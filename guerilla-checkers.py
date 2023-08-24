@@ -311,6 +311,79 @@ def randomised_game(draw=False):
     #breakpoint()
     return random_game.game_record
 
+def two_player_game():
+    twoplayergame = game()
+    player = -1
+    while not twoplayergame.is_game_over():
+        valid_actions = twoplayergame.get_valid_actions(player)
+        turn_over = False
+        while not turn_over:
+            if player == -1:
+                print('Turn', str(len(twoplayergame.game_record)),'guerillas move')
+            if player == 1:
+                print('Turn', str(len(twoplayergame.game_record)),'COINs move')
+            try:
+                move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
+            except ValueError:
+                print("Please enter a number.")
+            if move in range(len(valid_actions)):
+                draw_board(valid_actions[move])
+                confirm = str(input("Do you chose this move? (y/n)"))
+                if confirm == "y":
+                    turn_over = True
+                    twoplayergame.take_action(player, valid_actions[move])
+                    player = player * -1
+            else:
+                print("You need to enter a number between 0 and", len(valid_actions)-1)
+    winner = twoplayergame.get_game_result()
+    if winner == None:
+        print("No winner")
+    if winner == -1:
+        print("Guerilla wins")
+    if winner == 1:
+        print("COIN wins")
+    #breakpoint()
+    return twoplayergame.game_record
+
+def one_player_game(human):
+    oneplayergame = game()
+    player = -1
+    while not oneplayergame.is_game_over():
+        valid_actions = oneplayergame.get_valid_actions(player)
+        turn_over = False
+        if player == human:
+            while not turn_over:
+                draw_board(oneplayergame.board)
+                if player == -1:
+                    print('Turn', str(len(oneplayergame.game_record)),'guerillas move')
+                if player == 1:
+                    print('Turn', str(len(oneplayergame.game_record)),'COINs move')
+                try:
+                    move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
+                except ValueError:
+                    print("Please enter a number.")
+                if move in range(len(valid_actions)):
+                    draw_board(valid_actions[move])
+                    confirm = str(input("Do you chose this move? (y/n)"))
+                    if confirm == "y":
+                        turn_over = True
+                        oneplayergame.take_action(player, valid_actions[move])
+                        player = player * -1
+                else:
+                    print("You need to enter a number between 0 and", len(valid_actions)-1)
+        else:
+            oneplayergame.take_action(player, random.choice(valid_actions))
+            player = player * -1
+    winner = twoplayergame.get_game_result()
+    if winner == None:
+        print("No winner")
+    if winner == -1:
+        print("Guerilla wins")
+    if winner == 1:
+        print("COIN wins")
+    #breakpoint()
+    return twoplayergame.game_record
+            
 def draw_board(board):
     stones, squares, grid = decompress_board(board)
     cross_glyph = u"\u253c"
@@ -392,5 +465,31 @@ def draw_board(board):
                             print(blackstone, end=black_top)    
                 print(u"\u259C")
     print(u"\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2588")
+
+print("There is no AI yet, just random choice.")
+while True:
+    player_choice = input("Do you want to play with 0, 1 or 2 players? (0/1/2/q)")
+    if str(player_choice) == "0":
+        randomised_game(draw = True)
+        break
     
-randomised_game(draw = True)
+    if str(player_choice) == "1":
+        while True:
+            player_side = input("Will you play as guerilla or COIN? (g/c)")
+            if player_side == "g":
+                one_player_game(-1)
+                break
+            if player_side == "c":
+                one_player_game(1)
+                break
+            print("You have to type 'g' or 'c'!")
+        break
+    
+    if str(player_choice) == "2":
+        two_player_game()
+        break
+    
+    if str(player_choice) == "q":
+        print("Bye!")
+        break
+    print("Incorrect input")
