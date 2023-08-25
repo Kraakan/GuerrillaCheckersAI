@@ -374,7 +374,7 @@ def one_player_game(human):
         else:
             oneplayergame.take_action(player, random.choice(valid_actions))
             player = player * -1
-    winner = twoplayergame.get_game_result()
+    winner = oneplayergame.get_game_result()
     if winner == None:
         print("No winner")
     if winner == -1:
@@ -382,7 +382,7 @@ def one_player_game(human):
     if winner == 1:
         print("COIN wins")
     #breakpoint()
-    return twoplayergame.game_record
+    return oneplayergame.game_record
             
 def draw_board(board):
     stones, squares, grid = decompress_board(board)
@@ -468,7 +468,7 @@ def draw_board(board):
 
 print("There is no AI yet, just random choice.")
 while True:
-    player_choice = input("Do you want to play with 0, 1 or 2 players? (0/1/2/q)")
+    player_choice = input("Do you want to play with 0, 1 or 2 players? (q to quit) (0/1/2/q)")
     if str(player_choice) == "0":
         randomised_game(draw = True)
         break
