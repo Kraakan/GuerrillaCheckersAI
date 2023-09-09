@@ -348,8 +348,8 @@ def two_player_game():
 def one_player_game(human):
     oneplayergame = game()
     player = -1
+    valid_actions = oneplayergame.get_valid_actions(player)
     while not oneplayergame.is_game_over():
-        valid_actions = oneplayergame.get_valid_actions(player)
         turn_over = False
         if player == human:
             while not turn_over:
@@ -368,12 +368,12 @@ def one_player_game(human):
                     if confirm == "y":
                         turn_over = True
                         oneplayergame.take_action(player, valid_actions[move])
-                        player = player * -1
                 else:
                     print("You need to enter a number between 0 and", len(valid_actions)-1)
         else:
             oneplayergame.take_action(player, random.choice(valid_actions))
-            player = player * -1
+        player = player * -1
+        valid_actions = oneplayergame.get_valid_actions(player)
     winner = oneplayergame.get_game_result()
     if winner == None:
         print("No winner")
