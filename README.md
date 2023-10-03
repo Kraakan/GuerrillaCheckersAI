@@ -1,6 +1,8 @@
 # Guerrilla Checkers AI — a Roadmap
 <img src="img.png" alt="board" width="500"/>
 
+[ Background info ](https://ludii.games/details.php?keyword=Guerrilla%20Checkers)
+
 ## Game Rules
 
 1. **Game Setup**: The game is played on an empty 8x8 board. The Counterinsurgent (COIN) player places 6 checkers on the white squares in the middle of the board. The Guerrilla player starts with 66 stones but begins the game with no pieces on the board.
