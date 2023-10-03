@@ -138,6 +138,7 @@ class game():
         self.checker_positions = rules["checker positions"]
         self.guerillas_turn = True
         self.game_record = [self.board]
+        self.COINjump = None
         
     def get_current_state(self):
         # This function returns the current state of the game.
@@ -145,13 +146,20 @@ class game():
         
     def get_valid_actions(self, player):
         # This function takes the current player as input and returns a list of valid actions for that player.
+        
+        # An acton for either player can be defined by two spots on the board:
+        # For the guerilla player the first spot is where they place one stone, 
+        # and the second place is where they place a second stone next to the first.
+        # For the COIN player the first spot is the location one of their checkers that is able to move,
+        # and the second spot is where it ends up.
+        
         moves = None
         if self.board[0] < 66:
             self.checker_positions = list_checker_positions(self.board)
-        # player: 0 = guerilla 1 = COIN
+        # player: 1 = guerilla 0 = COIN
         # Not sure if I need to check whose turn it is, 
         # or if returning an empty list is the right response for players "acting out of turn"
-        if player == -1:
+        if player == 1:
             if self.guerillas_turn:
                 moves = self.get_guerilla_moves()
             else: moves = []
@@ -160,17 +168,6 @@ class game():
                 moves = self.get_COIN_moves()
             else: moves = []
         return moves
-    
-    def take_action(self, player, action):
-        # This function takes the current player and an action as input, updates the game state based on the action, checks if the game has ended, and returns the outcome.
-        #result = None
-        if (player == -1 and self.guerillas_turn) or (player == 1 and not self.guerillas_turn):
-            self.board = action
-            self.game_record.append(self.board)
-            self.guerillas_turn = not self.guerillas_turn
-        #if is_game_over():
-        #    result = get_game_result()
-        return self.get_game_result()
 
     def is_game_over(self):
         # This function checks if the game is over and returns a boolean value.
@@ -199,41 +196,6 @@ class game():
         # his function returns the number of remaining Guerrilla stones.
         # Not sure if this is needed
         return self.board[0]
-    
-    def get_guerilla_moves(self):
-        move_list=[]
-        # TODO: Find out if it's necessary to make a copy of the board for each move
-        # First move, if the guerilla player is still holding all their stones
-        if self.board[0] == 66:
-            for i in range(48):
-                if i < 42:
-                    new_board = copy.copy(self.board)
-                    new_board[i + 33] = 1
-                    new_board[i + 33 + 7] = 1
-                    new_board[0] -= 2
-                    move_list.append(new_board)
-                if (i+1)%7 != 0:
-                    new_board = copy.copy(self.board)
-                    new_board[i + 33] = 1
-                    new_board[i + 33 + 1] = 1
-                    new_board[0] -= 2
-                    move_list.append(new_board)
-        else:
-            # Find occupied crosses
-            for index, cross in enumerate(self.board[33:]):
-                if cross == 1:
-                    # TODO: Make sure the name and index of the neighbors list is correct!
-                    for neighbor in rules["neighbors"][index]:
-                        if self.board[neighbor + 33] == 0:
-                            for neighborbor in rules["neighbors"][neighbor]:
-                                if self.board[neighborbor + 33] == 0:
-                                    new_board = copy.copy(self.board)
-                                    new_board[neighbor + 33] = 1
-                                    new_board[neighborbor + 33] = 1
-                                    new_board = self.check_surround(new_board, self.checker_positions)
-                                    new_board[0] -= 2
-                                    move_list.append(new_board)
-        return move_list
 
     def check_surround(self, board, positions):
         #breakpoint()
@@ -245,27 +207,6 @@ class game():
             if surrounded:
                 board[position] = 0
         return board
-    
-    def get_COIN_moves(self, debug=False):
-        move_list=[]
-
-        for position in self.checker_positions:
-                # Check for possible moves
-                for diagonal in rules["diagonals"][position - 1]:
-                    if self.board[diagonal[0] + 1] == 0:
-                        new_board = copy.copy(self.board)
-                        new_board[position] = 0
-                        new_board[diagonal[0] + 1] = 1
-                        if self.board[diagonal[1]] == 1:
-                            new_board[diagonal[1]] = 0
-                            move_list += self.capture_and_move(new_board, diagonal[0] + 1, debug)
-                        else:
-                            if debug:
-                                breakpoint()
-                            move_list.append(new_board)
-                            # Capture and recurse
-        # A move is represented by the board state produed by that move
-        return move_list
 
     def capture_and_move(self, board, position, debug=False):
         new_moves = []
@@ -283,56 +224,115 @@ class game():
         if not jumped:
             new_moves.append(board)
         return new_moves
+                      
+    def get_guerilla_moves(self):
+        move_list=[]
+        # TODO: Find out if it's necessary to make a copy of the board for each move
+        # First move, if the guerilla player is still holding all their stones
+        if self.board[0] == 66:
+            for i in range(48):
+                if i < 42:
+                    # Vertical orientation
+                    new_move = (i + 33, i + 33 + 7)
+                    move_list.append(new_move)
+                if (i+1)%7 != 0:
+                    # Horizontal orientation
+                    new_move = (i + 33, i + 33 + 1)
+                    move_list.append(new_move)
+        else:
+            # Find occupied crosses
+            for index, cross in enumerate(self.board[33:]):
+                if cross == 1:
+                    # TODO: Make sure the name and index of the neighbors list is correct!
+                    for neighbor in rules["neighbors"][index]:
+                        if self.board[neighbor + 33] == 0:
+                            for neighborbor in rules["neighbors"][neighbor]:
+                                if self.board[neighborbor + 33] == 0:
+                                    new_move = (neighbor + 33, neighborbor + 33)
+                                    move_list.append(new_move)
+        return move_list
+        
+    def take_action(self, player, action):
+        # This function takes the current player and an action as input, updates the game state based on the action, checks if the game has ended, and returns the outcome.
+        #result = None
+        if player == 1 and self.guerillas_turn:
+            # Guerilla
+            # 
+            new_board = copy.copy(self.board)
+            new_board[0] -= 2
+            new_board[action[0]] = 1
+            new_board[action[1]] = 1
+            new_board = self.check_surround(new_board, self.checker_positions)
+            self.guerillas_turn = not self.guerillas_turn
 
-def randomised_game(draw=False):
-    random_game = game()
-    player = -1
-    if draw:
-        draw_board(random_game.board)
-    while not random_game.is_game_over():
-        valid_actions = random_game.get_valid_actions(player)
-        if len(valid_actions) > 0: # Looks like I need to change how I deal with whose turn it is
-            random_game.take_action(player, random.choice(valid_actions))
-            player = player * -1
-        if draw:
-            if random_game.guerillas_turn:
-                print('Guerilla', end='')
-            else:
-                print('COIN', end='')
-            print(' turn ' + str(len(random_game.game_record)))
-            draw_board(random_game.board)
-    winner = random_game.get_game_result()
-    if winner == None:
-        print("No winner")
-    if winner == -1:
-        print("Guerilla wins")
-    if winner == 1:
-        print("COIN wins")
-    #breakpoint()
-    return random_game.game_record
+        if (player == 0 and not self.guerillas_turn):
+            # COIN
+            new_board = copy.copy(self.board)
+            new_board[action[0]] = 0
+            new_board[action[1]] = 1
+            # If the COIN player has captured a guerilla stone, and there is one or more stones that can be captured with the same piece, they have to do so
+            diagonals = rules["diagonals"][action[0] - 1]
+            #breakpoint()
+            index = [square for square, cross in diagonals].index(action[1] - 1)
+            diagonal = diagonals[index]
+            self.guerillas_turn = True
+            self.COINjump = None
+            if self.board[diagonal[1]] == 1:
+                new_board[diagonal[1]] = 0
+                for new_diagonal in rules["diagonals"][action[1] - 1]:
+                    if new_board[new_diagonal[0] + 1] == 0 and new_board[new_diagonal[1]] == 1:
+                        self.COINjump = (action[1], diagonal)
+                        self.guerillas_turn = False
+        self.board = new_board
+        self.game_record.append(self.board)
+        return self.get_game_result()
+                      
+    def get_COIN_moves(self, debug=False):
+        move_list=[]
+        #breakpoint()
+        if self.COINjump == None:
+            for position in self.checker_positions:
+                    # TODO: Write code!
+                    for diagonal in rules["diagonals"][position - 1]:
+                        if self.board[diagonal[0] + 1] == 0:
+                            new_move = (position, diagonal[0] + 1)
+                            if debug:
+                                breakpoint()
+                            move_list.append(new_move)
+        else: #WRONG?
+            #breakpoint()
+            for diagonal in rules["diagonals"][self.COINjump[1][0]]:
+                if self.board[diagonal[1]] == 1 and self.board[diagonal[0] + 1] == 0:
+                    new_move = (self.COINjump[1][0] + 1, diagonal[0] + 1)
+                    move_list.append(new_move)
+            if len(move_list) < 1:
+                self.guerillas_turn = True
+        return move_list
 
 def two_player_game():
     twoplayergame = game()
-    player = -1
+    player = 1
     while not twoplayergame.is_game_over():
         valid_actions = twoplayergame.get_valid_actions(player)
         turn_over = False
         while not turn_over:
-            if player == -1:
-                print('Turn', str(len(twoplayergame.game_record)),'guerillas move')
+            draw_board(twoplayergame.board)
             if player == 1:
-                print('Turn', str(len(twoplayergame.game_record)),'COINs move')
+                print('Turn', str(len(twoplayergame.game_record)), ': Guerilla has', twoplayergame.board[0], 'stones. Guerillas move')
+            if player == 0:
+                print('Turn', str(len(twoplayergame.game_record)), ': Guerilla has', twoplayergame.board[0], 'stones. COINs move')
             try:
                 move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
             except ValueError:
                 print("Please enter a number.")
             if move in range(len(valid_actions)):
-                draw_board(valid_actions[move])
+                draw_board(twoplayergame.board, move = valid_actions[move])
+                print('')
                 confirm = str(input("Do you chose this move? (y/n)"))
                 if confirm == "y":
                     turn_over = True
                     twoplayergame.take_action(player, valid_actions[move])
-                    player = player * -1
+                    player = int(twoplayergame.guerillas_turn)
             else:
                 print("You need to enter a number between 0 and", len(valid_actions)-1)
     winner = twoplayergame.get_game_result()
@@ -347,33 +347,36 @@ def two_player_game():
 
 def one_player_game(human):
     oneplayergame = game()
-    player = -1
-    valid_actions = oneplayergame.get_valid_actions(player)
+    player = 1
     while not oneplayergame.is_game_over():
         turn_over = False
         if player == human:
+            valid_actions = oneplayergame.get_valid_actions(player)
             while not turn_over:
                 draw_board(oneplayergame.board)
-                if player == -1:
-                    print('Turn', str(len(oneplayergame.game_record)),'guerillas move')
                 if player == 1:
-                    print('Turn', str(len(oneplayergame.game_record)),'COINs move')
+                    print('Turn', str(len(oneplayergame.game_record)),': Guerilla has', oneplayergame.board[0], 'stones. Guerillas move.')
+                if player == 0:
+                    print('Turn', str(len(oneplayergame.game_record)),': Guerilla has', oneplayergame.board[0], 'stones. COINs move.')
                 try:
                     move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
                 except ValueError:
                     print("Please enter a number.")
                 if move in range(len(valid_actions)):
-                    draw_board(valid_actions[move])
+                    draw_board(oneplayergame.board, move = valid_actions[move])
+                    print('')
                     confirm = str(input("Do you chose this move? (y/n)"))
                     if confirm == "y":
                         turn_over = True
                         oneplayergame.take_action(player, valid_actions[move])
+                        player = int(oneplayergame.guerillas_turn)
                 else:
                     print("You need to enter a number between 0 and", len(valid_actions)-1)
         else:
+            valid_actions = oneplayergame.get_valid_actions(player)
             oneplayergame.take_action(player, random.choice(valid_actions))
-        player = player * -1
-        valid_actions = oneplayergame.get_valid_actions(player)
+            player = int(oneplayergame.guerillas_turn)
+        
     winner = oneplayergame.get_game_result()
     if winner == None:
         print("No winner")
@@ -383,8 +386,42 @@ def one_player_game(human):
         print("COIN wins")
     #breakpoint()
     return oneplayergame.game_record
-            
-def draw_board(board):
+
+def randomized_game(draw=False):
+    random_game = game()
+    player = 1
+    if draw:
+        draw_board(random_game.board)
+    while not random_game.is_game_over():
+        valid_actions = random_game.get_valid_actions(player)
+        if len(valid_actions) > 0:
+            random_game.take_action(player, random.choice(valid_actions))
+        player = int(random_game.guerillas_turn)
+        if draw:
+            if random_game.guerillas_turn:
+                print('Guerilla', end='')
+            else:
+                print('COIN', end='')
+            print(' turn ' + str(len(random_game.game_record)))
+            print('Guerilla has', random_game.board[0], 'stones.')
+            draw_board(random_game.board)
+    winner = random_game.get_game_result()
+    if winner == None:
+        print("No winner")
+    if winner == -1:
+        print("Guerilla wins")
+    if winner == 1:
+        print("COIN wins")
+    #breakpoint()
+    return random_game.game_record
+
+def draw_board(board, move = None):
+    if move != None:
+        board = copy.copy(board)
+        if move[0] > 32:
+            board[move[0]] = 1
+        else: board[move[0]] = 0
+        board[move[1]] = 1
     stones, squares, grid = decompress_board(board)
     cross_glyph = u"\u253c"
     horizontal_line = u"\u2500"
@@ -470,17 +507,17 @@ print("There is no AI yet, just random choice.")
 while True:
     player_choice = input("Do you want to play with 0, 1 or 2 players? (q to quit) (0/1/2/q)")
     if str(player_choice) == "0":
-        randomised_game(draw = True)
+        randomized_game(draw = True)
         break
     
     if str(player_choice) == "1":
         while True:
             player_side = input("Will you play as guerilla or COIN? (g/c)")
             if player_side == "g":
-                one_player_game(-1)
+                one_player_game(1)
                 break
             if player_side == "c":
-                one_player_game(1)
+                one_player_game(0)
                 break
             print("You have to type 'g' or 'c'!")
         break
