@@ -75,7 +75,7 @@ However, these methods also come with their own challenges, such as increased co
 
 Designing a programmable interface (API) for a game like Guerrilla Checkers involves creating a set of functions that allow an AI agent to interact with the game. Here's a high-level design of the API:
 
-1. **State Representation**: The game state should be represented as a combination of a 4x4 matrix for the COIN player's checkers and a 7x7 matrix for the Guerrilla player's stones. Different values should be used for empty positions, Guerrilla stones, and COIN checkers. The state should also include the number of remaining Guerrilla stones.
+1. **State Representation**: The game state should be represented as a combination of a 4x8 matrix for the COIN player's checkers and a 7x7 matrix for the Guerrilla player's stones. Different values should be used for empty positions, Guerrilla stones, and COIN checkers. The state should also include the number of remaining Guerrilla stones.
 
 2. **Action Representation**: For the Guerrilla player, an action should be represented as the coordinates of two intersection points where the player wants to place stones. For the COIN player, an action should be represented as the initial and final coordinates of the move or jump.
 
@@ -99,7 +99,7 @@ Here is some sample code for the API. It's not complete, but it should give you 
 import numpy as np
 
 # Initialize the game state
-coin_state = np.zeros((4, 4))  # 4x4 matrix for COIN checkers
+coin_state = np.zeros((8, 4))  # 8x4 matrix for COIN checkers
 guerrilla_state = np.zeros((7, 7))  # 7x7 matrix for Guerrilla stones
 
 # Function to update the state
@@ -139,7 +139,7 @@ def get_valid_actions(player):
     # Check which player's turn it is
     if player == 'COIN':
         # Iterate over the COIN state matrix
-        for i in range(4):
+        for i in range(8):
             for j in range(4):
                 # If the current square contains a COIN checker
                 if coin_state[i][j] == 1:
@@ -231,7 +231,7 @@ class Game:
     def initial_state(self):
         # Return the initial game state
         # This should be a representation of the game board
-        # For Guerrilla Checkers, this could be a 4x4 matrix for COIN checkers,
+        # For Guerrilla Checkers, this could be a 8x4 matrix for COIN checkers,
         # a 7x7 matrix for Guerrilla stones, and an integer for remaining Guerrilla stones
         pass
 
@@ -344,13 +344,13 @@ Please note that this is a simplified example and doesn't include all the necess
 
 ## Input Representation
 
-In the case of Guerrilla Checkers, where the game state is represented by a 4x4 matrix (for COIN player's checkers), a 7x7 matrix (for Guerrilla player's stones), and an integer (for remaining Guerrilla stones), you could structure the input to the CNN in a few different ways. Here are a couple of possibilities:
+In the case of Guerrilla Checkers, where the game state is represented by a 8x4 matrix (for COIN player's checkers), a 7x7 matrix (for Guerrilla player's stones), and an integer (for remaining Guerrilla stones), you could structure the input to the CNN in a few different ways. Here are a couple of possibilities:
 
-1. **Stack the Matrices**: You could stack the 4x4 and 7x7 matrices together to form a 3D tensor (similar to a multi-channel image). The 4x4 matrix could be zero-padded to match the size of the 7x7 matrix. The integer representing the remaining Guerrilla stones could be incorporated as a separate channel filled with the same value, or it could be input separately into a fully connected layer later in the network.
+1. **Stack the Matrices**: You could stack the 8x4 and 7x7 matrices together to form a 3D tensor (similar to a multi-channel image). The 8x4 matrix could be zero-padded to match the size of the 7x7 matrix. The integer representing the remaining Guerrilla stones could be incorporated as a separate channel filled with the same value, or it could be input separately into a fully connected layer later in the network.
 
-2. **Separate Paths for Each Input**: You could have separate convolutional paths for the 4x4 and 7x7 matrices, which would allow the network to learn features at different scales. The outputs of these paths could then be concatenated and fed into a fully connected layer. The integer representing the remaining Guerrilla stones could be input into this fully connected layer as well.
+2. **Separate Paths for Each Input**: You could have separate convolutional paths for the 8x4 and 7x7 matrices, which would allow the network to learn features at different scales. The outputs of these paths could then be concatenated and fed into a fully connected layer. The integer representing the remaining Guerrilla stones could be input into this fully connected layer as well.
 
-In either case, the convolutional layers of the CNN would be able to learn spatial features from the 4x4 and 7x7 matrices, such as the configuration of stones in different parts of the board.
+In either case, the convolutional layers of the CNN would be able to learn spatial features from the 8x4 and 7x7 matrices, such as the configuration of stones in different parts of the board.
 
 Here's a rough sketch of what the first option might look like in code:
 
@@ -408,7 +408,7 @@ When using a Convolutional Neural Network (CNN) for this game, you would need to
 
 1. **Normalize the Data**: Neural networks generally work best with input data in the range of 0-1 or -1 to 1. You can normalize the matrices by dividing by the maximum possible value. For the integer representing the remaining Guerrilla stones, you can divide by the total number of stones at the start of the game. In the case of the Guerrilla Checkers game, normalizing the remaining stones by dividing by the maximum number of stones (66) makes sense because it scales the number of remaining stones to a range between 0 and 1. This puts it on a similar scale as the position information for the checkers and Guerrilla stones, which are also represented as 0 or 1. These values are already in a suitable range for input to a neural network. It's fine to normalize only the part of the tensor that corresponds to the remaining stones and let the position information of checkers and Guerrilla stones remain either 0 or 1.
 
-2. **Reshape the Data**: CNNs typically expect a 3D input (height, width, channels). In this case, you can consider each matrix as a separate channel. However, since the matrices are of different sizes, you would need to pad the smaller one (the 4x4 matrix) with zeros to match the size of the larger one (the 7x7 matrix). This would give you two 7x7 matrices, which you can stack to create a 7x7x2 input for the CNN. The integer representing the remaining Guerrilla stones can be reshaped into a 1x1 matrix and added as a third channel, resulting in a 7x7x3 input.
+2. **Reshape the Data**: CNNs typically expect a 3D input (height, width, channels). In this case, you can consider each matrix as a separate channel. However, since the matrices are of different sizes, you would need to pad the smaller one (the 8x4 matrix) with zeros to match the size of the larger one (the 7x7 matrix). This would give you two 7x7 matrices, which you can stack to create a 7x7x2 input for the CNN. The integer representing the remaining Guerrilla stones can be reshaped into a 1x1 matrix and added as a third channel, resulting in a 7x7x3 input.
 
 3. **Input to the CNN**: The processed game state can now be fed into the CNN as input.
 
@@ -422,7 +422,17 @@ def preprocess_state(coin_state, guerrilla_state, remaining_stones):
     remaining_stones = remaining_stones / 66  # assuming 66 is the total number of stones at the start
 
     # Pad the smaller state to match the size of the larger one
-    coin_state_padded = np.pad(coin_state, ((0, 3), (0, 3)))
+    # Reshape the 8x4 matrix into a 1D array
+    coin_state_flattened = coin_state.reshape(-1)
+   
+    # Create a 7x7 matrix initialized with zeros
+    coin_state_padded = np.zeros((7, 7))
+   
+    # Populate the 7x7 matrix with elements from the 1D array
+    for i in range(coin_state_flattened.shape[0]):
+        row = i // 7  # Determine the row
+        col = i % 7   # Determine the column
+        coin_state_padded[row, col] = coin_state_flattened[i]
 
     # Reshape the remaining stones into a 7x7 matrix
     remaining_stones_matrix = np.full((7, 7), remaining_stones)
