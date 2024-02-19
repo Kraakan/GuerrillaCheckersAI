@@ -329,10 +329,10 @@ class game():
                     if cross_index + 7 < 82 and self.board[cross_index + 7] == 0:
                         free_crosses.append(cross_index + 7 - 33)
                     # LEFT
-                    if cross_index - 1 > 33 and self.board[cross_index - 1] == 0:
+                    if (cross_index - 33) % 7 > 0 and self.board[cross_index - 1] == 0:
                         free_crosses.append(cross_index - 1 - 33)
                     # RIGHT
-                    if cross_index + 1 < 82 and self.board[cross_index + 1] == 0:
+                    if (cross_index -33) % 7 < 6 and self.board[cross_index + 1] == 0:
                         free_crosses.append(cross_index + 1 - 33)
                     #breakpoint()
                     for free_cross in free_crosses:
