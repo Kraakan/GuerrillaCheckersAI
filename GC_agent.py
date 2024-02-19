@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 # Run the code in guerilla-checkers.py - This worked with the checkers agent
-get_ipython().run_line_magic('run', 'guerilla-checkers')
+get_ipython().run_line_magic('run', 'guerilla_checkers')
 
 # Define the neural network that will be used to predict action probabilities
 class PolicyNetwork(nn.Module):

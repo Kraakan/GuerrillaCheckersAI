@@ -15,14 +15,25 @@ def compress_board(stones, squares, grid):
     # Grid last
     grid_list = grid.flatten().tolist()
     board = board + grid_list
-    
+    return board
+
+def dictify_board(stones, squares, grid):
+    board = {"stones": stones}
+    squares_dict = {}
+    for iy, ix in np.ndindex(squares.shape):
+        squares_dict[(iy,ix)] = squares[iy,ix]
+    board["squares"] = squares_dict
+    grid_dict = {}
+    for iy, ix in np.ndindex(grid.shape):
+        grid_dict[(iy,ix)] = grid[iy,ix]
+    board["grid"] = grid_dict
     return board
 
 def decompress_board(board):
     stones = board[0]
     squares_list = board[1:33]
     squares = np.array(squares_list).reshape((8, 4))
-    # add empty squares
+    #TODO add empty squares?
     grid_list = board[33:]
     grid = np.array(grid_list).reshape((7, 7))
     return stones, squares, grid
@@ -34,7 +45,8 @@ def create_starting_board():
     squares[5,2] = 1
     grid = np.zeros((7,7), dtype='b')
     starting_board = compress_board(66,squares,grid)
-    return starting_board
+    starting_board_dict = dictify_board(66,squares,grid)
+    return starting_board, starting_board_dict
 
 # IMPORTANT! Make sure the positions lists are always up to date
 def list_checker_positions(board):
@@ -44,11 +56,13 @@ def list_checker_positions(board):
             checker_list.append(index + 1)
     return checker_list
 
+# TODO: Add all possible actions, then delete rules.pickle
 try:
     rules = pickle.load( open( "rules.pickle", "rb" ))
 except FileNotFoundError:
     # Generating "rules" - mostly about the board layout
-    
+    print('Generating rules...')
+
     def diagonal_steps(position):
         steps = []
         # Beacuse the checker board is compressed, diagonals work differently on add and even rows
@@ -121,13 +135,78 @@ except FileNotFoundError:
     neighbors = []
     for n in range(49):
         neighbors.append(get_neighbors(n, 0))
+
+    list_diagonal_crosses(diagonals)
+    
+    # This method changes the mess above to a dict of tuples representing all the coordinates involved
+    def dictify_diagonals(list_, width, height):
+        return_dict = {}
+        row = 0
+        column = 0
+        i = 0
+        while row < height:
+            while column < width:
+                for target in list_[i]:
+                    target_tuple = (target[0] // 4, target[0] % 4)
+                    cross_index = target[1] - 33
+                    cross = (cross_index // 7, cross_index % 7)
+                    return_dict[(row, column) + target_tuple] = cross
+                column +=1
+                i +=1
+            row +=1
+            column = 0
+        return return_dict
+
+    diagonal_dict = dictify_diagonals(diagonals, 4, 8)
+
+    starting_board, starting_board_dict = create_starting_board()
+    COIN_moves = []
+    guerilla_moves = []
+    # I'm naming the tuple-coordinates to make the next part less confusing
+    y = 0
+    x = 1
+    for origin in starting_board_dict["squares"]:
+        if origin[y] % 2 == 0:
+            if origin[y] > 0:
+                COIN_moves.append(origin + (origin[y] - 1,origin[x]))
+                if origin[x] < 3:
+                    COIN_moves.append(origin + (origin[y] - 1,origin[x] + 1))
+            if origin[y] < 7:
+                COIN_moves.append(origin + (origin[y] + 1,origin[1]))
+                if origin[x] < 3:
+                    COIN_moves.append(origin + (origin[y] + 1,origin[x] + 1))
+        else:
+            if origin[y] > 0:
+                if origin[x] > 0:
+                    COIN_moves.append(origin + (origin[y] - 1,origin[x] - 1))
+                COIN_moves.append(origin + (origin[y] - 1,origin[x]))
+            if origin[y] < 7:
+                if origin[x] > 0:
+                    COIN_moves.append(origin + (origin[y] + 1,origin[x] - 1))
+                COIN_moves.append(origin + (origin[y] + 1, origin[x]))
+
+    for origin in starting_board_dict["grid"]:
+        if origin[y] > 0:
+            guerilla_moves.append(origin + (origin[0] - 1,origin[x]))
+        if origin[y] < 6:
+            guerilla_moves.append(origin + (origin[0] + 1,origin[x]))
+        if origin[x] > 0:
+            guerilla_moves.append(origin + (origin[0],origin[x] - 1))
+        if origin[x] < 6:
+            guerilla_moves.append(origin + (origin[0],origin[x] + 1))
+
+    all_guerilla_moves  = dict.fromkeys(guerilla_moves, False)
+    all_COIN_moves  = dict.fromkeys(COIN_moves, False)
+
     rules = {
         "diagonals" : diagonals,
         "neighbors" : neighbors,
-        "starting board" : create_starting_board(),
-        "checker positions" : [10, 14, 15, 18, 19, 23]
+        "starting board" : starting_board,
+        "checker positions" : [10, 14, 15, 18, 19, 23],
+        "all COIN moves" : all_COIN_moves,
+        "all guerilla moves" : all_guerilla_moves,
+        "diagonal dict": diagonal_dict
     }
-    list_diagonal_crosses(rules["diagonals"])
     
     pickle.dump(rules, open( "rules.pickle", "wb" ))
 
@@ -162,19 +241,21 @@ class game():
         if player == 1:
             if self.guerillas_turn:
                 moves = self.get_guerilla_moves()
-            else: moves = []
+            else:
+                print("Wrong player! It's guerillas_turn")
+                moves = []
         else:
             if not self.guerillas_turn:
                 moves = self.get_COIN_moves()
-            else: moves = []
+            else:
+                print("Wrong player! It's not guerillas_turn")
+                moves = []
         return moves
 
     def is_game_over(self):
         # This function checks if the game is over and returns a boolean value.
-        #breakpoint()
         if self.board[0] <= 0:
             return True
-        # It is important to have elif here, or the game will end before the guerilla player's first move!
         if sum(self.board[33:]) == 0 and self.board[0] < 66:
             return True
         if len(self.checker_positions) == 0:
@@ -224,8 +305,58 @@ class game():
         if not jumped:
             new_moves.append(board)
         return new_moves
-                      
+    
     def get_guerilla_moves(self):
+        move_dict = copy.copy(rules["all guerilla moves"])
+        # TODO: Find out if it's necessary to make a copy of the board for each move
+        # First move, if the guerilla player is still holding all their stones
+        if self.board[0] == 66:
+            # Permit all moves
+            move_dict = dict.fromkeys(move_dict, True)
+        else:
+            # Find occupied crosses
+            for index, cross in enumerate(self.board[33:]):
+                if cross == 1:
+                    cross_index = index + 33
+                    all_moves = list(move_dict.keys())
+                    #breakpoint()
+                    # TODO: Start ADJACENT, not on occupied crosses!
+                    free_crosses = []
+                    # UP
+                    if cross_index - 7 > 33 and self.board[cross_index - 7] == 0:
+                        free_crosses.append(cross_index - 7 - 33)
+                    # DOWN
+                    if cross_index + 7 < 82 and self.board[cross_index + 7] == 0:
+                        free_crosses.append(cross_index + 7 - 33)
+                    # LEFT
+                    if cross_index - 1 > 33 and self.board[cross_index - 1] == 0:
+                        free_crosses.append(cross_index - 1 - 33)
+                    # RIGHT
+                    if cross_index + 1 < 82 and self.board[cross_index + 1] == 0:
+                        free_crosses.append(cross_index + 1 - 33)
+                    #breakpoint()
+                    for free_cross in free_crosses:
+                        cross_y = free_cross // 7
+                        cross_x = free_cross % 7
+                        if (cross_y, cross_x, cross_y - 1, cross_x) in all_moves:
+                            # Check if up is occupied
+                            if self.board[free_cross - 7 + 33] == 0:
+                                move_dict[(cross_y, cross_x, cross_y - 1, cross_x)] = True
+                        if (cross_y, cross_x, cross_y + 1, cross_x) in all_moves:
+                            # Check if down is occupied
+                            if self.board[free_cross + 7 + 33] == 0:
+                                move_dict[(cross_y, cross_x, cross_y + 1, cross_x)] = True
+                        if (cross_y, cross_x, cross_y, cross_x - 1) in all_moves:
+                            # Check if left is occupied
+                            if cross_x > 0 and self.board[free_cross - 1 + 33] == 0:
+                                move_dict[(cross_y, cross_x, cross_y, cross_x - 1)] = True
+                        if (cross_y, cross_x, cross_y, cross_x + 1) in all_moves:
+                            # Check if right is occupied
+                            if cross_x < 6 and self.board[free_cross + 1 + 33] == 0:
+                                move_dict[(cross_y, cross_x, cross_y, cross_x + 1)] = True
+        return move_dict
+                                          
+    def old_get_guerilla_moves(self):
         move_list=[]
         # TODO: Find out if it's necessary to make a copy of the board for each move
         # First move, if the guerilla player is still holding all their stones
@@ -255,39 +386,69 @@ class game():
     def take_action(self, player, action):
         # This function takes the current player and an action as input, updates the game state based on the action, checks if the game has ended, and returns the outcome.
         #result = None
+        new_board = copy.copy(self.board)
         if player == 1 and self.guerillas_turn:
             # Guerilla
-            # 
-            new_board = copy.copy(self.board)
+            #
             new_board[0] -= 2
-            new_board[action[0]] = 1
-            new_board[action[1]] = 1
+            first = action[0] * 7 + action[1] + 33
+            second = action[2] * 7 + action[3] + 33
+            #breakpoint()
+            new_board[first] = 1
+            new_board[second] = 1
             new_board = self.check_surround(new_board, self.checker_positions)
-            self.guerillas_turn = not self.guerillas_turn
+            self.guerillas_turn = False
 
         if (player == 0 and not self.guerillas_turn):
             # COIN
-            new_board = copy.copy(self.board)
-            new_board[action[0]] = 0
-            new_board[action[1]] = 1
+            first = action[0] * 4 + action[1] + 1
+            second = action[2] * 4 + action[3] + 1
+            new_board[first] = 0
+            new_board[second] = 1
             # If the COIN player has captured a guerilla stone, and there is one or more stones that can be captured with the same piece, they have to do so
-            diagonals = rules["diagonals"][action[0] - 1]
+            #diagonals = rules["diagonals"][action[0] - 1]
             #breakpoint()
-            index = [square for square, cross in diagonals].index(action[1] - 1)
-            diagonal = diagonals[index]
+            #index = [square for square, cross in diagonals].index(action[1] - 1)
+            #diagonal = diagonals[index]
+            cross_tuple = rules["diagonal dict"][action]
+            cross_index = cross_tuple[0] * 7 + cross_tuple[1] + 33
             self.guerillas_turn = True
             self.COINjump = None
-            if self.board[diagonal[1]] == 1:
-                new_board[diagonal[1]] = 0
-                for new_diagonal in rules["diagonals"][action[1] - 1]:
+            #breakpoint()
+            if self.board[cross_index] == 1:
+                new_board[cross_index] = 0
+                for new_diagonal in rules["diagonals"][second - 1]:
                     if new_board[new_diagonal[0] + 1] == 0 and new_board[new_diagonal[1]] == 1:
-                        self.COINjump = (action[1], diagonal)
+                        self.COINjump = (second, cross_index)
                         self.guerillas_turn = False
         self.board = new_board
         self.game_record.append(self.board)
         return self.get_game_result()
-                      
+    
     def get_COIN_moves(self, debug=False):
+        move_dict = copy.copy(rules["all COIN moves"])
+        #breakpoint()
+        if self.COINjump == None:
+            for position in self.checker_positions:
+                abs_pos = position - 1
+                #breakpoint()
+                for diagonal in rules["diagonals"][abs_pos]:
+                    if self.board[diagonal[0] + 1] == 0:
+                        move_dict[(abs_pos // 4, abs_pos % 4, diagonal[0] // 4, diagonal[0] % 4)] = True
+                        #breakpoint()
+        else:
+            #self.guerillas_turn = True
+            #breakpoint()
+            for diagonal in rules["diagonals"][self.COINjump[0] - 1]: # Fixed: -1
+                if self.board[diagonal[1]] == 1 and self.board[diagonal[0] + 1] == 0:
+                    #new_move = (self.COINjump[1][0] + 1, diagonal[0] + 1)
+                    abs_jump = self.COINjump[0] - 1
+                    abs_diag = diagonal[0]
+                    move_dict[(abs_jump // 4, abs_jump % 4, abs_diag // 4, abs_diag % 4)] = True 
+                    #self.guerillas_turn = False
+        return move_dict
+                          
+    def old_get_COIN_moves(self, debug=False):
         move_list=[]
         #breakpoint()
         if self.COINjump == None:
@@ -299,8 +460,7 @@ class game():
                             if debug:
                                 breakpoint()
                             move_list.append(new_move)
-        else: #WRONG?
-            #breakpoint()
+        else:
             for diagonal in rules["diagonals"][self.COINjump[1][0]]:
                 if self.board[diagonal[1]] == 1 and self.board[diagonal[0] + 1] == 0:
                     new_move = (self.COINjump[1][0] + 1, diagonal[0] + 1)
@@ -351,7 +511,7 @@ def one_player_game(human):
     while not oneplayergame.is_game_over():
         turn_over = False
         if player == human:
-            valid_actions = oneplayergame.get_valid_actions(player)
+            valid_actions = list(oneplayergame.get_valid_actions(player).keys())
             while not turn_over:
                 draw_board(oneplayergame.board)
                 if player == 1:
@@ -363,6 +523,7 @@ def one_player_game(human):
                 except ValueError:
                     print("Please enter a number.")
                 if move in range(len(valid_actions)):
+                    #breakpoint()
                     draw_board(oneplayergame.board, move = valid_actions[move])
                     print('')
                     confirm = str(input("Do you chose this move? (y/n)"))
@@ -394,8 +555,9 @@ def randomized_game(draw=False):
         draw_board(random_game.board)
     while not random_game.is_game_over():
         valid_actions = random_game.get_valid_actions(player)
-        if len(valid_actions) > 0:
-            random_game.take_action(player, random.choice(valid_actions))
+        valid_actions_list = [k for k, v in valid_actions.items() if v == True]
+        if len(valid_actions_list) > 0:
+            random_game.take_action(player, random.choice(valid_actions_list))
         player = int(random_game.guerillas_turn)
         if draw:
             if random_game.guerillas_turn:
@@ -418,6 +580,7 @@ def randomized_game(draw=False):
 def draw_board(board, move = None):
     if move != None:
         board = copy.copy(board)
+        # TODO: CONVERT!
         if move[0] > 32:
             board[move[0]] = 1
         else: board[move[0]] = 0
@@ -503,7 +666,7 @@ def draw_board(board, move = None):
                 print(u"\u259C")
     print(u"\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2588")
 
-print("There is no AI yet, just random choice.")
+"""print("There is no AI yet, just random choice.")
 while True:
     player_choice = input("Do you want to play with 0, 1 or 2 players? (q to quit) (0/1/2/q)")
     if str(player_choice) == "0":
@@ -529,4 +692,4 @@ while True:
     if str(player_choice) == "q":
         print("Bye!")
         break
-    print("Incorrect input")
+    print("Incorrect input")"""
