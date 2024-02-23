@@ -11,8 +11,11 @@ def start(stdscr):
     
     curses.start_color()
     curses.use_default_colors()
-    curses.init_pair(1, curses.COLOR_YELLOW, -1)
-    curses.init_pair(2, curses.COLOR_MAGENTA, -1)
+    curses.init_pair(1, curses.COLOR_MAGENTA, -1)
+    curses.init_pair(2, 0, curses.COLOR_MAGENTA)
+    curses.init_pair(3, curses.COLOR_CYAN, -1)
+    curses.init_pair(4, 0, curses.COLOR_CYAN)
+    curses.init_pair(5, 0, curses.COLOR_RED)
 
     while True:
         stdscr.clear()
@@ -24,19 +27,21 @@ def start(stdscr):
             review_game(stdscr, game_record, move_history)
             break
         
-        if str(player_choice) == "1":
+        if player_choice == ord('1'):
             while True:
-                player_side = input("Will you play as guerilla or COIN? (g/c)")
-                if player_side == "g":
+                stdscr.clear()
+                stdscr.addstr("Will you play as guerilla or COIN? (g/c)")
+                player_side = stdscr.getch()
+                if player_side == ord('g'):
                     one_player_game(1, stdscr)
                     break
-                if player_side == "c":
+                if player_side == ord('c'):
                     one_player_game(0, stdscr)
                     break
                 stdscr.addstr("You have to type 'g' or 'c'!")
             break
         
-        if str(player_choice) == "2":
+        if player_choice == ord('2'):
             two_player_game(stdscr)
             break
         
@@ -45,7 +50,91 @@ def start(stdscr):
             break
         stdscr.addstr("Incorrect input")
 
-def draw_board_with_curses(board, stdscr, y, x, move = None):
+def get_highlight(move, player):
+    # Convert move coords to board space on curses screen (1-17)
+    y1 = 0
+    x1 = 0
+    y2 = 0
+    x2 = 0
+
+    if move == None or player == None:
+        return (y1, x1, y2, x2)
+    
+    if player == 0:
+        # COIN
+        move_from = move[:2]
+        move_to = move[2:]
+
+        y1 = 2 * (move_from[0] + 1)
+
+        if move_from[0] % 2 == 0:
+            x1 = 4 * (move_from[1] + 1)
+        else:
+            x1 = 4 * (move_from[1] + 1) - 2
+
+        y2 = 2 * (move_to[0] + 1)
+
+        if move_to[0] % 2 == 0:
+            x2 = 4 * (move_to[1] + 1)
+        else:
+            x2 = 4 * (move_to[1] + 1) - 2
+
+        # Odd rows are offset to the left
+        #if move_from[1] % 2 != 0:
+        #    x1 -= 2
+        #if move_to[1] % 2 != 0:
+        #    x2 -= 2
+
+    if player == 1:
+        # guerilla
+        #first_stone = move[:2]
+        #second_stone = move[2:]
+        y1, x1, y2, x2 = move
+
+        y1, x1, y2, x2 = (x * 2 + 3 for x in (y1, x1, y2, x2))
+    
+    return (y1, x1, y2, x2)
+
+def select_move(player, y, x, move_start = None):
+    
+    if player == 0: # COIN
+        move_y = y // 2 - 1
+        move_x = x // 4 - 1
+
+        if move_y % 2 != 0:
+           move_x = (x + 2) // 4 - 1
+
+        if move_y < 0:
+            move_y = 0
+        elif move_y > 7:
+            move_y = 7
+        
+        if move_x < 0:
+            move_x = 0
+        elif move_x > 3:
+             move_x = 3   
+
+    else: # guerilla
+        move_y = (y - 3) // 2
+        move_x = (x - 3) // 2
+        if move_y < 0:
+            move_y = 0
+        elif move_y > 6:
+            move_y = 6
+        if move_x < 0:
+            move_x = 0
+        elif move_x > 6:
+            move_x = 6
+
+    if move_start == None:
+        return (move_y, move_x, move_y, move_x)
+    else:
+        return (move_start[0], move_start[1], move_y, move_x)
+
+
+def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None):
+    stdscr.move(0, 0)
+
     stones, squares, grid = guerilla_checkers.decompress_board(board)
     cross_glyph = u"\u253c"
     horizontal_line = u"\u2500"
@@ -59,15 +148,15 @@ def draw_board_with_curses(board, stdscr, y, x, move = None):
     black_corners_b = u"\u259A"
     copyright = u"\u00A9"
     fisheye = u"\u25C9"
-    blackstone =u"\u25D9"
+    inverse_circle = u"\u25D9"
+    blackstone = u"\u25CF"
+    bullet = u"\u2022"
     stdscr.addstr("  A B C D E F G H\n")
     stdscr.addstr(u" \u2588\u2588\u259B\u2580\u259C\u2588\u259B\u2580\u259C\u2588\u259B\u2580\u259C\u2588\u259B\u2580\u259C")
     if move != None:
         stdscr.addstr(str(move))
     
     for i, row in enumerate(squares):
-        #stdscr.addstr(i, row)
-        # Move cursor to next row?
         stdscr.addstr("\n")
         stdscr.addstr(str(8-i))
         string = ' '
@@ -98,12 +187,14 @@ def draw_board_with_curses(board, stdscr, y, x, move = None):
                         if cross == 0:
                             stdscr.addstr(black_corners_b + black_top)
                         else:
-                            stdscr.addstr(blackstone + black_top)                        
+                            stdscr.addstr(bullet, curses.color_pair(3))
+                            stdscr.addstr(black_top)                        
                     else:
                         if cross == 0:
                             stdscr.addstr(black_corners_a + black_bottom)
                         else:
-                            stdscr.addstr(blackstone + black_bottom)
+                            stdscr.addstr(bullet, curses.color_pair(3))
+                            stdscr.addstr(black_bottom)
                 stdscr.addstr(u"\u259F")
         else:
             stdscr.addstr(black_right)
@@ -131,46 +222,108 @@ def draw_board_with_curses(board, stdscr, y, x, move = None):
                         if cross == 0:
                             stdscr.addstr(black_corners_a + black_bottom)
                         else:
-                            stdscr.addstr(blackstone + black_bottom)                    
+                            stdscr.addstr(bullet, curses.color_pair(3))
+                            stdscr.addstr(black_bottom)                    
                     else:
                         if cross == 0:
                             stdscr.addstr(black_corners_b + black_top)
                         else:
-                            stdscr.addstr(blackstone + black_top)    
+                            stdscr.addstr(bullet, curses.color_pair(3))
+                            stdscr.addstr(black_top)    
                 stdscr.addstr(u"\u259C")
     # Move cursor to next row?
     stdscr.addstr("\n ")
     stdscr.addstr(u"\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2588")
-    stdscr.chgat(y, x, 1, curses.A_STANDOUT)
-    # TODO?: return available coordinates
+    stdscr.addstr("y:" + str(yy) + " x:" + str(xx))
+    # curses.color_pair(5) curses.A_REVERSE)
+    stdscr.chgat(yy, xx, 1, curses.color_pair(5) | curses.A_BLINK)
+    if move != None:
+        highlight = get_highlight(move, player)
+        stdscr.move(16, 18)
+        stdscr.addstr(str(highlight))
+        y1, x1, y2, x2 = highlight
+        if player == 0:
+            stdscr.chgat(y1, x1, 1, curses.color_pair(2))
+            stdscr.chgat(y2, x2, 1, curses.color_pair(2))
+        else:
+            stdscr.chgat(y1, x1, 1, curses.color_pair(4))
+            stdscr.chgat(y2, x2, 1, curses.color_pair(4))
+    stdscr.move(0, 0)
 
 def two_player_game(stdscr):
     twoplayergame = guerilla_checkers.game()
     player = 1
+    yy = 1
+    xx = 1
+    min_y = 1
+    min_x = 1
+    max_y = 17
+    max_x = 17
     while not twoplayergame.is_game_over():
         valid_actions = twoplayergame.get_valid_actions(player)
+        valid_actions_list = [k for k, v in valid_actions.items() if v == True]
         turn_over = False
+        move_start = None
+        move = None
         while not turn_over:
-            draw_board_with_curses(twoplayergame.board, stdscr, y, x)
+            stdscr.clear()
             if player == 1:
                 stdscr.addstr('Turn' + str(len(twoplayergame.game_record)) + ': Guerilla has' + str(twoplayergame.board[0]) + 'stones. Guerillas move')
             if player == 0:
                 stdscr.addstr('Turn' + str(len(twoplayergame.game_record)) + ': Guerilla has' + str(twoplayergame.board[0]) + 'stones. COINs move')
-            try:
-                c = stdscr.getch()
-                #move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
-            except ValueError:
-                stdscr.addstr("Please enter a number.")
-            if move in range(len(valid_actions)):
-                draw_board_with_curses(twoplayergame.board, stdscr, y, x, move = valid_actions[move])
-                stdscr.addstr('')
-                confirm = str(input("Do you chose this move? (y/n)"))
-                if confirm == "y":
-                    turn_over = True
-                    twoplayergame.take_action(player, valid_actions[move])
-                    player = int(twoplayergame.guerillas_turn)
+            
+            draw_board_with_curses(twoplayergame.board, stdscr, yy, xx, move = move_start, player = player)
+            # FOR TESTING:
+            #move_start = None
+            #player = 0
+            ###
+            c = stdscr.getch()
+            if c == ord('q'):
+                break
+            elif c == curses.KEY_MOUSE:
+                mouse_event = curses.getmouse()
+                stdscr.addstr(str(mouse_event))
+            elif c == ord('a') or c == curses.KEY_LEFT:
+                xx-= 1
+            elif c == ord('d') or c == curses.KEY_RIGHT:
+                xx+= 1
+            elif c == ord('w') or c == curses.KEY_UP:
+                yy-= 1
+            elif c == ord('s') or c == curses.KEY_DOWN:
+                yy+= 1
+            if xx> max_x:
+                xx= max_x
+            if yy> max_y:
+                yy= max_y
+            if xx< min_x:
+                xx= min_x
+            if yy< min_y:
+                yy= min_y
+
+            # https://stackoverflow.com/questions/32252733/interpreting-enter-keypress-in-stdscr-curses-module-in-python
+            if c == curses.KEY_ENTER or c == 10 or c == 13:
+                selected_y = yy
+                selected_x = xx
+                move = select_move(player, selected_y, selected_x, move_start = move_start)
+
+            if move_start == None:
+                move_start = move
+                move = None
+                draw_board_with_curses(twoplayergame.board, stdscr, yy, xx, move = move_start, player = player)
             else:
-                stdscr.addstr("You need to enter a number between 0 and", len(valid_actions)-1)
+                draw_board_with_curses(twoplayergame.board, stdscr, yy, xx, move = move, player = player)
+
+            stdscr.move(15, 18)
+            if move != None:
+                if move in valid_actions_list:
+                    turn_over = True
+                    twoplayergame.take_action(player, move)
+                    player = int(twoplayergame.guerillas_turn)
+                else:
+                    stdscr.addstr("Invalid move!")
+                    move_start = None
+                    move = None
+                    confirm = stdscr.getch()
     winner = twoplayergame.get_game_result()
     if winner == None:
         stdscr.addstr("No winner")
@@ -188,7 +341,7 @@ def one_player_game(human, stdscr):
         if player == human:
             valid_actions = list(oneplayergame.get_valid_actions(player).keys())
             while not turn_over:
-                draw_board_with_curses(oneplayergame.board, stdscr, y, x)
+                draw_board_with_curses(oneplayergame.board, stdscr, yy, xx)
                 if player == 1:
                     stdscr.addstr('Turn', str(len(oneplayergame.game_record)),': Guerilla has', oneplayergame.board[0], 'stones. Guerillas move.')
                 if player == 0:
@@ -198,7 +351,7 @@ def one_player_game(human, stdscr):
                 except ValueError:
                     stdscr.addstr("Please enter a number.")
                 if move in range(len(valid_actions)):
-                    draw_board_with_curses(oneplayergame.board, stdscr, y, x, move = valid_actions[move])
+                    draw_board_with_curses(oneplayergame.board, stdscr, yy, xx, move = valid_actions[move])
                     stdscr.addstr('')
                     confirm = str(input("Do you chose this move? (y/n)"))
                     if confirm == "y":
@@ -233,7 +386,7 @@ def randomized_game(stdscr, draw=False):
         valid_actions_list = [k for k, v in valid_actions.items() if v == True]
         if len(valid_actions_list) > 0:
             selected_move = random.choice(valid_actions_list)
-            move_history.append(selected_move)
+            move_history.append((player, selected_move))
             random_game.take_action(player, selected_move)
         player = int(random_game.guerillas_turn)
         if draw:
@@ -257,12 +410,13 @@ def review_game(stdscr, game_record, move_history):
     stdscr.clear()
     stdscr.addstr("RESULTS")
     turn = 0
+    player = 1
     while True:
         if turn > 0:
-            previous_move = move_history[turn - 1]
+            player, previous_move = move_history[turn - 1]
         else:
             previous_move = None
-        draw_board_with_curses(game_record[turn], stdscr, 0, 0, move = previous_move)
+        draw_board_with_curses(game_record[turn], stdscr, 0, 0, move = previous_move, player = player)
         stdscr.addstr("Flip through turns with arrow keys, press q to quit\n")
         c = stdscr.getch()
         if c == ord('q'):
@@ -276,4 +430,5 @@ def review_game(stdscr, game_record, move_history):
             turn = 0
         if turn >= len(move_history):
             turn = len(move_history)
+
 wrapper(start)

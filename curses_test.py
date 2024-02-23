@@ -59,7 +59,7 @@ def main(stdscr):
         #stdscr.addstr("\n")
         #stdscr.move(min_y, min_x)
         stdscr.move(0, 0)
-        draw_board_with_curses(board, x, y)
+        test_colors(stdscr)
         c = stdscr.getch()
         stdscr.clear()
         if c == ord('q'):
@@ -196,6 +196,30 @@ def draw_board_with_curses(board, x, y, move = None):
     stdscr.addstr(u"\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2588")
     stdscr.chgat(y, x, 1, curses.A_STANDOUT)
     # TODO: return available coordinates
+
+def test_colors(stdscr):
+    curses.start_color()
+    curses.use_default_colors()
+    stdscr.addstr("colors changeable? " + str(curses.can_change_color()))
+    for i in range(0, curses.COLORS):
+        curses.init_pair(i + 1, i-1, i)
+    for i in range(0, curses.COLORS):
+        # Medium shade: u"\u2592"
+        stdscr.addstr(str(i) + u": \u2591 \u2592 \u2593 ", curses.color_pair(i))
+        colors = curses.color_content(i)
+        try:
+            # color_content()
+            rgb = ''
+            
+            for nr, color in enumerate(colors):
+                rgb += str(" ")
+                rgb += str(color)
+        except:
+            rgb = "error"
+        stdscr.addstr(rgb)
+    stdscr.getch()
+
+
 wrapper(main)
 
 # Terminating a curses application is much easier than starting one. Call:
