@@ -58,8 +58,29 @@ def main(stdscr):
         #stdscr.addstr(str(x))
         #stdscr.addstr("\n")
         #stdscr.move(min_y, min_x)
-        stdscr.move(0, 0)
-        test_colors(stdscr)
+        stdscr.move(1, 0)
+        #test_colors(stdscr)
+
+
+        # En kvadrat är i tecken 2* så bred som den är hög. Halva block fungerar också!
+        stdscr.addstr(u" \u2580\n")
+        stdscr.addstr("\n")
+        stdscr.addstr(u" \u2584\n")
+        stdscr.addstr("\n")
+
+        stdscr.addstr(u" \u2588\u2588\n")
+        stdscr.addstr("\n")
+
+        stdscr.addstr(u" \u2588\u2588\u2588\u2588\n")
+        stdscr.addstr(u" \u2588\u2588\u2588\u2588\n")
+        stdscr.addstr("\n")
+
+        stdscr.addstr(u" \u2588\u2588\u2588\u2588\u2588\u2588\n")
+        stdscr.addstr(u" \u2588\u2588\u2588\u2588\u2588\u2588\n")
+        stdscr.addstr(u" \u2588\u2588\u2588\u2588\u2588\u2588\n")
+        stdscr.move(15, 15)
+        stdscr.addstr("Hax höjd: " + str(max_y) + " Max bredd: "  + str(max_x))
+
         c = stdscr.getch()
         stdscr.clear()
         if c == ord('q'):

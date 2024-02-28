@@ -1,6 +1,9 @@
 import guerilla_checkers
 import random
 
+def hello():
+    print("Hello")
+
 def randomized_game(draw=False):
     random_game = guerilla_checkers.game()
     player = 1

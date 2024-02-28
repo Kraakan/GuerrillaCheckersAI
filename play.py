@@ -331,39 +331,87 @@ def two_player_game(stdscr):
         stdscr.addstr("Guerilla wins")
     if winner == 1:
         stdscr.addstr("COIN wins")
+    stdscr.getch()
     return twoplayergame.game_record
 
 def one_player_game(human, stdscr):
     oneplayergame = guerilla_checkers.game()
     player = 1
+    yy = 1
+    xx = 1
+    min_y = 1
+    min_x = 1
+    max_y = 17
+    max_x = 17
     while not oneplayergame.is_game_over():
-        turn_over = False
+        player = int(oneplayergame.guerillas_turn)
+        # I shouldn't need to check if there are no valid moves at this point
+        valid_actions = oneplayergame.get_valid_actions(player)
+        valid_actions_list = [k for k, v in valid_actions.items() if v == True]
+        
+        move_start = None
+        move = None
         if player == human:
-            valid_actions = list(oneplayergame.get_valid_actions(player).keys())
+            turn_over = False
             while not turn_over:
-                draw_board_with_curses(oneplayergame.board, stdscr, yy, xx)
+                stdscr.clear()
                 if player == 1:
-                    stdscr.addstr('Turn', str(len(oneplayergame.game_record)),': Guerilla has', oneplayergame.board[0], 'stones. Guerillas move.')
+                    stdscr.addstr('Turn' + str(len(oneplayergame.game_record)) + ': Guerilla has' + str(oneplayergame.board[0]) + 'stones. Guerillas move')
                 if player == 0:
-                    stdscr.addstr('Turn', str(len(oneplayergame.game_record)),': Guerilla has', oneplayergame.board[0], 'stones. COINs move.')
-                try:
-                    move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
-                except ValueError:
-                    stdscr.addstr("Please enter a number.")
-                if move in range(len(valid_actions)):
-                    draw_board_with_curses(oneplayergame.board, stdscr, yy, xx, move = valid_actions[move])
-                    stdscr.addstr('')
-                    confirm = str(input("Do you chose this move? (y/n)"))
-                    if confirm == "y":
-                        turn_over = True
-                        oneplayergame.take_action(player, valid_actions[move])
-                        player = int(oneplayergame.guerillas_turn)
+                    stdscr.addstr('Turn' + str(len(oneplayergame.game_record)) + ': Guerilla has' + str(oneplayergame.board[0]) + 'stones. COINs move')
+                
+                draw_board_with_curses(oneplayergame.board, stdscr, yy, xx, move = move_start, player = player)
+
+                c = stdscr.getch()
+                if c == ord('q'):
+                    break
+                elif c == curses.KEY_MOUSE:
+                    mouse_event = curses.getmouse()
+                    stdscr.addstr(str(mouse_event))
+                elif c == ord('a') or c == curses.KEY_LEFT:
+                    xx-= 1
+                elif c == ord('d') or c == curses.KEY_RIGHT:
+                    xx+= 1
+                elif c == ord('w') or c == curses.KEY_UP:
+                    yy-= 1
+                elif c == ord('s') or c == curses.KEY_DOWN:
+                    yy+= 1
+                if xx> max_x:
+                    xx= max_x
+                if yy> max_y:
+                    yy= max_y
+                if xx< min_x:
+                    xx= min_x
+                if yy< min_y:
+                    yy= min_y
+
+                # https://stackoverflow.com/questions/32252733/interpreting-enter-keypress-in-stdscr-curses-module-in-python
+                if c == curses.KEY_ENTER or c == 10 or c == 13:
+                    selected_y = yy
+                    selected_x = xx
+                    move = select_move(player, selected_y, selected_x, move_start = move_start)
+
+                if move_start == None:
+                    move_start = move
+                    move = None
+                    draw_board_with_curses(oneplayergame.board, stdscr, yy, xx, move = move_start, player = player)
                 else:
-                    stdscr.addstr("You need to enter a number between 0 and", len(valid_actions)-1)
+                    draw_board_with_curses(oneplayergame.board, stdscr, yy, xx, move = move, player = player)
+
+                stdscr.move(15, 18)
+                if move != None:
+                    if move in valid_actions_list:
+                        turn_over = True
+                        oneplayergame.take_action(player, move)
+                    else:
+                        stdscr.addstr("Invalid move!")
+                        move_start = None
+                        move = None
+                        confirm = stdscr.getch()
         else:
-            valid_actions = oneplayergame.get_valid_actions(player)
-            oneplayergame.take_action(player, random.choice(valid_actions))
-            player = int(oneplayergame.guerillas_turn)
+            
+            selected_move = random.choice(valid_actions_list)
+            oneplayergame.take_action(player, selected_move)
         
     winner = oneplayergame.get_game_result()
     if winner == None:
@@ -372,6 +420,7 @@ def one_player_game(human, stdscr):
         stdscr.addstr("Guerilla wins")
     if winner == 1:
         stdscr.addstr("COIN wins")
+    stdscr.getch()
     return oneplayergame.game_record
 
 def randomized_game(stdscr, draw=False):

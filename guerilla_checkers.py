@@ -233,8 +233,8 @@ class game():
         # and the second spot is where it ends up.
         
         moves = None
-        if self.board[0] < 66:
-            self.checker_positions = list_checker_positions(self.board)
+        #if self.board[0] < 66:
+            #self.checker_positions = list_checker_positions(self.board)
         # player: 1 = guerilla 0 = COIN
         # Not sure if I need to check whose turn it is, 
         # or if returning an empty list is the right response for players "acting out of turn"
@@ -258,6 +258,7 @@ class game():
             return True
         if sum(self.board[33:]) == 0 and self.board[0] < 66:
             return True
+        self.checker_positions = list_checker_positions(self.board)
         if len(self.checker_positions) == 0:
             return True
         return False
