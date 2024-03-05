@@ -31,6 +31,20 @@ def randomized_game(draw=False):
     #breakpoint()
     return random_game.game_record, move_history
 
-game_record, move_history = randomized_game()
-print("Board size:", len(game_record[0]))
-print(game_record, move_history)
+#game_record, move_history = randomized_game()
+#print("Board size:", len(game_record[0]))
+#print(game_record, move_history)
+
+env = guerilla_checkers.gym_env(guerilla_checkers.game())
+
+# Number of actions assuming player is guerilla
+n_actions = len(env.action_space)
+# Get the number of state observations
+state = env.reset()
+n_observations = len(state)
+
+# print("Action space size:", n_actions, "Observation space size:", n_observations, "Reset returns:", state)
+
+valid_actions = env.get_valid_sample()
+print(valid_actions)
+print(type(valid_actions))

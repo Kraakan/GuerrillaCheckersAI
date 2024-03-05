@@ -4,6 +4,7 @@ import random
 import pickle
 import gymnasium as gym
 from gymnasium import spaces
+import torch
 
 def compress_board(stones, squares, grid):
     
@@ -215,20 +216,16 @@ except FileNotFoundError:
 class gym_env(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array", "curses"], "render_fps": 4}
 
-    def __init__(self, game, player=1, render_mode=None):
-        self.game = game
-        self.player = 1
+    def __init__(self, passed_game, player=1, render_mode=None):
+        self.game = passed_game
+        self.player = player
         # https://gymnasium.farama.org/api/spaces/
         self.observation_space = spaces.Discrete(82)
         # Limiting the action space for COIN may give a small advantage to performance
         if player == 0:
-            pass
+            self.action_space = spaces.MultiDiscrete([8,4,8,4])
         else:
-            self.action_space = spaces.Tuple((
-            spaces.Discrete(7),
-            spaces.Discrete(7),
-            spaces.Discrete(7),
-            spaces.Discrete(7)))
+            self.action_space = spaces.MultiDiscrete([7,7,7,7])
 
         # In future, I may want to limit action space to possible moves
         # To make sure the moves will be in the correct order, use the order saved in rules.pickle
@@ -248,16 +245,31 @@ class gym_env(gym.Env):
         self.clock = None
 
     def _get_obs(self):
-        self.game.get_current_state()
+        observation, player = self.game.get_current_state()
+        return observation
 
     def _get_info(self):
-        return decompress_board(self.board)
+        return decompress_board(self.game.board)
     
     def reset(self):
-        pass
+        observation = self._get_obs()
+        info = self._get_info()
+        if self.render_mode == "human":
+            self._render_frame()
+        return observation
+
+    def get_valid_sample(self):
+        # This will need to be modified if I want to train agents that can play either role
+        valid_actions_dict = self.game.get_valid_actions(self.player)
+        # return value should be like tensor([[[2, 5, 4, 0]]]), but valid
+        valid_actions_list = [k for k, v in valid_actions_dict.items() if v]
+        sample = random.choice(valid_actions_list)
+        sample = list(sample)
+        return sample
 
     def step(self, action):
-        # TODO: Catch invalid actions
+        # TODO: Catch invalid actions?
+
         board, reward, terminated = self.game.take_action(self.player, action)
         # (self.board, self.get_reward(player), self.is_game_over())
         observation = self._get_obs()
@@ -270,6 +282,11 @@ class gym_env(gym.Env):
 
     def _render_frame(self):
         pass
+
+    def close(self):
+        if self.window is not None:
+            pygame.display.quit()
+            pygame.quit()
 
 class game():
     # Game object, will probably be instantiated for each game
@@ -294,7 +311,7 @@ class game():
     def get_current_state(self):
         # This function returns the current state of the game.
         normalized_board = copy.copy(self.board)
-        normalized_board[0] /= 66 
+        normalized_board[0] /= 66
         return normalized_board, self.guerillas_turn
         
     def get_valid_actions(self, player):
@@ -465,10 +482,10 @@ class game():
         if player == 1 and self.guerillas_turn:
             # Guerilla
             #
+            #breakpoint()
             new_board[0] -= 2
             first = action[0] * 7 + action[1] + 33
             second = action[2] * 7 + action[3] + 33
-            #breakpoint()
             new_board[first] = 1
             new_board[second] = 1
             new_board = self.check_surround(new_board, self.checker_positions)

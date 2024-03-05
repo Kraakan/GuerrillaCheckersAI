@@ -78,7 +78,7 @@ TAU = 0.005
 LR = 1e-4
 
 # Number of actions assuming player is guerilla
-n_actions = len(env.get_guerilla_moves())
+n_actions = len(env.action_space)
 # Get the number of state observations
 state = env.reset()
 n_observations = len(state)
@@ -106,7 +106,10 @@ def select_action(state):
             # found, so we pick action with the larger expected reward.
             return policy_net(state).max(1).indices.view(1, 1)
     else:
-        return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
+        # TODO: Restrict sample to valid actions
+        # OR: Modify environment to punish invalid actions
+        random_action = env.get_valid_sample()
+        return torch.tensor([[random_action]], device=device, dtype=torch.long)
 
 
 episode_durations = []
@@ -191,15 +194,18 @@ for i_episode in range(num_episodes):
     # Initialize the environment and get its state
     state = env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+    print("Running episode", i_episode+1)
     for t in count():
+        print("Turn", t + 1)
         action = select_action(state)
-        observation, reward, terminated, truncated, _ = env.step(action.item())
+        observation, reward, terminated, truncated, _ = env.step(action.tolist()[0][0])
         reward = torch.tensor([reward], device=device)
         done = terminated or truncated
 
         if terminated:
             next_state = None
         else:
+            #breakpoint()
             next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
 
         # Store the transition in memory
