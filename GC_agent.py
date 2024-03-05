@@ -61,3 +61,56 @@ class DRLAgent:
         loss.backward()
         # Update the weights of the policy network
         self.optimizer.step()
+
+game = guerilla_checkers.game()
+state, current_player = game.get_current_state()
+
+# Initialize the agents
+# state_size, action_size, learning_rate
+COIN_action_size = len(guerilla_checkers.rules["all COIN moves"])
+guerilla_action_size = len(guerilla_checkers.rules["all guerilla moves"])
+learning_rate = 0.9 #?
+coin_agent = DRLAgent(len(state), COIN_action_size, learning_rate)
+guerrilla_agent = DRLAgent(len(state), guerilla_action_size, learning_rate)
+
+# Number of games to play for training
+num_games = 10
+
+# Loop over the games
+for i in range(num_games):
+    # Reset the game state
+    game.reset()
+
+    # Play the game until it's over
+    while not game.is_game_over():
+        # Get the current state and determine the current player
+        state, current_player = game.get_current_state()
+
+        # Let the appropriate agent choose an action
+        if current_player == 0: # COIN
+            action = coin_agent.choose_action(state)
+        else:
+            action = guerrilla_agent.choose_action(state)
+
+        # Perform the action and get the new state
+        new_state, reward, done = game.take_action(current_player, action)
+
+        # Let the appropriate agent observe the result
+        if current_player == 0: #'COIN':
+            coin_agent.observe((state, action, reward, new_state, done))
+        else:
+            guerrilla_agent.observe((state, action, reward, new_state, done))
+
+        # If the game is over, let the agents know
+        if done:
+            coin_agent.end_episode()
+            guerrilla_agent.end_episode()
+
+    # Train the agents using the observations from this game
+    coin_agent.network.train()
+    guerrilla_agent.network.train()
+
+    # Occasionally save the agents' weights
+    if i % 1000 == 0:
+        coin_agent.save_weights(f'coin_weights_{i}.h5')
+        guerrilla_agent.save_weights(f'guerrilla_weights_{i}.h5')

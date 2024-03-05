@@ -2,6 +2,8 @@ import numpy as np
 import copy
 import random
 import pickle
+import gymnasium as gym
+from gymnasium import spaces
 
 def compress_board(stones, squares, grid):
     
@@ -210,18 +212,90 @@ except FileNotFoundError:
     
     pickle.dump(rules, open( "rules.pickle", "wb" ))
 
+class gym_env(gym.Env):
+    metadata = {"render_modes": ["human", "rgb_array", "curses"], "render_fps": 4}
+
+    def __init__(self, game, player=1, render_mode=None):
+        self.game = game
+        self.player = 1
+        # https://gymnasium.farama.org/api/spaces/
+        self.observation_space = spaces.Discrete(82)
+        # Limiting the action space for COIN may give a small advantage to performance
+        if player == 0:
+            pass
+        else:
+            self.action_space = spaces.Tuple((
+            spaces.Discrete(7),
+            spaces.Discrete(7),
+            spaces.Discrete(7),
+            spaces.Discrete(7)))
+
+        # In future, I may want to limit action space to possible moves
+        # To make sure the moves will be in the correct order, use the order saved in rules.pickle
+        # rules["all guerilla moves"]
+        # rules["all COIN moves"]
+        assert render_mode is None or render_mode in self.metadata["render_modes"]
+        self.render_mode = render_mode
+
+        """
+        If human-rendering is used, `self.window` will be a reference
+        to the window that we draw to. `self.clock` will be a clock that is used
+        to ensure that the environment is rendered at the correct framerate in
+        human-mode. They will remain `None` until human-mode is used for the
+        first time.
+        """
+        self.window = None
+        self.clock = None
+
+    def _get_obs(self):
+        self.game.get_current_state()
+
+    def _get_info(self):
+        return decompress_board(self.board)
+    
+    def reset(self):
+        pass
+
+    def step(self, action):
+        # TODO: Catch invalid actions
+        board, reward, terminated = self.game.take_action(self.player, action)
+        # (self.board, self.get_reward(player), self.is_game_over())
+        observation = self._get_obs()
+        info = self._get_info()
+        return observation, reward, terminated, False, info
+    
+    def render(self):
+        if self.render_mode == "rgb_array":
+            return self._render_frame()
+
+    def _render_frame(self):
+        pass
+
 class game():
     # Game object, will probably be instantiated for each game
     def __init__(self):
         self.board = rules["starting board"]
         self.checker_positions = rules["checker positions"]
         self.guerillas_turn = True
+        # NOTE: I may want to remove or disable game_record for training!
         self.game_record = [self.board]
         self.COINjump = None
+    
+    def reset(self):
+        self.board = rules["starting board"]
+        self.checker_positions = rules["checker positions"]
+        self.guerillas_turn = True
+        self.game_record = [self.board]
+        self.COINjump = None
+        normalized_board = copy.copy(self.board)
+        normalized_board[0] /= 66 
+        return normalized_board
         
     def get_current_state(self):
         # This function returns the current state of the game.
-        return self.board, self.guerillas_turn
+        normalized_board = copy.copy(self.board)
+        normalized_board[0] /= 66 
+        return normalized_board, self.guerillas_turn
         
     def get_valid_actions(self, player):
         # This function takes the current player as input and returns a list of valid actions for that player.
@@ -243,13 +317,13 @@ class game():
                 moves = self.get_guerilla_moves()
             else:
                 print("Wrong player! It's guerillas_turn")
-                moves = []
+                moves = {}
         else:
             if not self.guerillas_turn:
                 moves = self.get_COIN_moves()
             else:
                 print("Wrong player! It's not guerillas_turn")
-                moves = []
+                moves = {}
         return moves
 
     def is_game_over(self):
@@ -272,7 +346,7 @@ class game():
             return 1
         if len(self.checker_positions) == 0:
             return -1
-        return None
+        return 0
 
     def get_remaining_stones(self):
         # his function returns the number of remaining Guerrilla stones.
@@ -423,9 +497,17 @@ class game():
                         self.COINjump = (second, cross_index)
                         self.guerillas_turn = False
         self.board = new_board
+        normalized_board = copy.copy(self.board)
+        normalized_board[0] /= 66 
         self.game_record.append(self.board)
-        return self.get_game_result()
+        return (normalized_board, self.get_reward(player), self.is_game_over())
     
+    def get_reward(self, player):
+        if player == 1: # guerilla
+            return -1 * self.get_game_result()
+        else:
+            return self.get_game_result()
+        
     def get_COIN_moves(self, debug=False):
         move_dict = copy.copy(rules["all COIN moves"])
         #breakpoint()
@@ -666,31 +748,3 @@ def draw_board(board, move = None):
                             print(blackstone, end=black_top)    
                 print(u"\u259C")
     print(u"\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2588")
-
-"""print("There is no AI yet, just random choice.")
-while True:
-    player_choice = input("Do you want to play with 0, 1 or 2 players? (q to quit) (0/1/2/q)")
-    if str(player_choice) == "0":
-        randomized_game(draw = True)
-        break
-    
-    if str(player_choice) == "1":
-        while True:
-            player_side = input("Will you play as guerilla or COIN? (g/c)")
-            if player_side == "g":
-                one_player_game(1)
-                break
-            if player_side == "c":
-                one_player_game(0)
-                break
-            print("You have to type 'g' or 'c'!")
-        break
-    
-    if str(player_choice) == "2":
-        two_player_game()
-        break
-    
-    if str(player_choice) == "q":
-        print("Bye!")
-        break
-    print("Incorrect input")"""

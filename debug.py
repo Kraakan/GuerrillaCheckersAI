@@ -32,5 +32,5 @@ def randomized_game(draw=False):
     return random_game.game_record, move_history
 
 game_record, move_history = randomized_game()
-
+print("Board size:", len(game_record[0]))
 print(game_record, move_history)
