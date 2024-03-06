@@ -246,33 +246,39 @@ class gym_env(gym.Env):
 
     def _get_obs(self):
         observation, player = self.game.get_current_state()
-        return observation
+        return observation, player 
 
     def _get_info(self):
         return decompress_board(self.game.board)
     
     def reset(self):
-        observation = self._get_obs()
-        info = self._get_info()
+        observation, player  = self._get_obs()
+        info = self.game.reset()
         if self.render_mode == "human":
             self._render_frame()
         return observation
 
+    def get_acting_player(self):
+        return int(self.game.guerillas_turn)
+    
     def get_valid_sample(self):
         # This will need to be modified if I want to train agents that can play either role
-        valid_actions_dict = self.game.get_valid_actions(self.player)
+        acting_player = self.get_acting_player()
+        valid_actions_dict = self.game.get_valid_actions(acting_player)
         # return value should be like tensor([[[2, 5, 4, 0]]]), but valid
         valid_actions_list = [k for k, v in valid_actions_dict.items() if v]
+        if len (valid_actions_list) < 1:
+            breakpoint()
         sample = random.choice(valid_actions_list)
         sample = list(sample)
         return sample
+    
 
-    def step(self, action):
+    def step(self, action, acting_player):
         # TODO: Catch invalid actions?
-
-        board, reward, terminated = self.game.take_action(self.player, action)
+        board, reward, terminated = self.game.take_action(acting_player, tuple(action))
         # (self.board, self.get_reward(player), self.is_game_over())
-        observation = self._get_obs()
+        observation, acting_player = self._get_obs()
         info = self._get_info()
         return observation, reward, terminated, False, info
     
@@ -291,8 +297,8 @@ class gym_env(gym.Env):
 class game():
     # Game object, will probably be instantiated for each game
     def __init__(self):
-        self.board = rules["starting board"]
-        self.checker_positions = rules["checker positions"]
+        self.board = copy.copy(rules["starting board"])
+        self.checker_positions = copy.copy(rules["checker positions"])
         self.guerillas_turn = True
         # NOTE: I may want to remove or disable game_record for training!
         self.game_record = [self.board]
@@ -548,135 +554,6 @@ class game():
                     #self.guerillas_turn = False
         return move_dict
                           
-    def old_get_COIN_moves(self, debug=False):
-        move_list=[]
-        #breakpoint()
-        if self.COINjump == None:
-            for position in self.checker_positions:
-                    # TODO: Write code!
-                    for diagonal in rules["diagonals"][position - 1]:
-                        if self.board[diagonal[0] + 1] == 0:
-                            new_move = (position, diagonal[0] + 1)
-                            if debug:
-                                breakpoint()
-                            move_list.append(new_move)
-        else:
-            for diagonal in rules["diagonals"][self.COINjump[1][0]]:
-                if self.board[diagonal[1]] == 1 and self.board[diagonal[0] + 1] == 0:
-                    new_move = (self.COINjump[1][0] + 1, diagonal[0] + 1)
-                    move_list.append(new_move)
-            if len(move_list) < 1:
-                self.guerillas_turn = True
-        return move_list
-
-def two_player_game():
-    twoplayergame = game()
-    player = 1
-    while not twoplayergame.is_game_over():
-        valid_actions = twoplayergame.get_valid_actions(player)
-        turn_over = False
-        while not turn_over:
-            draw_board(twoplayergame.board)
-            if player == 1:
-                print('Turn', str(len(twoplayergame.game_record)), ': Guerilla has', twoplayergame.board[0], 'stones. Guerillas move')
-            if player == 0:
-                print('Turn', str(len(twoplayergame.game_record)), ': Guerilla has', twoplayergame.board[0], 'stones. COINs move')
-            try:
-                move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
-            except ValueError:
-                print("Please enter a number.")
-            if move in range(len(valid_actions)):
-                draw_board(twoplayergame.board, move = valid_actions[move])
-                print('')
-                confirm = str(input("Do you chose this move? (y/n)"))
-                if confirm == "y":
-                    turn_over = True
-                    twoplayergame.take_action(player, valid_actions[move])
-                    player = int(twoplayergame.guerillas_turn)
-            else:
-                print("You need to enter a number between 0 and", len(valid_actions)-1)
-    winner = twoplayergame.get_game_result()
-    if winner == None:
-        print("No winner")
-    if winner == -1:
-        print("Guerilla wins")
-    if winner == 1:
-        print("COIN wins")
-    #breakpoint()
-    return twoplayergame.game_record
-
-def one_player_game(human):
-    oneplayergame = game()
-    player = 1
-    while not oneplayergame.is_game_over():
-        turn_over = False
-        if player == human:
-            valid_actions = list(oneplayergame.get_valid_actions(player).keys())
-            while not turn_over:
-                draw_board(oneplayergame.board)
-                if player == 1:
-                    print('Turn', str(len(oneplayergame.game_record)),': Guerilla has', oneplayergame.board[0], 'stones. Guerillas move.')
-                if player == 0:
-                    print('Turn', str(len(oneplayergame.game_record)),': Guerilla has', oneplayergame.board[0], 'stones. COINs move.')
-                try:
-                    move = int(input("You have {} possible moves, please chose one. ".format(str(len(valid_actions)))))
-                except ValueError:
-                    print("Please enter a number.")
-                if move in range(len(valid_actions)):
-                    #breakpoint()
-                    draw_board(oneplayergame.board, move = valid_actions[move])
-                    print('')
-                    confirm = str(input("Do you chose this move? (y/n)"))
-                    if confirm == "y":
-                        turn_over = True
-                        oneplayergame.take_action(player, valid_actions[move])
-                        player = int(oneplayergame.guerillas_turn)
-                else:
-                    print("You need to enter a number between 0 and", len(valid_actions)-1)
-        else:
-            valid_actions = oneplayergame.get_valid_actions(player)
-            oneplayergame.take_action(player, random.choice(valid_actions))
-            player = int(oneplayergame.guerillas_turn)
-        
-    winner = oneplayergame.get_game_result()
-    if winner == None:
-        print("No winner")
-    if winner == -1:
-        print("Guerilla wins")
-    if winner == 1:
-        print("COIN wins")
-    #breakpoint()
-    return oneplayergame.game_record
-
-def randomized_game(draw=False):
-    random_game = game()
-    player = 1
-    if draw:
-        draw_board(random_game.board)
-    while not random_game.is_game_over():
-        valid_actions = random_game.get_valid_actions(player)
-        valid_actions_list = [k for k, v in valid_actions.items() if v == True]
-        if len(valid_actions_list) > 0:
-            random_game.take_action(player, random.choice(valid_actions_list))
-        player = int(random_game.guerillas_turn)
-        if draw:
-            if random_game.guerillas_turn:
-                print('Guerilla', end='')
-            else:
-                print('COIN', end='')
-            print(' turn ' + str(len(random_game.game_record)))
-            print('Guerilla has', random_game.board[0], 'stones.')
-            draw_board(random_game.board)
-    winner = random_game.get_game_result()
-    if winner == None:
-        print("No winner")
-    if winner == -1:
-        print("Guerilla wins")
-    if winner == 1:
-        print("COIN wins")
-    #breakpoint()
-    return random_game.game_record
-
 def draw_board(board, move = None):
     if move != None:
         board = copy.copy(board)

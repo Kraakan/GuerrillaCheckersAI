@@ -78,7 +78,8 @@ TAU = 0.005
 LR = 1e-4
 
 # Number of actions assuming player is guerilla
-n_actions = len(env.action_space)
+n_actions = len(guerilla_checkers.rules['all guerilla moves'])
+action_list = list(guerilla_checkers.rules['all guerilla moves'].keys())
 # Get the number of state observations
 state = env.reset()
 n_observations = len(state)
@@ -104,11 +105,12 @@ def select_action(state):
             # t.max(1) will return the largest column value of each row.
             # second column on max result is index of where max element was
             # found, so we pick action with the larger expected reward.
-            return policy_net(state).max(1).indices.view(1, 1)
+            max_i = policy_net(state).max(1).indices.view(1, 1)
+            return torch.tensor([[max_i]], device=device, dtype=torch.long)
     else:
         # TODO: Restrict sample to valid actions
         # OR: Modify environment to punish invalid actions
-        random_action = env.get_valid_sample()
+        random_action = random.randrange(n_actions)
         return torch.tensor([[random_action]], device=device, dtype=torch.long)
 
 
@@ -161,6 +163,7 @@ def optimize_model():
     # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
     # columns of actions taken. These are the actions which would've been taken
     # for each batch state according to policy_net
+    # https://stackoverflow.com/questions/63493193/index-tensor-must-have-the-same-number-of-dimensions-as-input-tensor-error-encou
     state_action_values = policy_net(state_batch).gather(1, action_batch)
 
     # Compute V(s_{t+1}) for all next states.
@@ -188,45 +191,53 @@ def optimize_model():
 if torch.cuda.is_available():
     num_episodes = 600
 else:
-    num_episodes = 5
+    num_episodes = 100
 
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
     state = env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
-    print("Running episode", i_episode+1)
-    for t in count():
-        print("Turn", t + 1)
-        action = select_action(state)
-        observation, reward, terminated, truncated, _ = env.step(action.tolist()[0][0])
-        reward = torch.tensor([reward], device=device)
-        done = terminated or truncated
+    if i_episode % 10 == 0:
+        print("Running episode", i_episode+1)
+    terminated = False
+    while not terminated:
+        acting_player = env.get_acting_player()
+        if acting_player == env.player:
+            action = select_action(state)
+            action_to_pass = action_list[action.item()]
+            observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
+            reward = torch.tensor([reward], device=device)
+            done = terminated or truncated
 
-        if terminated:
-            next_state = None
+            if terminated:
+                next_state = None
+            else:
+                next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
+
+            # Store the transition in memory
+            memory.push(state, action, next_state, reward)
+
+            # Move to the next state
+            state = next_state
+
+            # Perform one step of the optimization (on the policy network)
+            optimize_model()
+
+            # Soft update of the target network's weights
+            # θ′ ← τ θ + (1 −τ )θ′
+            target_net_state_dict = target_net.state_dict()
+            policy_net_state_dict = policy_net.state_dict()
+            for key in policy_net_state_dict:
+                target_net_state_dict[key] = policy_net_state_dict[key]*TAU + target_net_state_dict[key]*(1-TAU)
+            target_net.load_state_dict(target_net_state_dict)
         else:
-            #breakpoint()
-            next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
-
-        # Store the transition in memory
-        memory.push(state, action, next_state, reward)
-
-        # Move to the next state
-        state = next_state
-
-        # Perform one step of the optimization (on the policy network)
-        optimize_model()
-
-        # Soft update of the target network's weights
-        # θ′ ← τ θ + (1 −τ )θ′
-        target_net_state_dict = target_net.state_dict()
-        policy_net_state_dict = policy_net.state_dict()
-        for key in policy_net_state_dict:
-            target_net_state_dict[key] = policy_net_state_dict[key]*TAU + target_net_state_dict[key]*(1-TAU)
-        target_net.load_state_dict(target_net_state_dict)
+            # Act randomly, for now
+            action = env.get_valid_sample()
+            env.step(action, acting_player)
 
         if done:
-            episode_durations.append(t + 1)
+            reward = env.game.get_reward(env.player)
+            episode_durations.append(reward)
             plot_durations()
             break
 
