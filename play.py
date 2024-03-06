@@ -1,4 +1,4 @@
-import guerilla_checkers
+import guerrilla_checkers
 import random
 import copy
 import curses
@@ -30,7 +30,7 @@ def start(stdscr):
         if player_choice == ord('1'):
             while True:
                 stdscr.clear()
-                stdscr.addstr("Will you play as guerilla or COIN? (g/c)")
+                stdscr.addstr("Will you play as guerrilla or COIN? (g/c)")
                 player_side = stdscr.getch()
                 if player_side == ord('g'):
                     one_player_game(1, stdscr)
@@ -86,7 +86,7 @@ def get_highlight(move, player):
         #    x2 -= 2
 
     if player == 1:
-        # guerilla
+        # guerrilla
         #first_stone = move[:2]
         #second_stone = move[2:]
         y1, x1, y2, x2 = move
@@ -114,7 +114,7 @@ def select_move(player, y, x, move_start = None):
         elif move_x > 3:
              move_x = 3   
 
-    else: # guerilla
+    else: # guerrilla
         move_y = (y - 3) // 2
         move_x = (x - 3) // 2
         if move_y < 0:
@@ -135,7 +135,7 @@ def select_move(player, y, x, move_start = None):
 def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None):
     stdscr.move(0, 0)
 
-    stones, squares, grid = guerilla_checkers.decompress_board(board)
+    stones, squares, grid = guerrilla_checkers.decompress_board(board)
     cross_glyph = u"\u253c"
     horizontal_line = u"\u2500"
     vertical_line = u"\u2502"
@@ -251,7 +251,7 @@ def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None):
     stdscr.move(0, 0)
 
 def two_player_game(stdscr):
-    twoplayergame = guerilla_checkers.game()
+    twoplayergame = guerrilla_checkers.game()
     player = 1
     yy = 1
     xx = 1
@@ -268,9 +268,9 @@ def two_player_game(stdscr):
         while not turn_over:
             stdscr.clear()
             if player == 1:
-                stdscr.addstr('Turn' + str(len(twoplayergame.game_record)) + ': Guerilla has' + str(twoplayergame.board[0]) + 'stones. Guerillas move')
+                stdscr.addstr('Turn' + str(len(twoplayergame.game_record)) + ': guerrilla has' + str(twoplayergame.board[0]) + 'stones. guerrillas move')
             if player == 0:
-                stdscr.addstr('Turn' + str(len(twoplayergame.game_record)) + ': Guerilla has' + str(twoplayergame.board[0]) + 'stones. COINs move')
+                stdscr.addstr('Turn' + str(len(twoplayergame.game_record)) + ': guerrilla has' + str(twoplayergame.board[0]) + 'stones. COINs move')
             
             draw_board_with_curses(twoplayergame.board, stdscr, yy, xx, move = move_start, player = player)
             # FOR TESTING:
@@ -318,7 +318,7 @@ def two_player_game(stdscr):
                 if move in valid_actions_list:
                     turn_over = True
                     twoplayergame.take_action(player, move)
-                    player = int(twoplayergame.guerillas_turn)
+                    player = int(twoplayergame.guerrillas_turn)
                 else:
                     stdscr.addstr("Invalid move!")
                     move_start = None
@@ -328,14 +328,14 @@ def two_player_game(stdscr):
     if winner == None:
         stdscr.addstr("No winner")
     if winner == -1:
-        stdscr.addstr("Guerilla wins")
+        stdscr.addstr("guerrilla wins")
     if winner == 1:
         stdscr.addstr("COIN wins")
     stdscr.getch()
     return twoplayergame.game_record
 
 def one_player_game(human, stdscr):
-    oneplayergame = guerilla_checkers.game()
+    oneplayergame = guerrilla_checkers.game()
     player = 1
     yy = 1
     xx = 1
@@ -344,7 +344,7 @@ def one_player_game(human, stdscr):
     max_y = 17
     max_x = 17
     while not oneplayergame.is_game_over():
-        player = int(oneplayergame.guerillas_turn)
+        player = int(oneplayergame.guerrillas_turn)
         # I shouldn't need to check if there are no valid moves at this point
         valid_actions = oneplayergame.get_valid_actions(player)
         valid_actions_list = [k for k, v in valid_actions.items() if v == True]
@@ -356,9 +356,9 @@ def one_player_game(human, stdscr):
             while not turn_over:
                 stdscr.clear()
                 if player == 1:
-                    stdscr.addstr('Turn' + str(len(oneplayergame.game_record)) + ': Guerilla has' + str(oneplayergame.board[0]) + 'stones. Guerillas move')
+                    stdscr.addstr('Turn' + str(len(oneplayergame.game_record)) + ': guerrilla has' + str(oneplayergame.board[0]) + 'stones. guerrillas move')
                 if player == 0:
-                    stdscr.addstr('Turn' + str(len(oneplayergame.game_record)) + ': Guerilla has' + str(oneplayergame.board[0]) + 'stones. COINs move')
+                    stdscr.addstr('Turn' + str(len(oneplayergame.game_record)) + ': guerrilla has' + str(oneplayergame.board[0]) + 'stones. COINs move')
                 
                 draw_board_with_curses(oneplayergame.board, stdscr, yy, xx, move = move_start, player = player)
 
@@ -417,40 +417,40 @@ def one_player_game(human, stdscr):
     if winner == None:
         stdscr.addstr("No winner")
     if winner == -1:
-        stdscr.addstr("Guerilla wins")
+        stdscr.addstr("guerrilla wins")
     if winner == 1:
         stdscr.addstr("COIN wins")
     stdscr.getch()
     return oneplayergame.game_record
 
 def randomized_game(stdscr, draw=False):
-    random_game = guerilla_checkers.game()
+    random_game = guerrilla_checkers.game()
     player = 1
     move_history = []
     if draw:
         draw_board_with_curses(random_game.board, stdscr, 0, 0)
     while not random_game.is_game_over():
-        player = int(random_game.guerillas_turn)
+        player = int(random_game.guerrillas_turn)
         valid_actions = random_game.get_valid_actions(player)
         valid_actions_list = [k for k, v in valid_actions.items() if v == True]
         if len(valid_actions_list) > 0:
             selected_move = random.choice(valid_actions_list)
             move_history.append((player, selected_move))
             random_game.take_action(player, selected_move)
-        player = int(random_game.guerillas_turn)
+        player = int(random_game.guerrillas_turn)
         if draw:
-            if random_game.guerillas_turn:
-                stdscr.addstr('Guerilla', end='')
+            if random_game.guerrillas_turn:
+                stdscr.addstr('guerrilla', end='')
             else:
                 stdscr.addstr('COIN', end='')
             stdscr.addstr(' turn ' + str(len(random_game.game_record)))
-            stdscr.addstr('Guerilla has', random_game.board[0], 'stones.')
+            stdscr.addstr('guerrilla has', random_game.board[0], 'stones.')
             draw_board_with_curses(random_game.board, stdscr, 0, 0)
     winner = random_game.get_game_result()
     if winner == None:
         stdscr.addstr("No winner")
     if winner == -1:
-        stdscr.addstr("Guerilla wins")
+        stdscr.addstr("guerrilla wins")
     if winner == 1:
         stdscr.addstr("COIN wins")
     return random_game.game_record, move_history

@@ -1,6 +1,7 @@
-import guerilla_checkers
+import guerrilla_checkers
 import math
 import random
+import copy
 import matplotlib
 import matplotlib.pyplot as plt
 from collections import namedtuple, deque
@@ -23,7 +24,9 @@ import torch.nn.functional as F
 # TAU is the update rate of the target network
 # LR is the learning rate of the ``AdamW`` optimizer
 
-env = guerilla_checkers.gym_env(guerilla_checkers.game())
+player = 0 # 0 for COIN, 1 for guerrilla
+
+env = guerrilla_checkers.gym_env(guerrilla_checkers.game(), player)
 
 # set up matplotlib
 is_ipython = 'inline' in matplotlib.get_backend()
@@ -76,10 +79,14 @@ EPS_END = 0.05
 EPS_DECAY = 1000
 TAU = 0.005
 LR = 1e-4
+if player == 1:
+    # Number of actions assuming player is guerrilla
+    n_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
+    action_list = list(guerrilla_checkers.rules['all guerrilla moves'].keys())
+else:
+    n_actions = len(guerrilla_checkers.rules['all COIN moves'])
+    action_list = list(guerrilla_checkers.rules['all COIN moves'].keys())
 
-# Number of actions assuming player is guerilla
-n_actions = len(guerilla_checkers.rules['all guerilla moves'])
-action_list = list(guerilla_checkers.rules['all guerilla moves'].keys())
 # Get the number of state observations
 state = env.reset()
 n_observations = len(state)
@@ -100,17 +107,27 @@ def select_action(state):
     eps_threshold = EPS_END + (EPS_START - EPS_END) * \
         math.exp(-1. * steps_done / EPS_DECAY)
     steps_done += 1
+    valid_action_indexes = env.game.get_valid_action_indexes(player)
     if sample > eps_threshold:
         with torch.no_grad():
             # t.max(1) will return the largest column value of each row.
             # second column on max result is index of where max element was
             # found, so we pick action with the larger expected reward.
-            max_i = policy_net(state).max(1).indices.view(1, 1)
+
+            # TODO: Apply invalid action masking
+            # https://github.com/vwxyzjn/invalid-action-masking/blob/master/test.py
+            policy = policy_net(state)
+            mask_tensor = torch.zeros(n_actions, dtype=torch.bool)
+            for i in valid_action_indexes:
+                mask_tensor[i] = True
+            masked_policy = copy.copy(policy)
+            masked_policy = torch.where(mask_tensor, masked_policy, torch.tensor(-1e+8))
+            max_i = masked_policy.max(1).indices.view(1, 1)
             return torch.tensor([[max_i]], device=device, dtype=torch.long)
     else:
-        # TODO: Restrict sample to valid actions
-        # OR: Modify environment to punish invalid actions
-        random_action = random.randrange(n_actions)
+        if len(valid_action_indexes) < 1:
+            breakpoint()
+        random_action = random.choice(valid_action_indexes)
         return torch.tensor([[random_action]], device=device, dtype=torch.long)
 
 
@@ -207,7 +224,6 @@ for i_episode in range(num_episodes):
             action_to_pass = action_list[action.item()]
             observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
             reward = torch.tensor([reward], device=device)
-            done = terminated or truncated
 
             if terminated:
                 next_state = None
@@ -233,9 +249,8 @@ for i_episode in range(num_episodes):
         else:
             # Act randomly, for now
             action = env.get_valid_sample()
-            env.step(action, acting_player)
-
-        if done:
+            observation, reward, terminated, truncated, _ = env.step(action, acting_player)
+        if terminated:
             reward = env.game.get_reward(env.player)
             episode_durations.append(reward)
             plot_durations()

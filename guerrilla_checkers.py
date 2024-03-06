@@ -164,7 +164,7 @@ except FileNotFoundError:
 
     starting_board, starting_board_dict = create_starting_board()
     COIN_moves = []
-    guerilla_moves = []
+    guerrilla_moves = []
     # I'm naming the tuple-coordinates to make the next part less confusing
     y = 0
     x = 1
@@ -190,24 +190,23 @@ except FileNotFoundError:
 
     for origin in starting_board_dict["grid"]:
         if origin[y] > 0:
-            guerilla_moves.append(origin + (origin[0] - 1,origin[x]))
+            guerrilla_moves.append(origin + (origin[y] - 1,origin[x]))
         if origin[y] < 6:
-            guerilla_moves.append(origin + (origin[0] + 1,origin[x]))
+            guerrilla_moves.append(origin + (origin[y] + 1,origin[x]))
         if origin[x] > 0:
-            guerilla_moves.append(origin + (origin[0],origin[x] - 1))
+            guerrilla_moves.append(origin + (origin[y],origin[x] - 1))
         if origin[x] < 6:
-            guerilla_moves.append(origin + (origin[0],origin[x] + 1))
+            guerrilla_moves.append(origin + (origin[y],origin[x] + 1))
 
-    all_guerilla_moves  = dict.fromkeys(guerilla_moves, False)
+    all_guerrilla_moves  = dict.fromkeys(guerrilla_moves, False)
     all_COIN_moves  = dict.fromkeys(COIN_moves, False)
-
     rules = {
         "diagonals" : diagonals,
         "neighbors" : neighbors,
         "starting board" : starting_board,
         "checker positions" : [10, 14, 15, 18, 19, 23],
         "all COIN moves" : all_COIN_moves,
-        "all guerilla moves" : all_guerilla_moves,
+        "all guerrilla moves" : all_guerrilla_moves,
         "diagonal dict": diagonal_dict
     }
     
@@ -216,20 +215,21 @@ except FileNotFoundError:
 class gym_env(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array", "curses"], "render_fps": 4}
 
-    def __init__(self, passed_game, player=1, render_mode=None):
+    def __init__(self, passed_game, player, render_mode=None):
         self.game = passed_game
         self.player = player
         # https://gymnasium.farama.org/api/spaces/
         self.observation_space = spaces.Discrete(82)
         # Limiting the action space for COIN may give a small advantage to performance
         if player == 0:
+            # Is this aligned the right way?
             self.action_space = spaces.MultiDiscrete([8,4,8,4])
         else:
             self.action_space = spaces.MultiDiscrete([7,7,7,7])
 
         # In future, I may want to limit action space to possible moves
         # To make sure the moves will be in the correct order, use the order saved in rules.pickle
-        # rules["all guerilla moves"]
+        # rules["all guerrilla moves"]
         # rules["all COIN moves"]
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
@@ -259,7 +259,7 @@ class gym_env(gym.Env):
         return observation
 
     def get_acting_player(self):
-        return int(self.game.guerillas_turn)
+        return int(self.game.guerrillas_turn)
     
     def get_valid_sample(self):
         # This will need to be modified if I want to train agents that can play either role
@@ -272,12 +272,10 @@ class gym_env(gym.Env):
         sample = random.choice(valid_actions_list)
         sample = list(sample)
         return sample
-    
 
     def step(self, action, acting_player):
         # TODO: Catch invalid actions?
         board, reward, terminated = self.game.take_action(acting_player, tuple(action))
-        # (self.board, self.get_reward(player), self.is_game_over())
         observation, acting_player = self._get_obs()
         info = self._get_info()
         return observation, reward, terminated, False, info
@@ -299,7 +297,7 @@ class game():
     def __init__(self):
         self.board = copy.copy(rules["starting board"])
         self.checker_positions = copy.copy(rules["checker positions"])
-        self.guerillas_turn = True
+        self.guerrillas_turn = True
         # NOTE: I may want to remove or disable game_record for training!
         self.game_record = [self.board]
         self.COINjump = None
@@ -307,7 +305,7 @@ class game():
     def reset(self):
         self.board = rules["starting board"]
         self.checker_positions = rules["checker positions"]
-        self.guerillas_turn = True
+        self.guerrillas_turn = True
         self.game_record = [self.board]
         self.COINjump = None
         normalized_board = copy.copy(self.board)
@@ -318,13 +316,85 @@ class game():
         # This function returns the current state of the game.
         normalized_board = copy.copy(self.board)
         normalized_board[0] /= 66
-        return normalized_board, self.guerillas_turn
-        
+        return normalized_board, self.guerrillas_turn
+    def get_valid_action_indexes(self, player):
+        indexes = []
+        if player == 1: # guerrilla
+            if self.guerrillas_turn:
+                #indexes = self.get_guerrilla_moves()
+                    move_list = list(rules["all guerrilla moves"].keys())
+                    # TODO: Find out if it's necessary to make a copy of the board for each move
+                    # First move, if the guerrilla player is still holding all their stones
+                    if self.board[0] == 66:
+                        # Permit all moves
+                        indexes = list(range(len(move_list)))
+                    else:
+                        # Find occupied crosses
+                        for index, cross in enumerate(self.board[33:]):
+                            if cross == 1:
+                                cross_index = index + 33
+                                # TODO: Start ADJACENT, not on occupied crosses!
+                                free_crosses = []
+                                # UP
+                                if cross_index - 7 > 33 and self.board[cross_index - 7] == 0:
+                                    free_crosses.append(cross_index - 7 - 33)
+                                # DOWN
+                                if cross_index + 7 < 82 and self.board[cross_index + 7] == 0:
+                                    free_crosses.append(cross_index + 7 - 33)
+                                # LEFT
+                                if (cross_index - 33) % 7 > 0 and self.board[cross_index - 1] == 0:
+                                    free_crosses.append(cross_index - 1 - 33)
+                                # RIGHT
+                                if (cross_index -33) % 7 < 6 and self.board[cross_index + 1] == 0:
+                                    free_crosses.append(cross_index + 1 - 33)
+                                for free_cross in free_crosses:
+                                    cross_y = free_cross // 7
+                                    cross_x = free_cross % 7
+                                    if (cross_y, cross_x, cross_y - 1, cross_x) in move_list:
+                                        # Check if up is occupied
+                                        if self.board[free_cross - 7 + 33] == 0:
+                                            indexes.append(move_list.index((cross_y, cross_x, cross_y - 1, cross_x)))
+                                    if (cross_y, cross_x, cross_y + 1, cross_x) in move_list:
+                                        # Check if down is occupied
+                                        if self.board[free_cross + 7 + 33] == 0:
+                                            indexes.append(move_list.index((cross_y, cross_x, cross_y + 1, cross_x)))
+                                    if (cross_y, cross_x, cross_y, cross_x - 1) in move_list:
+                                        # Check if left is occupied
+                                        if cross_x > 0 and self.board[free_cross - 1 + 33] == 0:
+                                            indexes.append(move_list.index((cross_y, cross_x, cross_y, cross_x - 1)))
+                                    if (cross_y, cross_x, cross_y, cross_x + 1) in move_list:
+                                        # Check if right is occupied
+                                        if cross_x < 6 and self.board[free_cross + 1 + 33] == 0:
+                                            indexes.append(move_list.index((cross_y, cross_x, cross_y, cross_x + 1)))
+            else:
+                print("Wrong player! It's not guerrillas_turn")
+                indexes = []
+        else: # COIN
+            if not self.guerrillas_turn:
+                move_list = list(rules["all COIN moves"].keys())
+                #move_dict = copy.copy(rules["all COIN moves"])
+                if self.COINjump == None:
+                    for position in self.checker_positions:
+                        abs_pos = position - 1
+                        for diagonal in rules["diagonals"][abs_pos]:
+                            if self.board[diagonal[0] + 1] == 0:
+                                indexes.append(move_list.index((abs_pos // 4, abs_pos % 4, diagonal[0] // 4, diagonal[0] % 4)))
+                else:
+                    for diagonal in rules["diagonals"][self.COINjump[0] - 1]:
+                        if self.board[diagonal[1]] == 1 and self.board[diagonal[0] + 1] == 0:
+                            abs_jump = self.COINjump[0] - 1
+                            abs_diag = diagonal[0]
+                            indexes.append(move_list.index((abs_jump // 4, abs_jump % 4, abs_diag // 4, abs_diag % 4)))
+            else:
+                print("Wrong player! It's guerrillas_turn")
+                indexes = []
+        return indexes
+    
     def get_valid_actions(self, player):
         # This function takes the current player as input and returns a list of valid actions for that player.
         
         # An acton for either player can be defined by two spots on the board:
-        # For the guerilla player the first spot is where they place one stone, 
+        # For the guerrilla player the first spot is where they place one stone, 
         # and the second place is where they place a second stone next to the first.
         # For the COIN player the first spot is the location one of their checkers that is able to move,
         # and the second spot is where it ends up.
@@ -332,20 +402,20 @@ class game():
         moves = None
         #if self.board[0] < 66:
             #self.checker_positions = list_checker_positions(self.board)
-        # player: 1 = guerilla 0 = COIN
+        # player: 1 = guerrilla 0 = COIN
         # Not sure if I need to check whose turn it is, 
         # or if returning an empty list is the right response for players "acting out of turn"
         if player == 1:
-            if self.guerillas_turn:
-                moves = self.get_guerilla_moves()
+            if self.guerrillas_turn:
+                moves = self.get_guerrilla_moves()
             else:
-                print("Wrong player! It's guerillas_turn")
+                print("Wrong player! It's not guerrillas_turn")
                 moves = {}
         else:
-            if not self.guerillas_turn:
+            if not self.guerrillas_turn:
                 moves = self.get_COIN_moves()
             else:
-                print("Wrong player! It's not guerillas_turn")
+                print("Wrong player! It's guerrillas_turn")
                 moves = {}
         return moves
 
@@ -362,7 +432,7 @@ class game():
     
     def get_game_result(self):
         # This function returns the result of the game if it's over.
-        # 0 = guerilla wins, 1 = COIN wins
+        # 0 = guerrilla wins, 1 = COIN wins
         if self.board[0] <= 0:
             return 1
         if sum(self.board[33:]) == 0 and self.board[0] < 66:
@@ -377,7 +447,6 @@ class game():
         return self.board[0]
 
     def check_surround(self, board, positions):
-        #breakpoint()
         for position in positions:
             surrounded = True
             for cross in rules["diagonals"][position - 1]:
@@ -404,10 +473,10 @@ class game():
             new_moves.append(board)
         return new_moves
     
-    def get_guerilla_moves(self):
-        move_dict = copy.copy(rules["all guerilla moves"])
+    def get_guerrilla_moves(self):
+        move_dict = copy.copy(rules["all guerrilla moves"])
         # TODO: Find out if it's necessary to make a copy of the board for each move
-        # First move, if the guerilla player is still holding all their stones
+        # First move, if the guerrilla player is still holding all their stones
         if self.board[0] == 66:
             # Permit all moves
             move_dict = dict.fromkeys(move_dict, True)
@@ -417,7 +486,6 @@ class game():
                 if cross == 1:
                     cross_index = index + 33
                     all_moves = list(move_dict.keys())
-                    #breakpoint()
                     # TODO: Start ADJACENT, not on occupied crosses!
                     free_crosses = []
                     # UP
@@ -432,7 +500,6 @@ class game():
                     # RIGHT
                     if (cross_index -33) % 7 < 6 and self.board[cross_index + 1] == 0:
                         free_crosses.append(cross_index + 1 - 33)
-                    #breakpoint()
                     for free_cross in free_crosses:
                         cross_y = free_cross // 7
                         cross_x = free_cross % 7
@@ -454,10 +521,10 @@ class game():
                                 move_dict[(cross_y, cross_x, cross_y, cross_x + 1)] = True
         return move_dict
                                           
-    def old_get_guerilla_moves(self):
+    def old_get_guerrilla_moves(self):
         move_list=[]
         # TODO: Find out if it's necessary to make a copy of the board for each move
-        # First move, if the guerilla player is still holding all their stones
+        # First move, if the guerrilla player is still holding all their stones
         if self.board[0] == 66:
             for i in range(48):
                 if i < 42:
@@ -485,73 +552,65 @@ class game():
         # This function takes the current player and an action as input, updates the game state based on the action, checks if the game has ended, and returns the outcome.
         #result = None
         new_board = copy.copy(self.board)
-        if player == 1 and self.guerillas_turn:
-            # Guerilla
-            #
-            #breakpoint()
+        if player == 1 and self.guerrillas_turn:
+            # guerrilla
             new_board[0] -= 2
             first = action[0] * 7 + action[1] + 33
             second = action[2] * 7 + action[3] + 33
             new_board[first] = 1
             new_board[second] = 1
             new_board = self.check_surround(new_board, self.checker_positions)
-            self.guerillas_turn = False
+            self.guerrillas_turn = False
 
-        if (player == 0 and not self.guerillas_turn):
+        if (player == 0 and not self.guerrillas_turn):
             # COIN
             first = action[0] * 4 + action[1] + 1
             second = action[2] * 4 + action[3] + 1
             new_board[first] = 0
             new_board[second] = 1
-            # If the COIN player has captured a guerilla stone, and there is one or more stones that can be captured with the same piece, they have to do so
+            # If the COIN player has captured a guerrilla stone, and there is one or more stones that can be captured with the same piece, they have to do so
             #diagonals = rules["diagonals"][action[0] - 1]
-            #breakpoint()
             #index = [square for square, cross in diagonals].index(action[1] - 1)
             #diagonal = diagonals[index]
             cross_tuple = rules["diagonal dict"][action]
             cross_index = cross_tuple[0] * 7 + cross_tuple[1] + 33
-            self.guerillas_turn = True
+            self.guerrillas_turn = True
             self.COINjump = None
-            #breakpoint()
             if self.board[cross_index] == 1:
                 new_board[cross_index] = 0
                 for new_diagonal in rules["diagonals"][second - 1]:
                     if new_board[new_diagonal[0] + 1] == 0 and new_board[new_diagonal[1]] == 1:
                         self.COINjump = (second, cross_index)
-                        self.guerillas_turn = False
+                        self.guerrillas_turn = False
         self.board = new_board
         normalized_board = copy.copy(self.board)
         normalized_board[0] /= 66 
         self.game_record.append(self.board)
-        return (normalized_board, self.get_reward(player), self.is_game_over())
+        reward = self.get_reward(player)
+        terminated = self.is_game_over()
+        return (normalized_board, reward, terminated)
     
     def get_reward(self, player):
-        if player == 1: # guerilla
-            return -1 * self.get_game_result()
+        COIN_reward = self.get_game_result()
+        if player == 1: # guerrilla
+            return -1 * COIN_reward
         else:
-            return self.get_game_result()
+            return COIN_reward
         
     def get_COIN_moves(self, debug=False):
         move_dict = copy.copy(rules["all COIN moves"])
-        #breakpoint()
         if self.COINjump == None:
             for position in self.checker_positions:
                 abs_pos = position - 1
-                #breakpoint()
                 for diagonal in rules["diagonals"][abs_pos]:
                     if self.board[diagonal[0] + 1] == 0:
                         move_dict[(abs_pos // 4, abs_pos % 4, diagonal[0] // 4, diagonal[0] % 4)] = True
-                        #breakpoint()
         else:
-            #self.guerillas_turn = True
-            #breakpoint()
-            for diagonal in rules["diagonals"][self.COINjump[0] - 1]: # Fixed: -1
+            for diagonal in rules["diagonals"][self.COINjump[0] - 1]:
                 if self.board[diagonal[1]] == 1 and self.board[diagonal[0] + 1] == 0:
-                    #new_move = (self.COINjump[1][0] + 1, diagonal[0] + 1)
                     abs_jump = self.COINjump[0] - 1
                     abs_diag = diagonal[0]
-                    move_dict[(abs_jump // 4, abs_jump % 4, abs_diag // 4, abs_diag % 4)] = True 
-                    #self.guerillas_turn = False
+                    move_dict[(abs_jump // 4, abs_jump % 4, abs_diag // 4, abs_diag % 4)] = True
         return move_dict
                           
 def draw_board(board, move = None):

@@ -31,7 +31,7 @@ stdscr.keypad(True)
 
 from curses import wrapper
 import copy
-from guerilla_checkers import create_starting_board, decompress_board
+from guerrilla_checkers import create_starting_board, decompress_board
 
 
 def main(stdscr):

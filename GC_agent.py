@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import guerilla_checkers
+import guerrilla_checkers
 
 # Define the neural network that will be used to predict action probabilities
 class PolicyNetwork(nn.Module):
@@ -62,16 +62,16 @@ class DRLAgent:
         # Update the weights of the policy network
         self.optimizer.step()
 
-game = guerilla_checkers.game()
+game = guerrilla_checkers.game()
 state, current_player = game.get_current_state()
 
 # Initialize the agents
 # state_size, action_size, learning_rate
-COIN_action_size = len(guerilla_checkers.rules["all COIN moves"])
-guerilla_action_size = len(guerilla_checkers.rules["all guerilla moves"])
+COIN_action_size = len(guerrilla_checkers.rules["all COIN moves"])
+guerrilla_action_size = len(guerrilla_checkers.rules["all guerrilla moves"])
 learning_rate = 0.9 #?
 coin_agent = DRLAgent(len(state), COIN_action_size, learning_rate)
-guerrilla_agent = DRLAgent(len(state), guerilla_action_size, learning_rate)
+guerrilla_agent = DRLAgent(len(state), guerrilla_action_size, learning_rate)
 
 # Number of games to play for training
 num_games = 10
