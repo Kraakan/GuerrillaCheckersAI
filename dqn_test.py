@@ -24,7 +24,10 @@ import torch.nn.functional as F
 # TAU is the update rate of the target network
 # LR is the learning rate of the ``AdamW`` optimizer
 
-player = 0 # 0 for COIN, 1 for guerrilla
+player = None # 0 for COIN, 1 for guerrilla
+
+while player not in [0, 1]:
+    player = int(input("Chose which player to train: 0 for COIN, 1 for Guerrilla. "))
 
 env = guerrilla_checkers.gym_env(guerrilla_checkers.game(), player)
 
@@ -206,20 +209,26 @@ def optimize_model():
     optimizer.step()
 
 if torch.cuda.is_available():
-    num_episodes = 600
+    num_episodes = 1000
 else:
-    num_episodes = 100
+    num_episodes = 500
 
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
     state = env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
-    if i_episode % 10 == 0:
+    if i_episode % 50 == 0:
         print("Running episode", i_episode+1)
     terminated = False
     while not terminated:
         acting_player = env.get_acting_player()
-        if acting_player == env.player:
+        if len(env.game.get_valid_action_indexes(acting_player)) < 1:
+            terminated = True
+            if acting_player == env.player:
+                reward = -1
+            else:
+                reward = 1
+        elif acting_player == env.player:
             action = select_action(state)
             action_to_pass = action_list[action.item()]
             observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
@@ -230,6 +239,7 @@ for i_episode in range(num_episodes):
             else:
                 next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
 
+            
             # Store the transition in memory
             memory.push(state, action, next_state, reward)
 
