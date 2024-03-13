@@ -1,3 +1,4 @@
+from gym_env import gym_env
 import guerrilla_checkers
 import math
 import random
@@ -29,7 +30,7 @@ player = None # 0 for COIN, 1 for guerrilla
 while player not in [0, 1]:
     player = int(input("Chose which player to train: 0 for COIN, 1 for Guerrilla. "))
 
-env = guerrilla_checkers.gym_env(guerrilla_checkers.game(), player)
+env = gym_env(guerrilla_checkers.game(), player)
 
 # set up matplotlib
 is_ipython = 'inline' in matplotlib.get_backend()
@@ -211,7 +212,7 @@ def optimize_model():
 if torch.cuda.is_available():
     num_episodes = 1000
 else:
-    num_episodes = 500
+    num_episodes = 5
 
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
@@ -223,7 +224,9 @@ for i_episode in range(num_episodes):
     while not terminated:
         acting_player = env.get_acting_player()
         if len(env.game.get_valid_action_indexes(acting_player)) < 1:
+            breakpoint()
             terminated = True
+            next_state = None
             if acting_player == env.player:
                 reward = -1
             else:
