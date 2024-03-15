@@ -74,6 +74,10 @@ class gym_env(gym.Env):
         info = self._get_info()
         return observation, reward, terminated, False, info
     
+    def _step(self, tensordict):
+        # TODO get action frpm tensordict?
+        pass
+    
     def render(self):
         if self.render_mode == "rgb_array":
             return self._render_frame()
