@@ -199,8 +199,8 @@ except FileNotFoundError:
     rules = {
         "diagonals" : diagonals,
         "neighbors" : neighbors,
-        "starting board" : starting_board,
-        "checker positions" : [10, 14, 15, 18, 19, 23],
+        "starting board" : frozenset(starting_board),
+        "checker positions" : frozenset({10, 14, 15, 18, 19, 23}),
         "all COIN moves" : all_COIN_moves,
         "all guerrilla moves" : all_guerrilla_moves,
         "diagonal dict": diagonal_dict
@@ -213,8 +213,8 @@ except FileNotFoundError:
 class game():
     # Game object, will probably be instantiated for each game
     def __init__(self):
-        self.board = copy.copy(rules["starting board"])
-        self.checker_positions = copy.copy(rules["checker positions"])
+        self.board = list(rules["starting board"])
+        self.checker_positions = list(rules["checker positions"])
         self.guerrillas_turn = True
         # NOTE: I may want to remove or disable game_record for training!
         self.game_record = [self.board]
@@ -291,7 +291,7 @@ class game():
         else: # COIN
             if not self.guerrillas_turn:
                 move_list = list(rules["all COIN moves"].keys())
-                #move_dict = copy.copy(rules["all COIN moves"])
+                #move_dict = list(rules["all COIN moves"])
                 if self.COINjump == None:
                     for position in self.checker_positions:
                         abs_pos = position - 1
@@ -540,6 +540,7 @@ class game():
                 abs_pos = position - 1
                 for diagonal in rules["diagonals"][abs_pos]:
                     if self.board[diagonal[0] + 1] == 0:
+                        #breakpoint()
                         move_dict[(abs_pos // 4, abs_pos % 4, diagonal[0] // 4, diagonal[0] % 4)] = True
         else:
             for diagonal in rules["diagonals"][self.COINjump[0] - 1]:

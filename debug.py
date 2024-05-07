@@ -1,5 +1,6 @@
 import guerrilla_checkers
 import random
+from gym_env import gym_env
 
 def hello():
     print("Hello")
@@ -35,7 +36,7 @@ def randomized_game(draw=False):
 #print("Board size:", len(game_record[0]))
 #print(game_record, move_history)
 
-env = guerrilla_checkers.gym_env(guerrilla_checkers.game())
+env = gym_env(guerrilla_checkers.game(), 1)
 
 # Number of actions assuming player is guerrilla
 n_actions = len(env.action_space)
@@ -48,3 +49,30 @@ n_observations = len(state)
 valid_actions = env.get_valid_sample()
 print(valid_actions)
 print(type(valid_actions))
+
+print(env.game.board)
+
+print(len(env.game.board))
+
+empty_board = [0] * 82
+
+def draw_board(board):
+    stones, squares, grid = guerrilla_checkers.decompress_board(env.game.board)
+    for i, row in enumerate(squares):
+        print(i, row)
+        if i%2 == 0:
+            for j, square in enumerate(row):
+                print('0', square, end=' ')
+            print('')
+            if i<7:
+                print(grid[i, :])
+        else:
+            for j, square in enumerate(row):
+                print(square, '0', end=' ')
+            print('')
+            if i<7:
+                print(grid[i, :])
+
+draw_board(env.game.board)
+
+guerrilla_checkers.draw_board(env.game.board)
