@@ -4,6 +4,9 @@ import guerrilla_checkers
 import random
 import sys
 import statistics
+import datetime
+
+episode_durations = []
 
 def no_dqn_test(n_games):
 
@@ -12,7 +15,6 @@ def no_dqn_test(n_games):
     action_list = list(guerrilla_checkers.rules['all guerrilla moves'].keys())
     state = env.reset()
     n_observations = len(state)
-    episode_durations = []
 
     for i_episode in range(n_games):
         state = env.reset()
@@ -39,15 +41,26 @@ def no_dqn_test(n_games):
     print('Average game length', statistics.mean(episode_durations))
     return episode_durations
 
+games_num = 100
+
 if len(sys.argv) > 0:
     if  sys.argv[1] == 'dqn':
         exec_str = "no_dqn_test(100)"
         if len(sys.argv) > 1:
-            num = sys.argv[2]
-            if num.isdigit():
-                exec_str = "no_dqn_test({})".format(num)
+            games_num = sys.argv[2]
+            if games_num.isdigit():
+                exec_str = "no_dqn_test({})".format(games_num)
         complete_str = '''
 from __main__ import no_dqn_test
 ''' + exec_str
         time = timeit(stmt=complete_str, number=1)
         print('Execution time:', str(time), 'seconds')
+
+f = open("speedtests.txt", "a")
+f.write('''
+''' + sys.platform + " " +  str(datetime.datetime.now()) + '''
+''' + str(games_num) + ' games played' + '''
+''' + 'Average game length: ' + str(statistics.mean(episode_durations) ) + '''
+''' + 'Execution time: ' + str(time) + 'seconds' + '''
+''')
+f.close()
