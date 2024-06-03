@@ -2,3 +2,8 @@ linux 2024-05-07 21:25:20.760635
 10 games played
 Average game length: 33.0
 Execution time: 0.6044731719885021seconds
+
+linux 2024-05-08 11:33:30.868100
+100 games played
+Average game length: 31.44
+Execution time: 5.021500647999346seconds

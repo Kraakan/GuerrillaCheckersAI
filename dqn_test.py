@@ -13,6 +13,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
+import datetime
+
 # https://gymnasium.farama.org/tutorials/gymnasium_basics/environment_creation/
 
 # https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
@@ -273,3 +275,4 @@ print('Complete')
 plot_durations(show_result=True)
 plt.ioff()
 plt.show()
+plt.savefig('dqn_' + str(datetime.datetime.now()) + '.png')

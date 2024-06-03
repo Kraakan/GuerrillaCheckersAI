@@ -221,8 +221,8 @@ class game():
         self.COINjump = None
     
     def reset(self):
-        self.board = rules["starting board"]
-        self.checker_positions = rules["checker positions"]
+        self.board = list(rules["starting board"])
+        self.checker_positions = list(rules["checker positions"])
         self.guerrillas_turn = True
         self.game_record = [self.board]
         self.COINjump = None
