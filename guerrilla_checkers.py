@@ -199,7 +199,7 @@ except FileNotFoundError:
     rules = {
         "diagonals" : diagonals,
         "neighbors" : neighbors,
-        "starting board" : frozenset(starting_board),
+        "starting board" : starting_board,
         "checker positions" : frozenset({10, 14, 15, 18, 19, 23}),
         "all COIN moves" : all_COIN_moves,
         "all guerrilla moves" : all_guerrilla_moves,
@@ -213,7 +213,7 @@ except FileNotFoundError:
 class game():
     # Game object, will probably be instantiated for each game
     def __init__(self):
-        self.board = list(rules["starting board"])
+        self.board = rules["starting board"]
         self.checker_positions = list(rules["checker positions"])
         self.guerrillas_turn = True
         # NOTE: I may want to remove or disable game_record for training!
@@ -221,7 +221,7 @@ class game():
         self.COINjump = None
     
     def reset(self):
-        self.board = list(rules["starting board"])
+        self.board = rules["starting board"]
         self.checker_positions = list(rules["checker positions"])
         self.guerrillas_turn = True
         self.game_record = [self.board]

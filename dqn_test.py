@@ -34,6 +34,7 @@ while player not in [0, 1]:
 
 env = gym_env(guerrilla_checkers.game(), player)
 
+breakpoint()
 # set up matplotlib
 is_ipython = 'inline' in matplotlib.get_backend()
 if is_ipython:
