@@ -27,14 +27,14 @@ import datetime
 # TAU is the update rate of the target network
 # LR is the learning rate of the ``AdamW`` optimizer
 
-player = None # 0 for COIN, 1 for guerrilla
+player = 1 # 0 for COIN, 1 for guerrilla
 
 while player not in [0, 1]:
     player = int(input("Chose which player to train: 0 for COIN, 1 for Guerrilla. "))
 
 env = gym_env(guerrilla_checkers.game(), player)
 
-breakpoint()
+
 # set up matplotlib
 is_ipython = 'inline' in matplotlib.get_backend()
 if is_ipython:
@@ -44,6 +44,8 @@ plt.ion()
 
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+print('device:', device)
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
@@ -66,20 +68,25 @@ class ReplayMemory(object):
     
 class DQN(nn.Module):
 
-    def __init__(self, n_observations, n_actions):
+    def __init__(self, n_observations, n_actions, n_layers = 3):
         super(DQN, self).__init__()
-        self.layer1 = nn.Linear(n_observations, 128)
-        self.layer2 = nn.Linear(128, 128)
-        self.layer3 = nn.Linear(128, n_actions)
+
+        self.newtork = [nn.Linear(n_observations, 128)]
+        self.layers = n_layers
+
+        for n in range(self.layers - 2):
+            self.newtork.append(nn.Linear(128, 128))
+        
+        self.newtork.append(nn.Linear(128, n_actions))
 
     # Called with either one element to determine next action, or a batch
     # during optimization. Returns tensor([[left0exp,right0exp]...]).
     def forward(self, x):
-        x = F.relu(self.layer1(x))
-        x = F.relu(self.layer2(x))
-        return self.layer3(x)
+        for n in range(self.layers - 1):
+            x = F.relu(self.newtork[n](x))
+        return self.newtork[self.layers - 1](x)
 
-BATCH_SIZE = 128
+BATCH_SIZE = 66 # 128 Excessive? I think it should be set to max n of turns in a game
 GAMMA = 0.99
 EPS_START = 0.9
 EPS_END = 0.05
