@@ -6,6 +6,8 @@ import sys
 import statistics
 import datetime
 
+# TODO: Add instructions because I already forgot
+
 episode_durations = []
 
 def no_dqn_test(n_games):

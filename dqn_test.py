@@ -15,6 +15,10 @@ import torch.nn.functional as F
 
 import datetime
 
+#TODO: FIX: RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!
+
+#TODO: FIX: ValueError: optimizer got an empty parameter list (or revert)
+
 # https://gymnasium.farama.org/tutorials/gymnasium_basics/environment_creation/
 
 # https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
@@ -68,23 +72,19 @@ class ReplayMemory(object):
     
 class DQN(nn.Module):
 
-    def __init__(self, n_observations, n_actions, n_layers = 3):
+    def __init__(self, n_observations, n_actions):
         super(DQN, self).__init__()
 
-        self.newtork = [nn.Linear(n_observations, 128)]
-        self.layers = n_layers
-
-        for n in range(self.layers - 2):
-            self.newtork.append(nn.Linear(128, 128))
-        
-        self.newtork.append(nn.Linear(128, n_actions))
+        self.layer1 = nn.Linear(n_observations, 128)
+        self.layer2 = nn.Linear(128, 128)
+        self.layer3 = nn.Linear(128, n_actions)
 
     # Called with either one element to determine next action, or a batch
     # during optimization. Returns tensor([[left0exp,right0exp]...]).
     def forward(self, x):
-        for n in range(self.layers - 1):
-            x = F.relu(self.newtork[n](x))
-        return self.newtork[self.layers - 1](x)
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        return self.layer3(x)
 
 BATCH_SIZE = 66 # 128 Excessive? I think it should be set to max n of turns in a game
 GAMMA = 0.99
@@ -131,7 +131,7 @@ def select_action(state):
             # TODO: Apply invalid action masking
             # https://github.com/vwxyzjn/invalid-action-masking/blob/master/test.py
             policy = policy_net(state)
-            mask_tensor = torch.zeros(n_actions, dtype=torch.bool)
+            mask_tensor = torch.zeros(n_actions, device=device, dtype=torch.bool)
             for i in valid_action_indexes:
                 mask_tensor[i] = True
             masked_policy = copy.copy(policy)
