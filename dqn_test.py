@@ -31,7 +31,7 @@ import datetime
 # TAU is the update rate of the target network
 # LR is the learning rate of the ``AdamW`` optimizer
 
-player = 1 # 0 for COIN, 1 for guerrilla
+player = None # 0 for COIN, 1 for guerrilla
 
 while player not in [0, 1]:
     player = int(input("Chose which player to train: 0 for COIN, 1 for Guerrilla. "))
@@ -280,7 +280,11 @@ for i_episode in range(num_episodes):
             break
 
 print('Complete')
+if player == 1:
+    player_string = "guerrilla"
+else: 
+    player_string = "COIN"
 plot_durations(show_result=True)
 plt.ioff()
 plt.show()
-plt.savefig('dqn_' + str(datetime.datetime.now()) + '.png')
+plt.savefig('dqn_' + "_".join(str(datetime.datetime.now()).split())+ "_" + player_string + '.png')
