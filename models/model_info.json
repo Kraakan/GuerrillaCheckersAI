@@ -1,0 +1,1 @@
+{"0": {"index": "0", "player": "1", "type": "DQN", "generation": "1", "path": "models/0/model_weights.pth"}, "1": {"index": "1", "player": "0", "type": "DQN", "generation": "2", "path": "models/1/model_weights.pth", "history": ["500 games against gen 1 DQN"]}}

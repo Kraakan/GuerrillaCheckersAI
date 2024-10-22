@@ -14,10 +14,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 import datetime
-
-#TODO: FIX: RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!
-
-#TODO: FIX: ValueError: optimizer got an empty parameter list (or revert)
+import json
+from pathlib import Path
 
 # https://gymnasium.farama.org/tutorials/gymnasium_basics/environment_creation/
 
@@ -35,9 +33,61 @@ player = None # 0 for COIN, 1 for guerrilla
 
 while player not in [0, 1]:
     player = int(input("Chose which player to train: 0 for COIN, 1 for Guerrilla. "))
+ai_player = abs(player - 1)
 
 env = gym_env(guerrilla_checkers.game(), player)
 
+opponent_selection = None
+try:
+    model_info_file = open("models/model_info.json", "r")
+    model_info = json.load(model_info_file)
+    new_index = len(model_info)
+    available_models = []
+    for key, item in model_info.items():
+        if item["player"] == str(ai_player):
+            available_models.append(key)
+    if len(available_models) > 0:
+        use_model = ""
+        while use_model not in ["y","n"]:
+            use_model = input("Use trained model for oppenent? (y/n) ")
+            if use_model == "y":
+                while opponent_selection not in available_models:
+                    for m in available_models:
+                        print(m, "type:", model_info[m]["type"], "generation:", model_info[m]["generation"])
+                    opponent_selection = input("Choose a model for your opponent ")
+                selected_opponent = model_info[opponent_selection]
+                ai_model_path = selected_opponent["path"]
+                opponent_string = "gen " + selected_opponent["generation"] + " " + selected_opponent["type"]
+                opponent_gen = int(selected_opponent["generation"])
+    else:
+        print("Sorry, there are not yet any models for your opponents side!")
+except FileNotFoundError:
+    print("No model info found")
+if opponent_selection == None:
+    model_info = {}
+    new_index = 0
+    opponent_gen = 0
+    opponent_string = "random moves"
+# Data to record about new model
+# index
+# player
+# type
+# generation (g of opponent model +1)
+# directory (same as index?)
+# wins/losses?
+# game records?
+# cute name?
+
+#TODO: Finish system for organizing models
+new_model_dir = 'models/' + str(new_index) + '/'
+new_model_path = new_model_dir + 'model_weights.pth'
+
+new_model_info = {"index": str(new_index),
+                  "player": str(player),
+                  "type": "DQN",
+                  "generation": str(opponent_gen + 1),
+                  "path": new_model_path
+                  }
 
 # set up matplotlib
 is_ipython = 'inline' in matplotlib.get_backend()
@@ -51,9 +101,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print('device:', device)
 
+
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
-
 
 class ReplayMemory(object):
 
@@ -96,10 +146,14 @@ LR = 1e-4
 if player == 1:
     # Number of actions assuming player is guerrilla
     n_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
+    n_ai_actions = len(guerrilla_checkers.rules['all COIN moves'])
     action_list = list(guerrilla_checkers.rules['all guerrilla moves'].keys())
+    ai_action_list = list(guerrilla_checkers.rules['all COIN moves'].keys())
 else:
     n_actions = len(guerrilla_checkers.rules['all COIN moves'])
+    n_ai_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
     action_list = list(guerrilla_checkers.rules['all COIN moves'].keys())
+    ai_action_list = list(guerrilla_checkers.rules['all guerrilla moves'].keys())
 
 # Get the number of state observations
 state = env.reset()
@@ -114,6 +168,31 @@ memory = ReplayMemory(10000)
 
 steps_done = 0
 
+class AI():
+
+    def __init__(self, model, player):
+        self.model = model
+        self.player = player
+
+    def select_action(self, state):
+        valid_action_indexes = env.game.get_valid_action_indexes(self.player)
+        policy = self.model(state)
+        mask_tensor = torch.zeros(n_ai_actions, device=device, dtype=torch.bool)
+        for i in valid_action_indexes:
+            mask_tensor[i] = True
+        masked_policy = copy.copy(policy)
+        masked_policy = torch.where(mask_tensor, masked_policy, torch.tensor(-1e+8))
+        max_i = masked_policy.max(1).indices.view(1, 1)
+        return torch.tensor([[max_i]], device=device, dtype=torch.long)
+
+# Load model for computer player
+# TODO: make sure the right model is loaded
+if opponent_selection != None:
+    model = DQN(n_observations, n_ai_actions).to(device)
+    model.load_state_dict(torch.load(ai_model_path, weights_only=True))
+    model.eval()
+
+    ai = AI(model, ai_player)
 
 def select_action(state):
     global steps_done
@@ -139,8 +218,8 @@ def select_action(state):
             max_i = masked_policy.max(1).indices.view(1, 1)
             return torch.tensor([[max_i]], device=device, dtype=torch.long)
     else:
-        if len(valid_action_indexes) < 1:
-            breakpoint()
+        #if len(valid_action_indexes) < 1:
+            #breakpoint()
         random_action = random.choice(valid_action_indexes)
         return torch.tensor([[random_action]], device=device, dtype=torch.long)
 
@@ -234,7 +313,7 @@ for i_episode in range(num_episodes):
     while not terminated:
         acting_player = env.get_acting_player()
         if len(env.game.get_valid_action_indexes(acting_player)) < 1:
-            breakpoint()
+            #breakpoint()
             terminated = True
             next_state = None
             if acting_player == env.player:
@@ -270,9 +349,13 @@ for i_episode in range(num_episodes):
                 target_net_state_dict[key] = policy_net_state_dict[key]*TAU + target_net_state_dict[key]*(1-TAU)
             target_net.load_state_dict(target_net_state_dict)
         else:
-            # Act randomly, for now
-            action = env.get_valid_sample()
-            observation, reward, terminated, truncated, _ = env.step(action, acting_player)
+            # AI actions are here
+            if opponent_selection == None:
+                action_to_pass = env.get_valid_sample()
+            else:
+                action = ai.select_action(state)
+                action_to_pass = ai_action_list[action.item()]
+            observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
         if terminated:
             reward = env.game.get_reward(env.player)
             episode_durations.append(reward)
@@ -284,7 +367,20 @@ if player == 1:
     player_string = "guerrilla"
 else: 
     player_string = "COIN"
+
+# Adding "training history", might be useful at a later point
+new_model_info["history"] = [str(num_episodes) + " games against " + opponent_string]
+
+model_info[str(new_index)] = new_model_info
+#Save model
+print("Saving model to:", new_model_dir)
+Path(new_model_dir).mkdir()
+torch.save(target_net.state_dict(), new_model_path)
+
+with open('models/model_info.json', 'w') as f:
+    json.dump(model_info, f)
+
 plot_durations(show_result=True)
 plt.ioff()
 plt.show()
-plt.savefig('dqn_' + "_".join(str(datetime.datetime.now()).split())+ "_" + player_string + '.png')
+plt.savefig(new_model_dir + 'dqn_' + "_".join(str(datetime.datetime.now()).split())+ "_" + player_string + '.png')
