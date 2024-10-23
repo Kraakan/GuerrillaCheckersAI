@@ -46,7 +46,7 @@ try:
     for key, item in model_info.items():
         if item["player"] == str(ai_player):
             available_models.append(key)
-        new_index = str(key) + 1
+        new_index = str(key  + 1)
     if len(available_models) > 0:
         use_model = ""
         while use_model not in ["y","n"]:
