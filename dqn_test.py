@@ -382,5 +382,5 @@ with open('models/model_info.json', 'w') as f:
 
 plot_durations(show_result=True)
 plt.ioff()
-plt.show()
 plt.savefig(new_model_dir + 'dqn_' + "_".join(str(datetime.datetime.now()).split())+ "_" + player_string + '.png')
+plt.show()
