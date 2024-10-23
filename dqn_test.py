@@ -63,9 +63,9 @@ try:
         print("Sorry, there are not yet any models for your opponents side!")
 except FileNotFoundError:
     print("No model info found")
+    new_index = 0
 if opponent_selection == None:
     model_info = {}
-    new_index = 0
     opponent_gen = 0
     opponent_string = "random moves"
 # Data to record about new model
