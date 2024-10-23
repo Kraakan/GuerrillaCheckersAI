@@ -371,7 +371,7 @@ class game():
         return 0
 
     def get_small_reward(self, player):
-        reward = len(self.checker_positions)/60
+        reward = len(self.checker_positions)/9
         # reward -= self.board[0]/66
         if player == 1:
             reward *= -1
