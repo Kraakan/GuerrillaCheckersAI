@@ -38,14 +38,15 @@ ai_player = abs(player - 1)
 env = gym_env(guerrilla_checkers.game(), player)
 
 opponent_selection = None
+new_index = 0
 try:
     model_info_file = open("models/model_info.json", "r")
     model_info = json.load(model_info_file)
-    new_index = len(model_info)
     available_models = []
     for key, item in model_info.items():
         if item["player"] == str(ai_player):
             available_models.append(key)
+        new_index = str(key) + 1
     if len(available_models) > 0:
         use_model = ""
         while use_model not in ["y","n"]:
@@ -63,7 +64,6 @@ try:
         print("Sorry, there are not yet any models for your opponents side!")
 except FileNotFoundError:
     print("No model info found")
-    new_index = 0
 if opponent_selection == None:
     model_info = {}
     opponent_gen = 0
