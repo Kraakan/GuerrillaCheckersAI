@@ -23,13 +23,20 @@ class PettingZoo(AECEnv):
         }
         self.render_mode = render_mode
 
-        # I'm creating the mage object in the env instead of passing it. I think this will be more efficient
+        # I'm creating the game object in the env instead of passing it. I think this will be more efficient
         self.game = guerrilla_checkers.game()
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         return spaces.Discrete(82)
     
+    def _get_obs(self):
+        observation, player = self.game.get_current_state()
+        return observation, player
+
+    def _get_info(self):
+        return guerrilla_checkers.decompress_board(self.game.board)  
+      
     def observe(self, agent):
         observation, acting_player = self.game.get_current_state()
         if agent == acting_player:
@@ -63,11 +70,11 @@ class PettingZoo(AECEnv):
         self.agent_selection = int(self.game.guerrillas_turn)
 
         # Not sure if it's useful to return anything here
-        #return starting_observation
+        return starting_observation
 
-    def step(self, action):
+    def step(self, action, acting_player):
         # TODO: Catch invalid actions?
-        acting_player = self.agent_selection
+        # acting_player = self.agent_selection
         board, reward, terminated = self.game.take_action(acting_player, tuple(action))
         if not terminated:
             reward = self.game.get_small_reward(acting_player)
@@ -87,3 +94,6 @@ class PettingZoo(AECEnv):
         sample = random.choice(valid_actions_list)
         sample = list(sample)
         return sample
+    
+    def get_acting_player(self):
+        return int(self.game.guerrillas_turn)

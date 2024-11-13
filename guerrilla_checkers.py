@@ -356,7 +356,7 @@ class game():
     
     def get_game_result(self):
         # This function returns the result of the game if it's over.
-        # 0 = guerrilla wins, 1 = COIN wins
+        # -1 = guerrilla wins, 1 = COIN wins, 0 = game isn't over
         if self.board[0] <= 0:
             return 1
         if sum(self.board[33:]) == 0 and self.board[0] < 66:

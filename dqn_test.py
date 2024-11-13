@@ -331,7 +331,7 @@ for i_episode in range(num_episodes):
             else:
                 next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
 
-            
+            # TODO: Try pushing memory if terminated            
             # Store the transition in memory
             memory.push(state, action, next_state, reward)
 
@@ -358,6 +358,8 @@ for i_episode in range(num_episodes):
             observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
         if terminated:
             reward = env.game.get_reward(env.player)
+            # This may cause problems
+            memory.push(state, action, next_state, reward)
             episode_durations.append(reward)
             plot_durations()
             break
