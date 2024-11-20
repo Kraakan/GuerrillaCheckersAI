@@ -229,6 +229,7 @@ players = [COIN, guerrilla]
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
     prev_action = None
+    prev_player = 1
     state = env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     if i_episode % 50 == 0:
@@ -236,7 +237,11 @@ for i_episode in range(num_episodes):
     terminated = False
     while not terminated:
         acting_player = env.get_acting_player()
-        if len(env.game.get_valid_action_indexes(acting_player)) < 1:
+        
+
+        if len(env.game.get_valid_action_indexes(acting_player)) < 1: # Seems like this will never happen....
+            # Might happen if guerrilla doesn't have 2 adjacent spaces to play at,
+            # but the game should test for that.
             terminated = True
             next_state = None
             loser = acting_player
@@ -251,11 +256,14 @@ for i_episode in range(num_episodes):
             breakpoint()
             players[winner].push_memory(state, prev_action, next_state, win_reward)
         else:
+            if prev_player != acting_player:
+                prev_player = abs(prev_player -1)
+                prev_action = copy.deepcopy(action)
             action = players[acting_player].select_action(state)
             action_to_pass = players[acting_player].action_list[action.item()]
             observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
             reward = torch.tensor([reward], dtype=torch.float32, device=device)
-            prev_action = action
+            
             if terminated:
                 next_state = None
             else:
@@ -277,14 +285,34 @@ for i_episode in range(num_episodes):
                 target_net_state_dict[key] = policy_net_state_dict[key]*TAU + target_net_state_dict[key]*(1-TAU)
             players[acting_player].target_net.load_state_dict(target_net_state_dict)
         if terminated:
+            #TODO: Try punishing loser
+            loser = env.get_acting_player()
+            loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
+            
+            # Store the transition in memory
+            players[loser].push_memory(state, prev_action, next_state, loss_reward)
+            #breakpoint()
+
+            # Perform one step of the optimization (on the policy network)
+            players[loser].optimize_model()
+
+            # Soft update of the target network's weights
+            # θ′ ← τ θ + (1 −τ )θ′
+            target_net_state_dict = players[loser].target_net.state_dict()
+            policy_net_state_dict = players[loser].policy_net.state_dict()
             """
-            for i in [0,1]:
+            for i in [0, 1]:
                 end_reward = env.game.get_reward(i)
-
-
-                # This may cause problems
-                reward = torch.tensor([end_reward], dtype=torch.float32, device=device)
-                players[i].push_memory(state, action, next_state, reward)
+                if i != acting_player:
+                    
+                    final_action = prev_action
+                    # This may cause problems
+                    loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
+                    players[i].push_memory(state, final_action, next_state, loss_reward)
+                    try:
+                        players[i].optimize_model()
+                    except:
+                        breakpoint()
             """
             who_won = env.game.get_game_result()
             wins.append(who_won)
