@@ -300,20 +300,7 @@ for i_episode in range(num_episodes):
             # θ′ ← τ θ + (1 −τ )θ′
             target_net_state_dict = players[loser].target_net.state_dict()
             policy_net_state_dict = players[loser].policy_net.state_dict()
-            """
-            for i in [0, 1]:
-                end_reward = env.game.get_reward(i)
-                if i != acting_player:
-                    
-                    final_action = prev_action
-                    # This may cause problems
-                    loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
-                    players[i].push_memory(state, final_action, next_state, loss_reward)
-                    try:
-                        players[i].optimize_model()
-                    except:
-                        breakpoint()
-            """
+            
             who_won = env.game.get_game_result()
             wins.append(who_won)
             plot_wins()
@@ -321,3 +308,8 @@ for i_episode in range(num_episodes):
         
         # Move to the next state
         state = next_state
+
+plot_wins(show_result=True)
+plt.ioff()
+plt.savefig('pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png')
+plt.show()
