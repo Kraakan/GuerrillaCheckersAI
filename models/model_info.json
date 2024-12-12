@@ -1,1 +1,125 @@
-{"0": {"index": "0", "player": "1", "type": "DQN", "generation": "1", "path": "models/0/model_weights.pth", "name": "Lilith"}, "1": {"index": "1", "player": "0", "type": "DQN", "generation": "2", "path": "models/1/model_weights.pth", "history": ["500 games against gen 1 DQN"], "name": "Adam"}, "2": {"index": "2", "player": "1", "type": "DQN", "generation": "3", "path": "models/2/model_weights.pth", "name": "Eve"}, "3": {"index": "3", "player": "0", "type": "DQN", "generation": "4", "path": "models/3/model_weights.pth", "name": "Cain"}, "4": {"index": "4", "player": "1", "type": "DQN", "generation": "5", "path": "models/4/model_weights.pth", "name": "Aclima"}, "5": {"index": "5", "player": "0", "type": "DQN", "generation": "6", "path": "models/5/model_weights.pth", "name": "Azura"}, "6": {"index": "6", "player": "1", "type": "DQN", "generation": "7", "path": "models/6/model_weights.pth", "name": "Abel"}, "7": {"index": "7", "player": "0", "type": "DQN", "generation": "8", "path": "models/7/model_weights.pth", "name": "Noam"}, "8": {"index": "8", "player": "1", "type": "DQN", "generation": "9", "path": "models/8/model_weights.pth", "name": "Seth"}, "9": {"index": "9", "player": "0", "type": "DQN", "generation": "10", "path": "models/9/model_weights.pth", "name": "Edna"}, "10": {"index": "10", "player": "1", "type": "DQN", "path": "models/10-11/coin_model_weights.pth", "name": "long-term Joona-Pekka", "history": ["55 games against twin, twin id=10"]}, "11": {"index": "11", "player": "0", "type": "DQN", "path": "models/10-11/guerrilla_model_weights.pth", "name": "long-term Gina", "history": ["55 games against twin, twin id=11"]}}
+{
+"0": {
+"index": "0",
+"player": "1",
+"type": "DQN",
+"generation": "1",
+"path": "models/0/model_weights.pth",
+"name": "Lilith"
+},
+"1": {
+"index": "1",
+"player": "0",
+"type": "DQN",
+"generation": "2",
+"path": "models/1/model_weights.pth",
+"history": [
+"500 games against gen 1 DQN"
+],
+"name": "Adam"
+},
+"2": {
+"index": "2",
+"player": "1",
+"type": "DQN",
+"generation": "3",
+"path": "models/2/model_weights.pth",
+"name": "Eve"
+},
+"3": {
+"index": "3",
+"player": "0",
+"type": "DQN",
+"generation": "4",
+"path": "models/3/model_weights.pth",
+"name": "Cain"
+},
+"4": {
+"index": "4",
+"player": "1",
+"type": "DQN",
+"generation": "5",
+"path": "models/4/model_weights.pth",
+"name": "Aclima"
+},
+"5": {
+"index": "5",
+"player": "0",
+"type": "DQN",
+"generation": "6",
+"path": "models/5/model_weights.pth",
+"name": "Azura"
+},
+"6": {
+"index": "6",
+"player": "1",
+"type": "DQN",
+"generation": "7",
+"path": "models/6/model_weights.pth",
+"name": "Abel"
+},
+"7": {
+"index": "7",
+"player": "0",
+"type": "DQN",
+"generation": "8",
+"path": "models/7/model_weights.pth",
+"name": "Noam"
+},
+"8": {
+"index": "8",
+"player": "1",
+"type": "DQN",
+"generation": "9",
+"path": "models/8/model_weights.pth",
+"name": "Seth"
+},
+"9": {
+"index": "9",
+"player": "0",
+"type": "DQN",
+"generation": "10",
+"path": "models/9/model_weights.pth",
+"name": "Edna"
+},
+"10": {
+"index": "10",
+"player": "1",
+"type": "DQN",
+"path": "models/10-11/coin_model_weights.pth",
+"name": "long-term Joona-Pekka",
+"history": [
+"55 games against twin, twin id=10"
+]
+},
+"11": {
+"index": "11",
+"player": "0",
+"type": "DQN",
+"path": "models/10-11/guerrilla_model_weights.pth",
+"name": "long-term Gina",
+"history": [
+"55 games against twin, twin id=11"
+]
+},
+"12": {
+"index": "12",
+"player": "1",
+"type": "DQN",
+"path": "models/12-13/coin_model_weights.pth",
+"name": "basic Osmonpoika",
+"history": [
+"55 games against twin, twin id=12"
+]
+},
+"13": {
+"index": "13",
+"player": "0",
+"type": "DQN",
+"path": "models/12-13/guerrilla_model_weights.pth",
+"name": "basic Safa",
+"history": [
+"55 games against twin, twin id=13"
+]
+}
+}

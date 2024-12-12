@@ -17,6 +17,8 @@ import datetime
 import json
 from pathlib import Path
 
+import csv
+
 # https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
 
 # set up matplotlib 
@@ -227,6 +229,13 @@ guerrilla = dqn_Agent(1)
 # Player designators correstonds to list indexes
 players = [COIN, guerrilla]
 
+# Ugly, but I need to track this file in att least two places
+model_info_file = open("models/model_info.json", "r")
+model_info = json.load(model_info_file)
+new_index = len(model_info.items())
+new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
+Path(new_dir).mkdir()
+
 def save_record(game):
     # TODO: Calculate if it's reasonable to save this much data
     try:
@@ -237,9 +246,9 @@ def save_record(game):
         data = game.game_record
     #TODO: Save data
 
-def save_training_data(dir, name, wins, lengths):
-    import csv
-    with open(dir + "/"+ name + ".csv", "w", newline='') as csvfile:
+def save_training_data(target_dir, name, wins, lengths):
+    
+    with open(target_dir + "/"+ name + ".csv", "w", newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(wins)
         csvwriter.writerow(lengths)
@@ -272,7 +281,6 @@ for i_episode in range(num_episodes):
             #The winner's previous action should be used here
             #It's not possible for COIN to lose on chain jumps, is it?
             win_reward = torch.tensor([1.], dtype=torch.float32, device=device)
-            breakpoint()
             players[winner].push_memory(state, prev_action, next_state, win_reward)
         else:
             if prev_player != acting_player:
@@ -323,13 +331,20 @@ for i_episode in range(num_episodes):
             wins.append(who_won)
             game_lengths.append(len(env.game.game_record))
             plot_wins()
+            if i_episode % 500 == 100: #TODO: adjust
+                # Save game record
+                record = env.game.game_record
+                with open(new_dir + str(i_episode) + ".csv", "w", newline='') as csvfile:
+                    csvwriter = csv.writer(csvfile)
+                    for row in record:
+                        csvwriter.writerow(row)
             break
         
         # Move to the next state
         state = next_state
 
 
-def save_models(g_target_net , c_target_net):
+def save_models(target_dir, g_target_net , c_target_net):
     # Create unique names by combining adjectives and names from long lists 
     # (duplicates will be unlikely, and won't cause big problems anyway)
     adjectives = open("names/english-adjectives.txt", "r").read().split(sep="\n")
@@ -337,14 +352,7 @@ def save_models(g_target_net , c_target_net):
     boy_names = [s.split(sep=";")[0] for s in open("names/names-men.csv", "r").read().split(sep="\n")]
     adj = random.choice(adjectives)
 
-
-    model_info_file = open("models/model_info.json", "r")
-    model_info = json.load(model_info_file)
-    new_index = len(model_info.items())
-    # Create new model info for both players:
-    new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
-
-    c_model_path = new_dir  + 'coin_model_weights.pth'
+    c_model_path = target_dir  + 'coin_model_weights.pth'
     c_name = adj + " " + random.choice(boy_names)
     c_model_info = {"index": str(new_index),
                   "player": "1",
@@ -352,7 +360,7 @@ def save_models(g_target_net , c_target_net):
                   "path": c_model_path,
                   "name": c_name
                   }
-    g_model_path = new_dir + 'guerrilla_model_weights.pth'
+    g_model_path = target_dir + 'guerrilla_model_weights.pth'
     g_name = adj + " " + random.choice(girl_names)
     g_model_info = {"index": str(new_index + 1),
                   "player": "0",
@@ -370,7 +378,6 @@ def save_models(g_target_net , c_target_net):
     model_info[str(new_index + 1)] = g_model_info
     #Save both models
     print("Saving guerrilla model to:", g_model_path)
-    Path(new_dir).mkdir()
     torch.save(g_target_net.state_dict(), g_model_path)
     print("Saving COIN model to:", c_model_path)
     torch.save(c_target_net.state_dict(), c_model_path)
@@ -380,10 +387,10 @@ def save_models(g_target_net , c_target_net):
     save_training_data(new_dir, "training-data", wins, game_lengths)
 
 
-save_models(players[0].target_net, players[1].target_net)
+save_models(new_dir, players[0].target_net, players[1].target_net)
 
 
 plot_wins(show_result=True)
 plt.ioff()
-plt.savefig('pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png')
+plt.savefig('pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png') # TODO: Modify to save in the dir with models
 plt.show()
