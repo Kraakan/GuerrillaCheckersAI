@@ -192,6 +192,7 @@ else:
     num_episodes = 55
 
 wins = []
+game_lengths = []
 
 def plot_wins(show_result=False):
     plt.figure(1)
@@ -225,6 +226,24 @@ guerrilla = dqn_Agent(1)
 
 # Player designators correstonds to list indexes
 players = [COIN, guerrilla]
+
+def save_record(game):
+    # TODO: Calculate if it's reasonable to save this much data
+    try:
+        file = open("data/this-game-data.csv", "rw")
+        # TODO: Split csv into list of lists
+    except:
+        # TODO: Create file
+        data = game.game_record
+    #TODO: Save data
+
+def save_training_data(dir, name, wins, lengths):
+    import csv
+    with open(dir + "/"+ name + ".csv", "w", newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(wins)
+        csvwriter.writerow(lengths)
+
 
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
@@ -300,14 +319,69 @@ for i_episode in range(num_episodes):
             # θ′ ← τ θ + (1 −τ )θ′
             target_net_state_dict = players[loser].target_net.state_dict()
             policy_net_state_dict = players[loser].policy_net.state_dict()
-            
             who_won = env.game.get_game_result()
             wins.append(who_won)
+            game_lengths.append(len(env.game.game_record))
             plot_wins()
             break
         
         # Move to the next state
         state = next_state
+
+
+def save_models(g_target_net , c_target_net):
+    # Create unique names by combining adjectives and names from long lists 
+    # (duplicates will be unlikely, and won't cause big problems anyway)
+    adjectives = open("names/english-adjectives.txt", "r").read().split(sep="\n")
+    girl_names = [s.split(sep=";")[0] for s in open("names/names-women.csv", "r").read().split(sep="\n")]
+    boy_names = [s.split(sep=";")[0] for s in open("names/names-men.csv", "r").read().split(sep="\n")]
+    adj = random.choice(adjectives)
+
+
+    model_info_file = open("models/model_info.json", "r")
+    model_info = json.load(model_info_file)
+    new_index = len(model_info.items())
+    # Create new model info for both players:
+    new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
+
+    c_model_path = new_dir  + 'coin_model_weights.pth'
+    c_name = adj + " " + random.choice(boy_names)
+    c_model_info = {"index": str(new_index),
+                  "player": "1",
+                  "type": "DQN",
+                  "path": c_model_path,
+                  "name": c_name
+                  }
+    g_model_path = new_dir + 'guerrilla_model_weights.pth'
+    g_name = adj + " " + random.choice(girl_names)
+    g_model_info = {"index": str(new_index + 1),
+                  "player": "0",
+                  "type": "DQN",
+                  "path": g_model_path,
+                  "name": g_name
+                  }
+    #breakpoint()
+    # Adding "training history", might be useful at a later point
+    twin_string = str(num_episodes) + " games against twin, twin id="
+    c_model_info["history"] = [twin_string + str(new_index)]
+    g_model_info["history"] = [twin_string + str(new_index + 1)]
+
+    model_info[str(new_index)] = c_model_info
+    model_info[str(new_index + 1)] = g_model_info
+    #Save both models
+    print("Saving guerrilla model to:", g_model_path)
+    Path(new_dir).mkdir()
+    torch.save(g_target_net.state_dict(), g_model_path)
+    print("Saving COIN model to:", c_model_path)
+    torch.save(c_target_net.state_dict(), c_model_path)
+
+    with open('models/model_info.json', 'w') as f:
+        json.dump(model_info, f, indent=0) # Will this make my json pretty?
+    save_training_data(new_dir, "training-data", wins, game_lengths)
+
+
+save_models(players[0].target_net, players[1].target_net)
+
 
 plot_wins(show_result=True)
 plt.ioff()
