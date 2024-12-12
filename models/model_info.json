@@ -121,5 +121,25 @@
 "history": [
 "55 games against twin, twin id=13"
 ]
+},
+"14": {
+"index": "14",
+"player": "1",
+"type": "DQN",
+"path": "models/14-15/coin_model_weights.pth",
+"name": "glass Eevald",
+"history": [
+"5000 games against twin, twin id=14"
+]
+},
+"15": {
+"index": "15",
+"player": "0",
+"type": "DQN",
+"path": "models/14-15/guerrilla_model_weights.pth",
+"name": "glass Katjusha",
+"history": [
+"5000 games against twin, twin id=15"
+]
 }
 }
