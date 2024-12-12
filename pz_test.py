@@ -329,7 +329,8 @@ for i_episode in range(num_episodes):
             policy_net_state_dict = players[loser].policy_net.state_dict()
             who_won = env.game.get_game_result()
             wins.append(who_won)
-            game_lengths.append(len(env.game.game_record))
+            # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
+            game_lengths.append((66 - env.game.board[0])//2)
             plot_wins()
             if i_episode % 500 == 100: #TODO: adjust
                 # Save game record

@@ -141,5 +141,25 @@
 "history": [
 "5000 games against twin, twin id=15"
 ]
+},
+"16": {
+"index": "16",
+"player": "1",
+"type": "DQN",
+"path": "models/16-17/coin_model_weights.pth",
+"name": "incomplete Heimer",
+"history": [
+"55 games against twin, twin id=16"
+]
+},
+"17": {
+"index": "17",
+"player": "0",
+"type": "DQN",
+"path": "models/16-17/guerrilla_model_weights.pth",
+"name": "incomplete Grethel",
+"history": [
+"55 games against twin, twin id=17"
+]
 }
 }
