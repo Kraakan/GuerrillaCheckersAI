@@ -189,7 +189,7 @@ class dqn_Agent():
         self.memory.push(state, action, next_state, reward)
 
 if torch.cuda.is_available():
-    num_episodes = 5000
+    num_episodes = 10000
 else:
     num_episodes = 55
 

@@ -161,5 +161,25 @@
 "history": [
 "55 games against twin, twin id=17"
 ]
+},
+"18": {
+"index": "18",
+"player": "1",
+"type": "DQN",
+"path": "models/18-19/coin_model_weights.pth",
+"name": "stiff Nguyen",
+"history": [
+"10000 games against twin, twin id=18"
+]
+},
+"19": {
+"index": "19",
+"player": "0",
+"type": "DQN",
+"path": "models/18-19/guerrilla_model_weights.pth",
+"name": "stiff Riina-Lotta",
+"history": [
+"10000 games against twin, twin id=19"
+]
 }
 }
