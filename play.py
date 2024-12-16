@@ -3,6 +3,10 @@ import random
 import copy
 import curses
 from curses import wrapper
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import json
 
 # Input:
 # c = stdscr.getch()
@@ -28,17 +32,76 @@ def start(stdscr):
             break
         
         if player_choice == ord('1'):
+            
             while True:
                 stdscr.clear()
                 stdscr.addstr("Will you play as guerrilla or COIN? (g/c)")
                 player_side = stdscr.getch()
                 if player_side == ord('g'):
-                    one_player_game(1, stdscr)
+                    human_player = 1
+                    ai_player = 0
                     break
                 if player_side == ord('c'):
-                    one_player_game(0, stdscr)
+                    human_player = 0
+                    ai_player = 1
                     break
                 stdscr.addstr("You have to type 'g' or 'c'!")
+            # Chose model
+            try:
+                model_info_file = open("models/model_info.json", "r")
+                stdscr.addstr("Loading models...")
+                model_info = json.load(model_info_file)
+                available_models = []
+                for key, item in model_info.items():
+                    if item["player"] == str(ai_player):
+                        available_models.append(key)
+                if len(available_models) < 1:
+                    stdscr.addstr("Sorry, no appropriate models were found :(")
+                    break
+                highlited = 0
+                while True:
+                    stdscr.clear()
+                    stdscr.addstr("Select AI model for opponent\n")
+                    for m in available_models:
+                        if available_models.index(m) == highlited:
+                            # highlight row
+                            stdscr.addstr(m + " type: " + model_info[m]["type"] + " name: " + model_info[m]["name"] + "\n", curses.A_REVERSE)
+                        else:
+                            stdscr.addstr(m + " type: " + model_info[m]["type"] + " name: " + model_info[m]["name"] + "\n")
+                        if "history" in model_info[m]:
+                            for h in model_info[m]["history"]:
+                                stdscr.addstr("    " + h + "\n")
+                    # TODO: Select model with curses
+                    c = stdscr.getch()
+                    if c == ord('q'):
+                        break
+                    elif c == curses.KEY_MOUSE:
+                        mouse_event = curses.getmouse()
+                        stdscr.addstr(str(mouse_event))
+                    elif c == ord('w') or c == curses.KEY_UP:
+                        if highlited == 0:
+                            highlited = len(available_models) - 1
+                        else:
+                            highlited = highlited - 1
+                    elif c == ord('s') or c == curses.KEY_DOWN:
+                        if highlited == len(available_models) - 1:
+                            highlited = 0
+                        else:
+                            highlited = highlited + 1
+                    elif c == curses.KEY_ENTER or c == 10 or c == 13:
+                        opponent_selection = available_models[highlited]
+                        selected_opponent = model_info[opponent_selection]
+                        ai_model_path = selected_opponent["path"]
+                        one_player_game(human_player, ai_model_path, stdscr)                        
+                        break
+                    else:
+                        stdscr.addstr("Select a model with arrow keys + Enter!")
+            except FileNotFoundError:
+                stdscr.addstr("ERROR! No model info found!")
+            # Display list of applicable models
+
+            # Create guerrilla/COIN AI
+
             break
         
         if player_choice == ord('2'):
@@ -49,6 +112,49 @@ def start(stdscr):
             stdscr.addstr("Bye!")
             break
         stdscr.addstr("Incorrect input")
+
+class AI():
+
+    def __init__(self, model, player, game, device):
+        self.model = model
+        self.player = player
+        self.game = game
+        self.device = device
+        if self.player == 1:
+            self.n_ai_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
+        else:
+            self.n_ai_actions = len(guerrilla_checkers.rules['all COIN moves'])
+
+    def select_action(self, state):
+        valid_action_indexes = self.game.get_valid_action_indexes(self.player)
+        policy = self.model(torch.tensor(state, device=self.device))
+        mask_tensor = torch.zeros(self.n_ai_actions, device=self.device, dtype=torch.bool)
+        for i in valid_action_indexes:
+            mask_tensor[i] = True
+        masked_policy = copy.copy(policy)
+        masked_policy = torch.where(mask_tensor, masked_policy, torch.tensor(-1e+8))
+        if masked_policy.dim() > 1:
+            max_i = masked_policy.max(1).indices.view(1, 1)
+        else:
+            max_i = masked_policy.argmax()
+            #max_i = max_i.to(dtype=torch.long, device=self.device)
+        return torch.tensor([[max_i]], device=self.device, dtype=torch.long)
+
+class DQN(nn.Module):
+
+    def __init__(self, n_observations, n_actions):
+        super(DQN, self).__init__()
+
+        self.layer1 = nn.Linear(n_observations, 128)
+        self.layer2 = nn.Linear(128, 128)
+        self.layer3 = nn.Linear(128, n_actions)
+
+    # Called with either one element to determine next action, or a batch
+    # during optimization. Returns tensor([[left0exp,right0exp]...]).
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        return self.layer3(x)
 
 def get_highlight(move, player):
     # Convert move coords to board space on curses screen (1-17)
@@ -334,8 +440,23 @@ def two_player_game(stdscr):
     stdscr.getch()
     return twoplayergame.game_record
 
-def one_player_game(human, stdscr):
+def one_player_game(human, ai_model_path, stdscr):
     oneplayergame = guerrilla_checkers.game()
+    state, player = oneplayergame.get_current_state()
+    n_observations = len(state)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if human == 1:
+        ai_player = 0
+        n_ai_actions = len(guerrilla_checkers.rules['all COIN moves'])
+        ai_action_list = list(guerrilla_checkers.rules['all COIN moves'].keys())
+    else:
+        ai_player = 1
+        n_ai_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
+        ai_action_list = list(guerrilla_checkers.rules['all guerrilla moves'].keys())
+    model = DQN(n_observations, n_ai_actions).to(device)
+    model.load_state_dict(torch.load(ai_model_path, weights_only=True, map_location=device))
+    model.eval()
+    ai = AI(model, ai_player, oneplayergame, device)
     player = 1
     yy = 1
     xx = 1
@@ -409,8 +530,9 @@ def one_player_game(human, stdscr):
                         move = None
                         confirm = stdscr.getch()
         else:
-            
-            selected_move = random.choice(valid_actions_list)
+            # TODO: AI moves here
+            action = ai.select_action(state)
+            selected_move = ai_action_list[action.item()]
             oneplayergame.take_action(player, selected_move)
         
     winner = oneplayergame.get_game_result()

@@ -68,13 +68,15 @@ class DQN(nn.Module):
         x = F.relu(self.layer2(x))
         return self.layer3(x)
 
-BATCH_SIZE = 66 # 128 Excessive? I think it should be set to max n of turns in a game
-GAMMA = 0.99
-EPS_START = 0.9
-EPS_END = 0.05
-EPS_DECAY = 1000
-TAU = 0.005
-LR = 1e-4
+# TODO: Save these variables! 
+# 128 Excessive? I think it should be set to max n of turns in a game
+BATCH_SIZE = 66 # number of transitions sampled from the replay buffer
+GAMMA = 0.99    # discount factor
+EPS_START = 0.9 # starting value of epsilon
+EPS_END = 0.05  # final value of epsilon
+EPS_DECAY = 1000# controls the rate of exponential decay of epsilon, higher means a slower decay
+TAU = 0.005     # update rate of the target network
+LR = 1e-4       # learning rate of the ``AdamW`` optimizer
 
 # 0 for COIN, 1 for guerrilla
 action_list_0 = list(guerrilla_checkers.rules['all COIN moves'].keys())
@@ -359,7 +361,14 @@ def save_models(target_dir, g_target_net , c_target_net):
                   "player": "1",
                   "type": "DQN",
                   "path": c_model_path,
-                  "name": c_name
+                  "name": c_name,
+                  "batch_size": BATCH_SIZE,
+                  "gamma": GAMMA,
+                  "eps_start": EPS_START,
+                  "eps_end": EPS_END,
+                  "eps_decay": EPS_DECAY,
+                  "tau": TAU,
+                  "lr": LR
                   }
     g_model_path = target_dir + 'guerrilla_model_weights.pth'
     g_name = adj + " " + random.choice(girl_names)
@@ -367,7 +376,14 @@ def save_models(target_dir, g_target_net , c_target_net):
                   "player": "0",
                   "type": "DQN",
                   "path": g_model_path,
-                  "name": g_name
+                  "name": g_name,
+                  "batch_size": BATCH_SIZE,
+                  "gamma": GAMMA,
+                  "eps_start": EPS_START,
+                  "eps_end": EPS_END,
+                  "eps_decay": EPS_DECAY,
+                  "tau": TAU,
+                  "lr": LR
                   }
     #breakpoint()
     # Adding "training history", might be useful at a later point
