@@ -90,9 +90,9 @@ new_model_info = {"index": str(new_index),
                   }
 
 # set up matplotlib
-is_ipython = 'inline' in matplotlib.get_backend()
-if is_ipython:
-    from IPython import display
+#is_ipython = 'inline' in matplotlib.get_backend()
+#if is_ipython:
+#    from IPython import display
 
 plt.ion()
 
@@ -244,12 +244,12 @@ def plot_durations(show_result=False):
         plt.plot(means.numpy())
 
     plt.pause(0.001)  # pause a bit so that plots are updated
-    if is_ipython:
-        if not show_result:
-            display.display(plt.gcf())
-            display.clear_output(wait=True)
-        else:
-            display.display(plt.gcf())
+    #if is_ipython:
+    #    if not show_result:
+    #        display.display(plt.gcf())
+    #        display.clear_output(wait=True)
+    #    else:
+    #        display.display(plt.gcf())
 
 def optimize_model():
     if len(memory) < BATCH_SIZE:
@@ -301,7 +301,16 @@ def optimize_model():
 if torch.cuda.is_available():
     num_episodes = 5000
 else:
-    num_episodes = 500
+    num_episodes = 50
+
+
+#Path(new_model_dir).mkdir()
+#prof = torch.profiler.profile(
+#            activities=[torch.profiler.ProfilerActivity.CPU,
+#                        torch.profiler.ProfilerActivity.CUDA],
+#                        on_trace_ready=torch.profiler.tensorboard_trace_handler(new_model_dir + 'mnist'))
+
+#prof.start()
 
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
@@ -324,10 +333,11 @@ for i_episode in range(num_episodes):
             action = select_action(state)
             action_to_pass = action_list[action.item()]
             observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
-            reward = torch.tensor([reward], device=device)
+            reward = torch.tensor([reward], dtype=torch.float32, device=device)
 
             if terminated:
-                next_state = None
+                next_state = observation # None causes error, what to do when there's no next state?
+                next_state = torch.tensor(next_state, dtype=torch.float32, device=device).unsqueeze(0)
             else:
                 next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
 
@@ -358,13 +368,18 @@ for i_episode in range(num_episodes):
             observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
         if terminated:
             reward = env.game.get_reward(env.player)
+            reward = torch.tensor([reward], dtype=torch.float32, device=device)
             # This may cause problems
             memory.push(state, action, next_state, reward)
             episode_durations.append(reward)
-            plot_durations()
+            #plot_durations()
             break
+    #prof.step()
+#prof.stop()
 
 print('Complete')
+#print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
+
 if player == 1:
     player_string = "guerrilla"
 else: 
@@ -376,13 +391,12 @@ new_model_info["history"] = [str(num_episodes) + " games against " + opponent_st
 model_info[str(new_index)] = new_model_info
 #Save model
 print("Saving model to:", new_model_dir)
-Path(new_model_dir).mkdir()
 torch.save(target_net.state_dict(), new_model_path)
 
 with open('models/model_info.json', 'w') as f:
     json.dump(model_info, f)
 
-plot_durations(show_result=True)
+#plot_durations(show_result=True)
 plt.ioff()
 plt.savefig(new_model_dir + 'dqn_' + "_".join(str(datetime.datetime.now()).split())+ "_" + player_string + '.png')
 plt.show()

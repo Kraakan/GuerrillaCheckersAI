@@ -181,5 +181,39 @@
 "history": [
 "10000 games against twin, twin id=19"
 ]
+},
+"20": {
+"index": "20",
+"player": "1",
+"type": "DQN",
+"path": "models/20-21/coin_model_weights.pth",
+"name": "supportive Nisse",
+"batch_size": 66,
+"gamma": 0.99,
+"eps_start": 0.9,
+"eps_end": 0.05,
+"eps_decay": 1000,
+"tau": 0.005,
+"lr": 0.0001,
+"history": [
+"55 games against twin, twin id=20"
+]
+},
+"21": {
+"index": "21",
+"player": "0",
+"type": "DQN",
+"path": "models/20-21/guerrilla_model_weights.pth",
+"name": "supportive Sof\u00eda",
+"batch_size": 66,
+"gamma": 0.99,
+"eps_start": 0.9,
+"eps_end": 0.05,
+"eps_decay": 1000,
+"tau": 0.005,
+"lr": 0.0001,
+"history": [
+"55 games against twin, twin id=21"
+]
 }
 }
