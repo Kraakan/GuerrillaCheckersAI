@@ -118,5 +118,125 @@
                 "lr": 0.0001
             }
         ]
+    },
+    "6": {
+        "index": "6",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/6-7/coin_model_weights.pth",
+        "name": "idiotic Ram",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "7",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "7": {
+        "index": "7",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/6-7/guerrilla_model_weights.pth",
+        "name": "idiotic Ann-Maria",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "7",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "8": {
+        "index": "8",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/8-9/coin_model_weights.pth",
+        "name": "gleeful Dominick",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "9",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "9": {
+        "index": "9",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/8-9/guerrilla_model_weights.pth",
+        "name": "gleeful Viena",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "9",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "10": {
+        "index": "10",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/10-11/coin_model_weights.pth",
+        "name": "loyal Fredi",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "11",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
+    },
+    "11": {
+        "index": "11",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/10-11/guerrilla_model_weights.pth",
+        "name": "loyal Aveliina",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "11",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
     }
 }
