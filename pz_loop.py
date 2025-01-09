@@ -19,14 +19,25 @@ from pathlib import Path
 
 import csv
 
+import argparse
+
+# Parse terminal arguments
+parser = argparse.ArgumentParser(description="Control training. Training agenda set in training_agenda.json")
+parser.add_argument(
+    "--loop",
+    type=int,
+    default=1,
+    help="Number of training sessions to do in this run (each session runs num_episodes games)"
+)
+
+args = parser.parse_args()
+
+num_loops = args.loop
+
+agenda_file = open("training_agenda.json", "r")
+agenda = json.load(agenda_file)
+
 # https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
-
-# set up matplotlib 
-is_ipython = 'inline' in matplotlib.get_backend()
-if is_ipython:
-    from IPython import display
-
-plt.ion()
 
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -51,7 +62,8 @@ class ReplayMemory(object):
 
     def __len__(self):
         return len(self.memory)
-    
+
+# TODO: get network structure from agenda
 class DQN(nn.Module):
 
     def __init__(self, n_observations, n_actions):
@@ -68,6 +80,7 @@ class DQN(nn.Module):
         x = F.relu(self.layer2(x))
         return self.layer3(x)
 
+# Defaults
 BATCH_SIZE = 128# number of transitions sampled from the replay buffer
 GAMMA = 0.99    # discount factor
 EPS_START = 0.9 # starting value of epsilon
@@ -188,10 +201,6 @@ class dqn_Agent():
     def push_memory(self, state, action, next_state, reward):
         self.memory.push(state, action, next_state, reward)
 
-if torch.cuda.is_available():
-    num_episodes = 10000
-else:
-    num_episodes = 55
 
 wins = []
 game_lengths = []
@@ -213,14 +222,6 @@ def plot_wins(show_result=False):
         means = torch.cat((torch.zeros(99), means))
         plt.plot(means.numpy())
 
-    plt.pause(0.001)  # pause a bit so that plots are updated
-    if is_ipython:
-        if not show_result:
-            display.display(plt.gcf())
-            display.clear_output(wait=True)
-        else:
-            display.display(plt.gcf())
-
 # 0 for COIN, 1 for guerrilla
 # These will hopefully be easy to replace with other types of agent
 COIN = dqn_Agent(0)
@@ -229,121 +230,12 @@ guerrilla = dqn_Agent(1)
 # Player designators correstonds to list indexes
 players = [COIN, guerrilla]
 
-# Ugly, but I need to track this file in att least two places
-model_info_file = open("models/model_info.json", "r")
-model_info = json.load(model_info_file)
-new_index = len(model_info.items())
-new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
-Path(new_dir).mkdir()
-
-def save_record(game):
-    # TODO: Calculate if it's reasonable to save this much data
-    try:
-        file = open("data/this-game-data.csv", "rw")
-        # TODO: Split csv into list of lists
-    except:
-        # TODO: Create file
-        data = game.game_record
-    #TODO: Save data
-
 def save_training_data(target_dir, name, wins, lengths):
     
     with open(target_dir + "/"+ name + ".csv", "w", newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(wins)
         csvwriter.writerow(lengths)
-
-
-for i_episode in range(num_episodes):
-    # Initialize the environment and get its state
-    prev_action = None
-    prev_player = 1
-    state = env.reset()
-    state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
-    if i_episode % 50 == 0:
-        print("Running episode", i_episode+1)
-    terminated = False
-    while not terminated:
-        acting_player = env.get_acting_player()
-        
-
-        if len(env.game.get_valid_action_indexes(acting_player)) < 1: # Seems like this will never happen....
-            # Might happen if guerrilla doesn't have 2 adjacent spaces to play at,
-            # but the game should test for that.
-            terminated = True
-            next_state = None
-            loser = acting_player
-            # Other player = abs(acting_player -1)
-            winner = abs(loser -1)
-            #TODO: distribute rewards
-            loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
-            players[loser].push_memory(state, action, next_state, loss_reward)
-            #The winner's previous action should be used here
-            #It's not possible for COIN to lose on chain jumps, is it?
-            win_reward = torch.tensor([1.], dtype=torch.float32, device=device)
-            players[winner].push_memory(state, prev_action, next_state, win_reward)
-        else:
-            if prev_player != acting_player:
-                prev_player = abs(prev_player -1)
-                prev_action = copy.deepcopy(action)
-            action = players[acting_player].select_action(state)
-            action_to_pass = players[acting_player].action_list[action.item()]
-            observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
-            reward = torch.tensor([reward], dtype=torch.float32, device=device)
-            
-            if terminated:
-                next_state = None
-            else:
-                next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
-            
-            # Store the transition in memory
-            players[acting_player].push_memory(state, action, next_state, reward)
-
- 
-
-            # Perform one step of the optimization (on the policy network)
-            players[acting_player].optimize_model()
-
-            # Soft update of the target network's weights
-            # θ′ ← τ θ + (1 −τ )θ′
-            target_net_state_dict = players[acting_player].target_net.state_dict()
-            policy_net_state_dict = players[acting_player].policy_net.state_dict()
-            for key in policy_net_state_dict:
-                target_net_state_dict[key] = policy_net_state_dict[key]*TAU + target_net_state_dict[key]*(1-TAU)
-            players[acting_player].target_net.load_state_dict(target_net_state_dict)
-        if terminated:
-            #TODO: Try punishing loser
-            loser = env.get_acting_player()
-            loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
-            
-            # Store the transition in memory
-            players[loser].push_memory(state, prev_action, next_state, loss_reward)
-            #breakpoint()
-
-            # Perform one step of the optimization (on the policy network)
-            players[loser].optimize_model()
-
-            # Soft update of the target network's weights
-            # θ′ ← τ θ + (1 −τ )θ′
-            target_net_state_dict = players[loser].target_net.state_dict()
-            policy_net_state_dict = players[loser].policy_net.state_dict()
-            who_won = env.game.get_game_result()
-            wins.append(who_won)
-            # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
-            game_lengths.append((66 - env.game.board[0])//2)
-            plot_wins()
-            if i_episode % 500 == 100: #TODO: adjust
-                # Save game record
-                record = env.game.game_record
-                with open(new_dir + str(i_episode) + ".csv", "w", newline='') as csvfile:
-                    csvwriter = csv.writer(csvfile)
-                    for row in record:
-                        csvwriter.writerow(row)
-            break
-        
-        # Move to the next state
-        state = next_state
-
 
 def save_models(target_dir, g_target_net , c_target_net):
     # Create unique names by combining adjectives and names from long lists 
@@ -357,7 +249,7 @@ def save_models(target_dir, g_target_net , c_target_net):
     c_name = adj + " " + random.choice(boy_names)
     c_model_info = {"index": str(new_index),
                   "player": "1",
-                  "type": "DQN",
+                  "type": "Basic DQN",
                   "path": c_model_path,
                   "name": c_name
                   }
@@ -365,7 +257,7 @@ def save_models(target_dir, g_target_net , c_target_net):
     g_name = adj + " " + random.choice(girl_names)
     g_model_info = {"index": str(new_index + 1),
                   "player": "0",
-                  "type": "DQN",
+                  "type": "Basic DQN",
                   "path": g_model_path,
                   "name": g_name
                   }
@@ -404,11 +296,151 @@ def save_models(target_dir, g_target_net , c_target_net):
         json.dump(model_info, f, indent=4) # Will this make my json pretty?
     save_training_data(new_dir, "training-data", wins, game_lengths)
 
+i_loop = 0
+i_agenda = 0
 
-save_models(new_dir, players[0].target_net, players[1].target_net)
+while i_loop < num_loops:
+
+    while i_agenda < len(agenda):
+        if agenda[i_agenda]["status"] == "done":
+            i_agenda += 1
+        else:
+            params = agenda[i_agenda]
+            BATCH_SIZE = params["BATCH_SIZE"]
+            GAMMA = params["GAMMA"]
+            EPS_START = params["EPS_START"]
+            EPS_END = params["EPS_END"]
+            EPS_DECAY = params["EPS_DECAY"]
+            TAU = params["TAU"]
+            LR = params["LR"]
+            print(params)
+            break
+
+    if torch.cuda.is_available():
+        num_episodes = 10000
+    else: # Don't train with cpu!
+        num_episodes = 2
+        print(num_loops)
+    
+    # Ugly, but I need to track this file in att least two places
+    try:
+        model_info_file = open("models/model_info.json", "r")
+        model_info = json.load(model_info_file)
+    except FileNotFoundError:
+        print("No model info found")
+        model_info = {}
+    new_index = len(model_info.items())
+    new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
+    print("Creating dir", new_dir)
+    Path(new_dir).mkdir()
+
+    wins = []
+    game_lengths = []
+
+    for i_episode in range(num_episodes):
+        # Initialize the environment and get its state
+        prev_action = None
+        prev_player = 1
+        state = env.reset()
+        state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+        if i_episode % 50 == 0:
+            print("Running episode", i_episode+1)
+        terminated = False
+        while not terminated:
+            acting_player = env.get_acting_player()
+            
+
+            if len(env.game.get_valid_action_indexes(acting_player)) < 1: # Seems like this will never happen....
+                # Might happen if guerrilla doesn't have 2 adjacent spaces to play at,
+                # but the game should test for that.
+                terminated = True
+                next_state = None
+                loser = acting_player
+                # Other player = abs(acting_player -1)
+                winner = abs(loser -1)
+                #TODO: distribute rewards
+                loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
+                players[loser].push_memory(state, action, next_state, loss_reward)
+                #The winner's previous action should be used here
+                #It's not possible for COIN to lose on chain jumps, is it?
+                win_reward = torch.tensor([1.], dtype=torch.float32, device=device)
+                players[winner].push_memory(state, prev_action, next_state, win_reward)
+            else:
+                if prev_player != acting_player:
+                    prev_player = abs(prev_player -1)
+                    prev_action = copy.deepcopy(action)
+                action = players[acting_player].select_action(state)
+                action_to_pass = players[acting_player].action_list[action.item()]
+                observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
+                reward = torch.tensor([reward], dtype=torch.float32, device=device)
+                
+                if terminated:
+                    next_state = None
+                else:
+                    next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
+                
+                # Store the transition in memory
+                players[acting_player].push_memory(state, action, next_state, reward)
+
+    
+
+                # Perform one step of the optimization (on the policy network)
+                players[acting_player].optimize_model()
+
+                # Soft update of the target network's weights
+                # θ′ ← τ θ + (1 −τ )θ′
+                target_net_state_dict = players[acting_player].target_net.state_dict()
+                policy_net_state_dict = players[acting_player].policy_net.state_dict()
+                for key in policy_net_state_dict:
+                    target_net_state_dict[key] = policy_net_state_dict[key]*TAU + target_net_state_dict[key]*(1-TAU)
+                players[acting_player].target_net.load_state_dict(target_net_state_dict)
+            if terminated:
+                #TODO: Try punishing loser
+                loser = env.get_acting_player()
+                loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
+                
+                # Store the transition in memory
+                players[loser].push_memory(state, prev_action, next_state, loss_reward)
+                #breakpoint()
+
+                # Perform one step of the optimization (on the policy network)
+                players[loser].optimize_model()
+
+                # Soft update of the target network's weights
+                # θ′ ← τ θ + (1 −τ )θ′
+                target_net_state_dict = players[loser].target_net.state_dict()
+                policy_net_state_dict = players[loser].policy_net.state_dict()
+                who_won = env.game.get_game_result()
+                wins.append(who_won)
+                # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
+                game_lengths.append((66 - env.game.board[0])//2)
+                plot_wins()
+                if i_episode % 500 == 100: #TODO: adjust
+                    # Save game record
+                    record = env.game.game_record
+                    with open(new_dir + str(i_episode) + ".csv", "w", newline='') as csvfile:
+                        csvwriter = csv.writer(csvfile)
+                        for row in record:
+                            csvwriter.writerow(row)
+                break
+            
+            # Move to the next state
+            state = next_state
+    i_loop += 1
+    agenda[i_agenda]["status"] = "done" # TODO Save changes to agenda
+    with open('training_agenda.json', 'w') as f:
+        json.dump(agenda, f, indent=4)
+    save_models(new_dir, players[0].target_net, players[1].target_net)
+    plot_wins(show_result=False)
+    plt.savefig(new_dir + 'pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png') # TODO: Modify to save in the dir with models
 
 
-plot_wins(show_result=True)
-plt.ioff()
-plt.savefig('pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png') # TODO: Modify to save in the dir with models
-plt.show()
+
+
+
+
+
+
+
+
+

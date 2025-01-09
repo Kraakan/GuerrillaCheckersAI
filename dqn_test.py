@@ -136,7 +136,7 @@ class DQN(nn.Module):
         x = F.relu(self.layer2(x))
         return self.layer3(x)
 
-BATCH_SIZE = 66 # 128 Excessive? I think it should be set to max n of turns in a game
+BATCH_SIZE = 128 # 128 Excessive? I think it should be set to max n of turns in a game
 GAMMA = 0.99
 EPS_START = 0.9
 EPS_END = 0.05
