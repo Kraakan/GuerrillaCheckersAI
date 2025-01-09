@@ -64,10 +64,10 @@ class ReplayMemory(object):
         return len(self.memory)
 
 # TODO: get network structure from agenda
-class DQN(nn.Module):
+class DQN_basic(nn.Module):
 
     def __init__(self, n_observations, n_actions):
-        super(DQN, self).__init__()
+        super(DQN_basic, self).__init__()
 
         self.layer1 = nn.Linear(n_observations, 128)
         self.layer2 = nn.Linear(128, 128)
@@ -79,6 +79,24 @@ class DQN(nn.Module):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
         return self.layer3(x)
+    
+class DQN_2deep(nn.Module):
+
+    def __init__(self, n_observations, n_actions):
+        super(DQN_2deep, self).__init__()
+
+        self.layer1 = nn.Linear(n_observations, 128)
+        self.layer2 = nn.Linear(128, 256)
+        self.layer3 = nn.Linear(256, 256)
+        self.layer4 = nn.Linear(256, n_actions)
+
+    # Called with either one element to determine next action, or a batch
+    # during optimization. Returns tensor([[left0exp,right0exp]...]).
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        x = F.relu(self.layer3(x))
+        return self.layer4(x)
 
 # Defaults
 BATCH_SIZE = 128# number of transitions sampled from the replay buffer
@@ -105,7 +123,7 @@ steps_done = 0
 
 class dqn_Agent():
     
-    def __init__(self, player):
+    def __init__(self, player, network):
         self.player = player
         if player == 0:
             self.action_list = action_list_0
@@ -113,11 +131,16 @@ class dqn_Agent():
         else:
             self.action_list = action_list_1
             self.n_actions =  n_actions_1
-        self.policy_net = DQN(n_observations, self.n_actions).to(device)
-        self.target_net = DQN(n_observations, self.n_actions).to(device)
+        # TODO Choose network structure based on agenda
+        if network == "2deep":
+            self.policy_net = DQN_2deep(n_observations, self.n_actions).to(device)
+            self.target_net = DQN_2deep(n_observations, self.n_actions).to(device)
+        else:
+            self.policy_net = DQN_basic(n_observations, self.n_actions).to(device)
+            self.target_net = DQN_basic(n_observations, self.n_actions).to(device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=LR, amsgrad=True)
-        self.memory = ReplayMemory(10000)
+        self.memory = ReplayMemory(10000) # TODO: Try different memory sizes?
     
     def select_action(self, state):
         global steps_done
@@ -132,7 +155,7 @@ class dqn_Agent():
                 # second column on max result is index of where max element was
                 # found, so we pick action with the larger expected reward.
 
-                # TODO: Apply invalid action masking
+                # Apply invalid action masking
                 # https://github.com/vwxyzjn/invalid-action-masking/blob/master/test.py
                 policy = self.policy_net(state)
                 mask_tensor = torch.zeros(self.n_actions, device=device, dtype=torch.bool)
@@ -214,7 +237,7 @@ def plot_wins(show_result=False):
         plt.clf()
         plt.title('Training...')
     plt.xlabel('Episode')
-    plt.ylabel('1 = COIN -1 = guerrilla')
+    plt.ylabel('-1 = guerrilla 1 = COIN')
     plt.plot(wins_t.numpy())
     # Take 100 episode averages and plot them too
     if len(wins_t) >= 100:
@@ -222,10 +245,7 @@ def plot_wins(show_result=False):
         means = torch.cat((torch.zeros(99), means))
         plt.plot(means.numpy())
 
-# 0 for COIN, 1 for guerrilla
-# These will hopefully be easy to replace with other types of agent
-COIN = dqn_Agent(0)
-guerrilla = dqn_Agent(1)
+
 
 # Player designators correstonds to list indexes
 players = [COIN, guerrilla]
@@ -313,6 +333,7 @@ while i_loop < num_loops:
             EPS_DECAY = params["EPS_DECAY"]
             TAU = params["TAU"]
             LR = params["LR"]
+            network = params["network"]
             print(params)
             break
 
@@ -334,8 +355,14 @@ while i_loop < num_loops:
     print("Creating dir", new_dir)
     Path(new_dir).mkdir()
 
+    # 0 for COIN, 1 for guerrilla
+    # These will hopefully be easy to replace with other types of agent
+    COIN = dqn_Agent(0, network)
+    guerrilla = dqn_Agent(1, network)
+
     wins = []
     game_lengths = []
+    start_time = str(datetime.datetime.now())
 
     for i_episode in range(num_episodes):
         # Initialize the environment and get its state
@@ -343,7 +370,7 @@ while i_loop < num_loops:
         prev_player = 1
         state = env.reset()
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
-        if i_episode % 50 == 0:
+        if i_episode % 100 == 0:
             print("Running episode", i_episode+1)
         terminated = False
         while not terminated:
@@ -426,13 +453,17 @@ while i_loop < num_loops:
             
             # Move to the next state
             state = next_state
+    end_time = str(datetime.datetime.now())
     i_loop += 1
-    agenda[i_agenda]["status"] = "done" # TODO Save changes to agenda
+    agenda[i_agenda]["status"] = "done"
     with open('training_agenda.json', 'w') as f:
         json.dump(agenda, f, indent=4)
+    with open(new_dir + 'time.txt', 'w') as f:
+        f.write(start_time + "\n" + end_time)
+        f.close()
     save_models(new_dir, players[0].target_net, players[1].target_net)
     plot_wins(show_result=False)
-    plt.savefig(new_dir + 'pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png') # TODO: Modify to save in the dir with models
+    plt.savefig(new_dir + 'pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png')
 
 
 

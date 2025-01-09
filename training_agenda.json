@@ -7,7 +7,8 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.005,
-        "LR": 0.0001
+        "LR": 0.0001,
+        "network": "basic"
     },
     {
         "status": "not done",
@@ -17,7 +18,8 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.005,
-        "LR": 0.0001
+        "LR": 0.0001,
+        "network": "basic"
     },
     {
         "status": "not done",
@@ -27,7 +29,8 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.005,
-        "LR": 0.0001
+        "LR": 0.0001,
+        "network": "basic"
     },
     {
         "status": "not done",
@@ -37,7 +40,8 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 10000,
         "TAU": 0.005,
-        "LR": 0.0001
+        "LR": 0.0001,
+        "network": "basic"
     },
     {
         "status": "not done",
@@ -47,7 +51,8 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.01,
-        "LR": 0.0001
+        "LR": 0.0001,
+        "network": "basic"
     },
     {
         "status": "not done",
@@ -57,6 +62,73 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.005,
-        "LR": 0.001
+        "LR": 0.001,
+        "network": "basic"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 128,
+        "GAMMA": 0.99,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 1000,
+        "TAU": 0.005,
+        "LR": 0.0001,
+        "network": "2deep"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 256,
+        "GAMMA": 0.99,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 1000,
+        "TAU": 0.005,
+        "LR": 0.0001,
+        "network": "2deep"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 128,
+        "GAMMA": 0.9,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 1000,
+        "TAU": 0.005,
+        "LR": 0.0001,
+        "network": "2deep"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 128,
+        "GAMMA": 0.99,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 10000,
+        "TAU": 0.005,
+        "LR": 0.0001,
+        "network": "2deep"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 128,
+        "GAMMA": 0.99,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 1000,
+        "TAU": 0.01,
+        "LR": 0.0001,
+        "network": "2deep"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 128,
+        "GAMMA": 0.99,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 1000,
+        "TAU": 0.005,
+        "LR": 0.001,
+        "network": "2deep"
     }
 ]
