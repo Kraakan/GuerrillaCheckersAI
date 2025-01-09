@@ -252,7 +252,7 @@ def save_training_data(target_dir, name, wins, lengths):
         csvwriter.writerow(wins)
         csvwriter.writerow(lengths)
 
-def save_models(target_dir, g_target_net , c_target_net):
+def save_models(target_dir, g_target_net , c_target_net, network_type):
     # Create unique names by combining adjectives and names from long lists 
     # (duplicates will be unlikely, and won't cause big problems anyway)
     adjectives = open("names/english-adjectives.txt", "r").read().split(sep="\n")
@@ -264,7 +264,7 @@ def save_models(target_dir, g_target_net , c_target_net):
     c_name = adj + " " + random.choice(boy_names)
     c_model_info = {"index": str(new_index),
                   "player": "1",
-                  "type": "Basic DQN",
+                  "type": network_type,
                   "path": c_model_path,
                   "name": c_name
                   }
@@ -272,7 +272,7 @@ def save_models(target_dir, g_target_net , c_target_net):
     g_name = adj + " " + random.choice(girl_names)
     g_model_info = {"index": str(new_index + 1),
                   "player": "0",
-                  "type": "Basic DQN",
+                  "type": network_type,
                   "path": g_model_path,
                   "name": g_name
                   }
@@ -458,7 +458,7 @@ while i_loop < num_loops:
     with open(new_dir + 'time.txt', 'w') as f:
         f.write(start_time + "\n" + end_time)
         f.close()
-    save_models(new_dir, players[0].target_net, players[1].target_net)
+    save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN")
     plot_wins(show_result=False)
     plt.savefig(new_dir + 'pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png')
 
