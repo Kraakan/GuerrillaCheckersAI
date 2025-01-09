@@ -245,11 +245,6 @@ def plot_wins(show_result=False):
         means = torch.cat((torch.zeros(99), means))
         plt.plot(means.numpy())
 
-
-
-# Player designators correstonds to list indexes
-players = [COIN, guerrilla]
-
 def save_training_data(target_dir, name, wins, lengths):
     
     with open(target_dir + "/"+ name + ".csv", "w", newline='') as csvfile:
@@ -359,6 +354,8 @@ while i_loop < num_loops:
     # These will hopefully be easy to replace with other types of agent
     COIN = dqn_Agent(0, network)
     guerrilla = dqn_Agent(1, network)
+    # Player designators correstonds to list indexes
+    players = [COIN, guerrilla]
 
     wins = []
     game_lengths = []
