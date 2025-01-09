@@ -238,5 +238,245 @@
                 "lr": 0.001
             }
         ]
+    },
+    "12": {
+        "index": "12",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/12-13/coin_model_weights.pth",
+        "name": "fatherly Misael",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "13",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "13": {
+        "index": "13",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/12-13/guerrilla_model_weights.pth",
+        "name": "fatherly Disa",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "13",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "14": {
+        "index": "14",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/14-15/coin_model_weights.pth",
+        "name": "uneven Iljas",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "15",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "15": {
+        "index": "15",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/14-15/guerrilla_model_weights.pth",
+        "name": "uneven Tilda",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "15",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "16": {
+        "index": "16",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/16-17/coin_model_weights.pth",
+        "name": "shoddy Malik",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "17",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "17": {
+        "index": "17",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/16-17/guerrilla_model_weights.pth",
+        "name": "shoddy Marjaterttu",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "17",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "18": {
+        "index": "18",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/18-19/coin_model_weights.pth",
+        "name": "illiterate Kouta",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "19",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "19": {
+        "index": "19",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/18-19/guerrilla_model_weights.pth",
+        "name": "illiterate Maxine",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "19",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "20": {
+        "index": "20",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/20-21/coin_model_weights.pth",
+        "name": "idle Erasmus",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "21",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "21": {
+        "index": "21",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/20-21/guerrilla_model_weights.pth",
+        "name": "idle Liisa-Lotta",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "21",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "22": {
+        "index": "22",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/22-23/coin_model_weights.pth",
+        "name": "bitter Siim",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "23",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
+    },
+    "23": {
+        "index": "23",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/22-23/guerrilla_model_weights.pth",
+        "name": "bitter Jatta",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "23",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
     }
 }
