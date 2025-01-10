@@ -128,7 +128,12 @@ class Agent():
                     mask_tensor[i] = True
                 masked_policy = copy.copy(policy)
                 masked_policy = torch.where(mask_tensor, masked_policy, torch.tensor(-1e+8))
-                max_i = masked_policy.max(1).indices.view(1, 1)
+                if len((masked_policy == torch.max(masked_policy)).nonzero(as_tuple=True)) > 1:
+                    # Select one of the max values
+                    breakpoint()
+                    max_i = random.choice((masked_policy == torch.max(masked_policy)).nonzero(as_tuple=True))[0]
+                else:
+                    max_i = masked_policy.max(1).indices.view(1, 1)
                 return torch.tensor([[max_i]], device=self.device, dtype=torch.long)
         else:
             #if len(valid_action_indexes) < 1:
@@ -191,8 +196,8 @@ class Agent():
 
 class AI():
 
-    def __init__(self, model, player, game, device):
-        self.model = model
+    def __init__(self, model_path, player, game, device, network_type="basic DQN"):
+        #self.model = model
         self.player = player
         self.game = game
         self.device = device
@@ -200,6 +205,12 @@ class AI():
             self.n_ai_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
         else:
             self.n_ai_actions = len(guerrilla_checkers.rules['all COIN moves'])
+        if network_type == "2deep DQN":
+            self.model = deep2(n_observations, self.n_ai_actions).to(device)
+        else:
+            self.model = basic(n_observations, self.n_ai_actions).to(device)
+        self.model.load_state_dict(torch.load(model_path, weights_only=True, map_location=device))
+        self.model.eval()
 
     def select_action(self, state):
         valid_action_indexes = self.game.get_valid_action_indexes(self.player)
@@ -214,4 +225,6 @@ class AI():
         else:
             max_i = masked_policy.argmax()
             #max_i = max_i.to(dtype=torch.long, device=self.device)
+        if len((masked_policy == torch.max(masked_policy)).nonzero(as_tuple=True)) > 1:
+            breakpoint()
         return torch.tensor([[max_i]], device=self.device, dtype=torch.long)

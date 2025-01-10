@@ -77,7 +77,7 @@ def save_training_data(target_dir, name, wins, lengths):
         csvwriter.writerow(wins)
         csvwriter.writerow(lengths)
 
-def save_models(target_dir, g_target_net , c_target_net, network_type):
+def save_models(target_dir, c_target_net, g_target_net,  network_type): # This is where I reversed the players - reorder to fix, but is it worth it?
     # Create unique names by combining adjectives and names from long lists 
     # (duplicates will be unlikely, and won't cause big problems anyway)
     adjectives = open("names/english-adjectives.txt", "r").read().split(sep="\n")
@@ -88,7 +88,7 @@ def save_models(target_dir, g_target_net , c_target_net, network_type):
     c_model_path = target_dir  + 'coin_model_weights.pth'
     c_name = adj + " " + random.choice(boy_names)
     c_model_info = {"index": str(new_index),
-                  "player": "1",
+                  "player": "0",
                   "type": network_type,
                   "path": c_model_path,
                   "name": c_name
@@ -96,7 +96,7 @@ def save_models(target_dir, g_target_net , c_target_net, network_type):
     g_model_path = target_dir + 'guerrilla_model_weights.pth'
     g_name = adj + " " + random.choice(girl_names)
     g_model_info = {"index": str(new_index + 1),
-                  "player": "0",
+                  "player": "1",
                   "type": network_type,
                   "path": g_model_path,
                   "name": g_name
