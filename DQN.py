@@ -130,8 +130,10 @@ class Agent():
                 masked_policy = torch.where(mask_tensor, masked_policy, torch.tensor(-1e+8))
                 if len((masked_policy == torch.max(masked_policy)).nonzero(as_tuple=True)) > 1:
                     # Select one of the max values
-                    #breakpoint()
-                    max_i = random.choice((masked_policy == torch.max(masked_policy)).nonzero(as_tuple=True)).view(1,1)
+                    try:
+                        max_i = random.choice((masked_policy == torch.max(masked_policy)).nonzero(as_tuple=True)).view(1,1)
+                    except:
+                        breakpoint()
                 else:
                     max_i = masked_policy.max(1).indices.view(1, 1)
                 return torch.tensor([[max_i]], device=self.device, dtype=torch.long)
