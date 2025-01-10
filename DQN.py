@@ -131,7 +131,7 @@ class Agent():
                 if len((masked_policy == torch.max(masked_policy)).nonzero(as_tuple=True)) > 1:
                     # Select one of the max values
                     try:
-                        max_i = random.choice((masked_policy[0] == torch.max(masked_policy)).nonzero(as_tuple=True)).view(1,1)
+                        max_i = random.choice((masked_policy[0] == torch.max(masked_policy)).nonzero()).view(1,1)
                     except:
                         breakpoint()
                 else:
