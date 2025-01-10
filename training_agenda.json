@@ -77,7 +77,7 @@
         "network": "2deep"
     },
     {
-        "status": "done",
+        "status": "problematic",
         "BATCH_SIZE": 256,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -88,7 +88,7 @@
         "network": "2deep"
     },
     {
-        "status": "done",
+        "status": "problematic",
         "BATCH_SIZE": 128,
         "GAMMA": 0.9,
         "EPS_START": 0.9,
@@ -110,7 +110,7 @@
         "network": "2deep"
     },
     {
-        "status": "done",
+        "status": "problematic",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -121,7 +121,7 @@
         "network": "2deep"
     },
     {
-        "status": "done",
+        "status": "problematic",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,

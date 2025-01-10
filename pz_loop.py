@@ -1,6 +1,4 @@
 from pettingzoo_env import PettingZoo
-import guerrilla_checkers
-import math
 import random
 import copy
 import matplotlib
@@ -8,10 +6,10 @@ import matplotlib.pyplot as plt
 from collections import namedtuple, deque
 from itertools import count
 
+import DQN
+# Some of the imports below will be redundant
+
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
 
 import datetime
 import json
@@ -37,81 +35,12 @@ num_loops = args.loop
 agenda_file = open("training_agenda.json", "r")
 agenda = json.load(agenda_file)
 
-# https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
+
 
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print('device:', device)
-
-
-Transition = namedtuple('Transition',
-                        ('state', 'action', 'next_state', 'reward'))
-
-class ReplayMemory(object):
-
-    def __init__(self, capacity):
-        self.memory = deque([], maxlen=capacity)
-
-    def push(self, *args):
-        """Save a transition"""
-        self.memory.append(Transition(*args))
-
-    def sample(self, batch_size):
-        return random.sample(self.memory, batch_size)
-
-    def __len__(self):
-        return len(self.memory)
-
-# TODO: get network structure from agenda
-class DQN_basic(nn.Module):
-
-    def __init__(self, n_observations, n_actions):
-        super(DQN_basic, self).__init__()
-
-        self.layer1 = nn.Linear(n_observations, 128)
-        self.layer2 = nn.Linear(128, 128)
-        self.layer3 = nn.Linear(128, n_actions)
-
-    # Called with either one element to determine next action, or a batch
-    # during optimization. Returns tensor([[left0exp,right0exp]...]).
-    def forward(self, x):
-        x = F.relu(self.layer1(x))
-        x = F.relu(self.layer2(x))
-        return self.layer3(x)
-    
-class DQN_2deep(nn.Module):
-
-    def __init__(self, n_observations, n_actions):
-        super(DQN_2deep, self).__init__()
-
-        self.layer1 = nn.Linear(n_observations, 128)
-        self.layer2 = nn.Linear(128, 256)
-        self.layer3 = nn.Linear(256, 256)
-        self.layer4 = nn.Linear(256, n_actions)
-
-    # Called with either one element to determine next action, or a batch
-    # during optimization. Returns tensor([[left0exp,right0exp]...]).
-    def forward(self, x):
-        x = F.relu(self.layer1(x))
-        x = F.relu(self.layer2(x))
-        x = F.relu(self.layer3(x))
-        return self.layer4(x)
-
-# Defaults
-BATCH_SIZE = 128# number of transitions sampled from the replay buffer
-GAMMA = 0.99    # discount factor
-EPS_START = 0.9 # starting value of epsilon
-EPS_END = 0.05  # final value of epsilon
-EPS_DECAY = 1000# controls the rate of exponential decay of epsilon, higher means a slower decay
-TAU = 0.005     # update rate of the target network
-LR = 1e-4       # learning rate of the ``AdamW`` optimizer
-
-# 0 for COIN, 1 for guerrilla
-action_list_0 = list(guerrilla_checkers.rules['all COIN moves'].keys())
-n_actions_0 = len(action_list_0)
-action_list_1 = list(guerrilla_checkers.rules['all guerrilla moves'].keys())
-n_actions_1 = len(action_list_1)
 
 env = PettingZoo()
 
@@ -120,110 +49,6 @@ state = env.reset()
 n_observations = len(state)
 
 steps_done = 0
-
-class dqn_Agent():
-    
-    def __init__(self, player, network):
-        self.player = player
-        if player == 0:
-            self.action_list = action_list_0
-            self.n_actions =  n_actions_0
-        else:
-            self.action_list = action_list_1
-            self.n_actions =  n_actions_1
-        # TODO Choose network structure based on agenda
-        if network == "2deep":
-            self.policy_net = DQN_2deep(n_observations, self.n_actions).to(device)
-            self.target_net = DQN_2deep(n_observations, self.n_actions).to(device)
-        else:
-            self.policy_net = DQN_basic(n_observations, self.n_actions).to(device)
-            self.target_net = DQN_basic(n_observations, self.n_actions).to(device)
-        self.target_net.load_state_dict(self.policy_net.state_dict())
-        self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=LR, amsgrad=True)
-        self.memory = ReplayMemory(10000) # TODO: Try different memory sizes?
-    
-    def select_action(self, state):
-        global steps_done
-        sample = random.random()
-        eps_threshold = EPS_END + (EPS_START - EPS_END) * \
-            math.exp(-1. * steps_done / EPS_DECAY)
-        steps_done += 1
-        valid_action_indexes = env.game.get_valid_action_indexes(self.player)
-        if sample > eps_threshold:
-            with torch.no_grad():
-                # t.max(1) will return the largest column value of each row.
-                # second column on max result is index of where max element was
-                # found, so we pick action with the larger expected reward.
-
-                # Apply invalid action masking
-                # https://github.com/vwxyzjn/invalid-action-masking/blob/master/test.py
-                policy = self.policy_net(state)
-                mask_tensor = torch.zeros(self.n_actions, device=device, dtype=torch.bool)
-                for i in valid_action_indexes:
-                    mask_tensor[i] = True
-                masked_policy = copy.copy(policy)
-                masked_policy = torch.where(mask_tensor, masked_policy, torch.tensor(-1e+8))
-                max_i = masked_policy.max(1).indices.view(1, 1)
-                return torch.tensor([[max_i]], device=device, dtype=torch.long)
-        else:
-            #if len(valid_action_indexes) < 1:
-                #breakpoint()
-            random_action = random.choice(valid_action_indexes)
-            return torch.tensor([[random_action]], device=device, dtype=torch.long)
-    
-    def optimize_model(self):
-        if len(self.memory) < BATCH_SIZE:
-            return
-        transitions = self.memory.sample(BATCH_SIZE)
-        # Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for
-        # detailed explanation). This converts batch-array of Transitions
-        # to Transition of batch-arrays.
-        batch = Transition(*zip(*transitions))
-
-        # Compute a mask of non-final states and concatenate the batch elements
-        # (a final state would've been the one after which simulation ended)
-        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
-                                            batch.next_state)), device=device, dtype=torch.bool)
-        non_final_next_states = torch.cat([s for s in batch.next_state
-                                                    if s is not None])
-        state_batch = torch.cat(batch.state)
-        action_batch = torch.cat(batch.action)
-        reward_batch = torch.cat(batch.reward)
-
-        # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
-        # columns of actions taken. These are the actions which would've been taken
-        # for each batch state according to policy_net
-        # https://stackoverflow.com/questions/63493193/index-tensor-must-have-the-same-number-of-dimensions-as-input-tensor-error-encou
-        #try:
-        state_action_values = self.policy_net(state_batch).gather(1, action_batch)
-        #except:
-        #    breakpoint()
-
-        # Compute V(s_{t+1}) for all next states.
-        # Expected values of actions for non_final_next_states are computed based
-        # on the "older" target_net; selecting their best reward with max(1).values
-        # This is merged based on the mask, such that we'll have either the expected
-        # state value or 0 in case the state was final.
-        next_state_values = torch.zeros(BATCH_SIZE, device=device)
-        with torch.no_grad():
-            next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1).values
-        # Compute the expected Q values
-        expected_state_action_values = (next_state_values * GAMMA) + reward_batch
-
-        # Compute Huber loss
-        criterion = nn.SmoothL1Loss()
-        loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
-
-        # Optimize the model
-        self.optimizer.zero_grad()
-        loss.backward()
-        # In-place gradient clipping
-        torch.nn.utils.clip_grad_value_(self.policy_net.parameters(), 100)
-        self.optimizer.step()
-
-    def push_memory(self, state, action, next_state, reward):
-        self.memory.push(state, action, next_state, reward)
-
 
 wins = []
 game_lengths = []
@@ -279,13 +104,13 @@ def save_models(target_dir, g_target_net , c_target_net, network_type):
     #breakpoint()
     # Adding "training history", might be useful at a later point
     training_params = {
-                  "batch_size": BATCH_SIZE,
-                  "gamma": GAMMA,
-                  "eps_start": EPS_START,
-                  "eps_end": EPS_END,
-                  "eps_decay": EPS_DECAY,
-                  "tau": TAU,
-                  "lr": LR
+                  "batch_size": DQN.BATCH_SIZE,
+                  "gamma": DQN.GAMMA,
+                  "eps_start": DQN.EPS_START,
+                  "eps_end": DQN.EPS_END,
+                  "eps_decay": DQN.EPS_DECAY,
+                  "tau": DQN.TAU,
+                  "lr": DQN.LR
                   }
     
     training_info = {
@@ -302,9 +127,9 @@ def save_models(target_dir, g_target_net , c_target_net, network_type):
     model_info[str(new_index)] = c_model_info
     model_info[str(new_index + 1)] = g_model_info
     #Save both models
-    print("Saving guerrilla model to:", g_model_path)
+    print('Saving guerrilla model', '"' + g_name + '"' ,'to:', g_model_path)
     torch.save(g_target_net.state_dict(), g_model_path)
-    print("Saving COIN model to:", c_model_path)
+    print('Saving COIN model', '"' + c_name + '"' ,'to:', c_model_path)
     torch.save(c_target_net.state_dict(), c_model_path)
 
     with open('models/model_info.json', 'w') as f:
@@ -321,15 +146,16 @@ while i_loop < num_loops:
             i_agenda += 1
         else:
             params = agenda[i_agenda]
-            BATCH_SIZE = params["BATCH_SIZE"]
-            GAMMA = params["GAMMA"]
-            EPS_START = params["EPS_START"]
-            EPS_END = params["EPS_END"]
-            EPS_DECAY = params["EPS_DECAY"]
-            TAU = params["TAU"]
-            LR = params["LR"]
+            DQN.BATCH_SIZE = params["BATCH_SIZE"]
+            DQN.GAMMA = params["GAMMA"]
+            DQN.EPS_START = params["EPS_START"]
+            DQN.EPS_END = params["EPS_END"]
+            DQN.EPS_DECAY = params["EPS_DECAY"]
+            DQN.TAU = params["TAU"]
+            DQN.LR = params["LR"]
             network = params["network"]
-            print(params)
+            #print(params)
+            print(DQN.BATCH_SIZE, DQN.GAMMA, DQN.EPS_START, DQN.EPS_END, DQN.EPS_DECAY, DQN.TAU, DQN.LR)
             break
 
     if torch.cuda.is_available():
@@ -352,8 +178,8 @@ while i_loop < num_loops:
 
     # 0 for COIN, 1 for guerrilla
     # These will hopefully be easy to replace with other types of agent
-    COIN = dqn_Agent(0, network)
-    guerrilla = dqn_Agent(1, network)
+    COIN = DQN.Agent(0, env.game, device, network)
+    guerrilla = DQN.Agent(1, env.game, device, network)
     # Player designators correstonds to list indexes
     players = [COIN, guerrilla]
 
@@ -416,7 +242,7 @@ while i_loop < num_loops:
                 target_net_state_dict = players[acting_player].target_net.state_dict()
                 policy_net_state_dict = players[acting_player].policy_net.state_dict()
                 for key in policy_net_state_dict:
-                    target_net_state_dict[key] = policy_net_state_dict[key]*TAU + target_net_state_dict[key]*(1-TAU)
+                    target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
                 players[acting_player].target_net.load_state_dict(target_net_state_dict)
             if terminated:
                 #TODO: Try punishing loser
