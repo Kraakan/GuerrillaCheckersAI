@@ -42,10 +42,10 @@ for key, item in model_info.items():
 
 wins = {}
 results_array = np.zeros((len(g_indexes), len(c_indexes)))
-for g_index in g_indexes:
+for i, g_index in enumerate(g_indexes):
     wins[g_index] = []
     g_info = model_info[g_index]
-    for c_index in c_indexes:
+    for j, c_index in enumerate(c_indexes):
         try:
             len(wins[c_index])
         except:
@@ -53,11 +53,11 @@ for g_index in g_indexes:
         c_info = model_info[c_index]
         results = []
         lengths = []
-        for i in range(1):
+        for k in range(1):
             score, length = play(g_info, c_info)
             results.append(score)
             lengths.append(length)
-        results_array[int(g_index),int(c_index)] = statistics.mean(results)
+        results_array[i,j] = statistics.mean(results)
         print(g_info["name"], "vs.", c_info["name"])
         #print("Guerrilla wins:", results.count(-1))
         #print("COIN wins:", results.count(1))
