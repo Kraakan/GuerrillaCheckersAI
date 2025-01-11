@@ -120,9 +120,9 @@ def save_models(target_dir, c_target_net, g_target_net,  network_type): # This i
     training_info.update(training_params)
 
     c_model_info["history"] = [training_info]
-    c_model_info["history"][-1]["opponent id"] = str(new_index)
+    c_model_info["history"][-1]["opponent id"] = str(new_index + 1)
     g_model_info["history"] = [training_info]
-    g_model_info["history"][-1]["opponent id"] = str(new_index + 1)
+    g_model_info["history"][-1]["opponent id"] = str(new_index)
 
     model_info[str(new_index)] = c_model_info
     model_info[str(new_index + 1)] = g_model_info
@@ -140,7 +140,7 @@ i_loop = 0
 i_agenda = 0
 
 while i_loop < num_loops:
-
+    print("Running training loop", i_loop + 1, "of", num_loops, ":")
     while i_agenda < len(agenda):
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
@@ -154,8 +154,7 @@ while i_loop < num_loops:
             DQN.TAU = params["TAU"]
             DQN.LR = params["LR"]
             network = params["network"]
-            #print(params)
-            print(DQN.BATCH_SIZE, DQN.GAMMA, DQN.EPS_START, DQN.EPS_END, DQN.EPS_DECAY, DQN.TAU, DQN.LR)
+            print(params)
             break
 
     if torch.cuda.is_available():

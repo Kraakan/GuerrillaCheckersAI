@@ -3,6 +3,8 @@ import guerrilla_checkers
 import torch
 import DQN
 import statistics
+import pandas as pd
+import numpy as np
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_COIN_actions = len(guerrilla_checkers.rules['all COIN moves'])
@@ -32,13 +34,14 @@ def play(g_info, c_info):
 # Play every guerrilla player against every COIN player
 g_indexes = []
 c_indexes = []
-for key, item in model_info.items(): # Looks like I reversed the int values for guerrilla and COIN (OOPS!)
+for key, item in model_info.items():
     if item["player"] == "1":
         g_indexes.append(key)
     if item["player"] == "0":
         c_indexes.append(key)
 
 wins = {}
+results_array = np.zeros((len(g_indexes), len(c_indexes)))
 for g_index in g_indexes:
     wins[g_index] = []
     g_info = model_info[g_index]
@@ -49,19 +52,28 @@ for g_index in g_indexes:
             wins[c_index] = []
         c_info = model_info[c_index]
         results = []
-        #lengths = []
+        lengths = []
         for i in range(1):
             score, length = play(g_info, c_info)
             results.append(score)
-            #lengths.append(length)
-        #print(g_info["name"], "vs.", c_info["name"])
+            lengths.append(length)
+        results_array[int(g_index),int(c_index)] = statistics.mean(results)
+        print(g_info["name"], "vs.", c_info["name"])
         #print("Guerrilla wins:", results.count(-1))
         #print("COIN wins:", results.count(1))
         if results.count(-1) > len(results)/2:
             wins[g_index].append(c_index)
+            print("guerrilla wins!")
         else:
             wins[c_index].append(g_index)
-        #print("Avg. game length:", statistics.mean(lengths))
+            print("COIN wins!")
+        print("Avg. game length:", statistics.mean(lengths))
+
+results_df = pd.DataFrame(data=results_array,
+                          index=g_indexes,
+                          columns=c_indexes)
+
+results_df.to_excel('tournament_results.xlsx', sheet_name='tournament', index=False)
 
 for key, item in wins.items():
     print("nr.", key, model_info[key]["name"], "-", len(item), "wins!")
