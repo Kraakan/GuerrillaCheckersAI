@@ -142,10 +142,10 @@ class Agent():
         if network == "2deep DQN":
             self.policy_net = deep2(n_observations, self.n_actions).to(self.device)
             self.target_net = deep2(n_observations, self.n_actions).to(self.device)
-        if network == "3deep DQN":
+        elif network == "3deep DQN":
             self.policy_net = deep3(n_observations, self.n_actions).to(self.device)
             self.target_net = deep3(n_observations, self.n_actions).to(self.device)
-        if network == "4deep DQN":
+        elif network == "4deep DQN":
             self.policy_net = deep4(n_observations, self.n_actions).to(self.device)
             self.target_net = deep4(n_observations, self.n_actions).to(self.device)
         else:
@@ -257,9 +257,9 @@ class AI():
             self.n_ai_actions = len(guerrilla_checkers.rules['all COIN moves'])
         if network_type == "2deep DQN":
             self.model = deep2(n_observations, self.n_ai_actions).to(device)
-        if network_type == "3deep DQN":
+        elif network_type == "3deep DQN":
             self.model = deep3(n_observations, self.n_ai_actions).to(device)
-        if network_type == "4deep DQN":
+        elif network_type == "4deep DQN":
             self.model = deep4(n_observations, self.n_ai_actions).to(device)
         else:
             self.model = basic(n_observations, self.n_ai_actions).to(device)
