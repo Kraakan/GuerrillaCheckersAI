@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import json
+import DQN
 
 # Input:
 # c = stdscr.getch()
@@ -59,18 +60,46 @@ def start(stdscr):
                     stdscr.addstr("Sorry, no appropriate models were found :(")
                     break
                 highlited = 0
+                rows, cols = stdscr.getmaxyx()
+                jmin = 0
+                jmax = len(available_models)
                 while True:
                     stdscr.clear()
                     stdscr.addstr("Select AI model for opponent\n")
-                    for m in available_models:
-                        if available_models.index(m) == highlited:
-                            # highlight row
-                            stdscr.addstr(m + " type: " + model_info[m]["type"] + " name: " + model_info[m]["name"] + "\n", curses.A_REVERSE)
-                        else:
-                            stdscr.addstr(m + " type: " + model_info[m]["type"] + " name: " + model_info[m]["name"] + "\n")
-                        if "history" in model_info[m]:
-                            for h in model_info[m]["history"]:
-                                stdscr.addstr("    " + h + "\n")
+                    i = 0
+                    j = jmin
+                    while i < (rows - 2):
+                        #for m in available_models: # Need to limit the number of options so they fit on the screen
+                        if j < len(available_models):
+                            if j == highlited:
+                                # highlight row
+                                stdscr.addstr(available_models[j] + \
+                                " type: " + model_info[available_models[j]]["type"] + \
+                                " name: " + model_info[available_models[j]]["name"] + \
+                                    "\n", curses.A_REVERSE)
+                            else:
+                                stdscr.addstr(available_models[j] + " type: " + model_info[available_models[j]]["type"] + " name: " + model_info[available_models[j]]["name"] + "\n")
+                            jmax = j
+                            i += 1
+                            if i < (rows - 2):
+                                strings_to_print = ""
+                                for key, item in model_info[available_models[j]]["history"][0].items():
+                                    if i < (rows - 2):
+                                        if len(strings_to_print) + 4 + len(key) + 2 + len(str(item)) + 1 >= cols:
+                                            stdscr.addstr(strings_to_print + "\n")
+                                            strings_to_print = "    " + key + ": " + str(item)
+                                            i += 1
+                                        else:
+                                            strings_to_print += "    " + key + ": " + str(item)
+                                if i < (rows - 2):
+                                    stdscr.addstr(strings_to_print + "\n\n")
+                                    i += 2
+                            j += 1
+
+                            #stdscr.getyx()
+                        #if "history" in model_info[m]:
+                        #    for h in model_info[m]["history"]:
+                        #        stdscr.addstr("    " + h["description"] + "\n")
                     # TODO: Select model with curses
                     c = stdscr.getch()
                     if c == ord('q'):
@@ -81,18 +110,25 @@ def start(stdscr):
                     elif c == ord('w') or c == curses.KEY_UP:
                         if highlited == 0:
                             highlited = len(available_models) - 1
+                            jmin = len(available_models) - jmax - 1
                         else:
                             highlited = highlited - 1
+                            if highlited < jmin:
+                                jmin = jmin - 1
                     elif c == ord('s') or c == curses.KEY_DOWN:
                         if highlited == len(available_models) - 1:
                             highlited = 0
+                            jmin = 0
                         else:
                             highlited = highlited + 1
+                            if highlited > jmax:
+                                jmin = jmin + 1
                     elif c == curses.KEY_ENTER or c == 10 or c == 13:
                         opponent_selection = available_models[highlited]
                         selected_opponent = model_info[opponent_selection]
+                        # TODO: apply network choice
                         ai_model_path = selected_opponent["path"]
-                        one_player_game(human_player, ai_model_path, stdscr)                        
+                        one_player_game(human_player, ai_model_path, stdscr, network=selected_opponent["type"])                        
                         break
                     else:
                         stdscr.addstr("Select a model with arrow keys + Enter!")
@@ -112,49 +148,6 @@ def start(stdscr):
             stdscr.addstr("Bye!")
             break
         stdscr.addstr("Incorrect input")
-
-class AI():
-
-    def __init__(self, model, player, game, device):
-        self.model = model
-        self.player = player
-        self.game = game
-        self.device = device
-        if self.player == 1:
-            self.n_ai_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
-        else:
-            self.n_ai_actions = len(guerrilla_checkers.rules['all COIN moves'])
-
-    def select_action(self, state):
-        valid_action_indexes = self.game.get_valid_action_indexes(self.player)
-        policy = self.model(torch.tensor(state, device=self.device))
-        mask_tensor = torch.zeros(self.n_ai_actions, device=self.device, dtype=torch.bool)
-        for i in valid_action_indexes:
-            mask_tensor[i] = True
-        masked_policy = copy.copy(policy)
-        masked_policy = torch.where(mask_tensor, masked_policy, torch.tensor(-1e+8))
-        if masked_policy.dim() > 1:
-            max_i = masked_policy.max(1).indices.view(1, 1)
-        else:
-            max_i = masked_policy.argmax()
-            #max_i = max_i.to(dtype=torch.long, device=self.device)
-        return torch.tensor([[max_i]], device=self.device, dtype=torch.long)
-
-class DQN(nn.Module):
-
-    def __init__(self, n_observations, n_actions):
-        super(DQN, self).__init__()
-
-        self.layer1 = nn.Linear(n_observations, 128)
-        self.layer2 = nn.Linear(128, 128)
-        self.layer3 = nn.Linear(128, n_actions)
-
-    # Called with either one element to determine next action, or a batch
-    # during optimization. Returns tensor([[left0exp,right0exp]...]).
-    def forward(self, x):
-        x = F.relu(self.layer1(x))
-        x = F.relu(self.layer2(x))
-        return self.layer3(x)
 
 def get_highlight(move, player):
     # Convert move coords to board space on curses screen (1-17)
@@ -440,7 +433,7 @@ def two_player_game(stdscr):
     stdscr.getch()
     return twoplayergame.game_record
 
-def one_player_game(human, ai_model_path, stdscr):
+def one_player_game(human, ai_model_path, stdscr, network="basic DQN"):
     oneplayergame = guerrilla_checkers.game()
     state, player = oneplayergame.get_current_state()
     n_observations = len(state)
@@ -453,10 +446,7 @@ def one_player_game(human, ai_model_path, stdscr):
         ai_player = 1
         n_ai_actions = len(guerrilla_checkers.rules['all guerrilla moves'])
         ai_action_list = list(guerrilla_checkers.rules['all guerrilla moves'].keys())
-    model = DQN(n_observations, n_ai_actions).to(device)
-    model.load_state_dict(torch.load(ai_model_path, weights_only=True, map_location=device))
-    model.eval()
-    ai = AI(model, ai_player, oneplayergame, device)
+    ai = DQN.AI(ai_model_path, ai_player, oneplayergame, device, network_type=network)
     player = 1
     yy = 1
     xx = 1

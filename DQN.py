@@ -80,6 +80,48 @@ class deep2(nn.Module):
         x = F.relu(self.layer2(x))
         x = F.relu(self.layer3(x))
         return self.layer4(x)
+    
+class deep3(nn.Module):
+
+    def __init__(self, n_observations, n_actions):
+        super(deep2, self).__init__()
+
+        self.layer1 = nn.Linear(n_observations, 256)
+        self.layer2 = nn.Linear(256, 256)
+        self.layer3 = nn.Linear(256, 256)
+        self.layer4 = nn.Linear(256, 256)
+        self.layer5 = nn.Linear(256, n_actions)
+
+    # Called with either one element to determine next action, or a batch
+    # during optimization. Returns tensor([[left0exp,right0exp]...]).
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        x = F.relu(self.layer3(x))
+        x = F.relu(self.layer4(x))
+        return self.layer5(x)
+    
+class deep4(nn.Module):
+
+    def __init__(self, n_observations, n_actions):
+        super(deep2, self).__init__()
+
+        self.layer1 = nn.Linear(n_observations, 512)
+        self.layer2 = nn.Linear(512, 512)
+        self.layer3 = nn.Linear(512, 512)
+        self.layer4 = nn.Linear(512, 512)
+        self.layer5 = nn.Linear(512, 512)
+        self.layer6 = nn.Linear(512, n_actions)
+
+    # Called with either one element to determine next action, or a batch
+    # during optimization. Returns tensor([[left0exp,right0exp]...]).
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        x = F.relu(self.layer3(x))
+        x = F.relu(self.layer4(x))
+        x = F.relu(self.layer5(x))
+        return self.layer6(x)
 
 class Agent():
     
@@ -96,10 +138,16 @@ class Agent():
         else:
             self.action_list = action_list_1
             self.n_actions =  n_actions_1
-        # TODO Choose network structure based on agenda
+        # Choose network structure based on agenda / model info
         if network == "2deep":
             self.policy_net = deep2(n_observations, self.n_actions).to(self.device)
             self.target_net = deep2(n_observations, self.n_actions).to(self.device)
+        if network == "3deep":
+            self.policy_net = deep3(n_observations, self.n_actions).to(self.device)
+            self.target_net = deep3(n_observations, self.n_actions).to(self.device)
+        if network == "4deep":
+            self.policy_net = deep4(n_observations, self.n_actions).to(self.device)
+            self.target_net = deep4(n_observations, self.n_actions).to(self.device)
         else:
             self.policy_net = basic(n_observations, self.n_actions).to(self.device)
             self.target_net = basic(n_observations, self.n_actions).to(self.device)
