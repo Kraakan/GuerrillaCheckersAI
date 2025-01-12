@@ -84,7 +84,7 @@ class deep2(nn.Module):
 class deep3(nn.Module):
 
     def __init__(self, n_observations, n_actions):
-        super(deep2, self).__init__()
+        super(deep3, self).__init__()
 
         self.layer1 = nn.Linear(n_observations, 256)
         self.layer2 = nn.Linear(256, 256)
@@ -104,7 +104,7 @@ class deep3(nn.Module):
 class deep4(nn.Module):
 
     def __init__(self, n_observations, n_actions):
-        super(deep2, self).__init__()
+        super(deep4, self).__init__()
 
         self.layer1 = nn.Linear(n_observations, 512)
         self.layer2 = nn.Linear(512, 512)
