@@ -15,11 +15,8 @@ action_lists = [list(guerrilla_checkers.rules['all COIN moves'].keys()),
 model_info_file = open("models/model_info.json", "r")
 model_info = json.load(model_info_file)
 
-def play(g_info, c_info):
-    game = guerrilla_checkers.game()
-    # Get model networks from info
-    g_AI = DQN.AI(g_info["path"], 1, game, device, network_type=g_info["type"])
-    c_AI = DQN.AI(c_info["path"], 0, game, device, network_type=c_info["type"])
+def play(game, g_AI, c_AI):
+    game.reset()
     players = [c_AI, g_AI]
     while not game.is_game_over():
         state, player = game.get_current_state()
@@ -41,20 +38,30 @@ for key, item in model_info.items():
         c_indexes.append(key)
 
 wins = {}
+c_models = []
+
 results_array = np.zeros((len(g_indexes), len(c_indexes)))
+game = guerrilla_checkers.game()
 for i, g_index in enumerate(g_indexes):
     wins[g_index] = []
     g_info = model_info[g_index]
+    # Get model networks from info
+    g_AI = DQN.AI(g_info["path"], 1, game, device, network_type=g_info["type"])
     for j, c_index in enumerate(c_indexes):
         try:
             len(wins[c_index])
         except:
             wins[c_index] = []
         c_info = model_info[c_index]
+        if len(c_models) > j:
+            c_AI = c_models[j]
+        else:
+            c_AI = DQN.AI(c_info["path"], 0, game, device, network_type=c_info["type"])
+            c_models.append(c_AI)
         results = []
         lengths = []
         for k in range(1):
-            score, length = play(g_info, c_info)
+            score, length = play(game, g_AI, c_AI)
             results.append(score)
             lengths.append(length)
         results_array[i,j] = statistics.mean(results)
