@@ -139,13 +139,13 @@ class Agent():
             self.action_list = action_list_1
             self.n_actions =  n_actions_1
         # Choose network structure based on agenda / model info
-        if network == "2deep":
+        if network == "2deep DQN":
             self.policy_net = deep2(n_observations, self.n_actions).to(self.device)
             self.target_net = deep2(n_observations, self.n_actions).to(self.device)
-        if network == "3deep":
+        if network == "3deep DQN":
             self.policy_net = deep3(n_observations, self.n_actions).to(self.device)
             self.target_net = deep3(n_observations, self.n_actions).to(self.device)
-        if network == "4deep":
+        if network == "4deep DQN":
             self.policy_net = deep4(n_observations, self.n_actions).to(self.device)
             self.target_net = deep4(n_observations, self.n_actions).to(self.device)
         else:
