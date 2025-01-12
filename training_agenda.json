@@ -154,7 +154,7 @@
         "network": "2deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -165,7 +165,7 @@
         "network": "3deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 256,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -176,7 +176,7 @@
         "network": "3deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.9,
         "EPS_START": 0.9,
@@ -187,7 +187,7 @@
         "network": "3deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -198,7 +198,7 @@
         "network": "3deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -209,7 +209,7 @@
         "network": "3deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -220,7 +220,7 @@
         "network": "3deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -231,7 +231,7 @@
         "network": "4deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 256,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -242,7 +242,7 @@
         "network": "4deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.9,
         "EPS_START": 0.9,
@@ -253,7 +253,7 @@
         "network": "4deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -264,7 +264,7 @@
         "network": "4deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -275,7 +275,7 @@
         "network": "4deep"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
