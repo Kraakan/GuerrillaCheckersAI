@@ -1038,5 +1038,485 @@
                 "lr": 0.001
             }
         ]
+    },
+    "52": {
+        "index": "52",
+        "player": "0",
+        "type": "3deep DQN",
+        "path": "models/52-53/coin_model_weights.pth",
+        "name": "mountainous Erkko",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "52",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "53": {
+        "index": "53",
+        "player": "1",
+        "type": "3deep DQN",
+        "path": "models/52-53/guerrilla_model_weights.pth",
+        "name": "mountainous Ida-Lina",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "52",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "54": {
+        "index": "54",
+        "player": "0",
+        "type": "3deep DQN",
+        "path": "models/54-55/coin_model_weights.pth",
+        "name": "studious Olav",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "54",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "55": {
+        "index": "55",
+        "player": "1",
+        "type": "3deep DQN",
+        "path": "models/54-55/guerrilla_model_weights.pth",
+        "name": "studious Nila",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "54",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "56": {
+        "index": "56",
+        "player": "0",
+        "type": "3deep DQN",
+        "path": "models/56-57/coin_model_weights.pth",
+        "name": "nifty Mihkal",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "56",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "57": {
+        "index": "57",
+        "player": "1",
+        "type": "3deep DQN",
+        "path": "models/56-57/guerrilla_model_weights.pth",
+        "name": "nifty Linn\u00e9a",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "56",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "58": {
+        "index": "58",
+        "player": "0",
+        "type": "3deep DQN",
+        "path": "models/58-59/coin_model_weights.pth",
+        "name": "icy Arho",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "58",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "59": {
+        "index": "59",
+        "player": "1",
+        "type": "3deep DQN",
+        "path": "models/58-59/guerrilla_model_weights.pth",
+        "name": "icy Aimi",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "58",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "60": {
+        "index": "60",
+        "player": "0",
+        "type": "3deep DQN",
+        "path": "models/60-61/coin_model_weights.pth",
+        "name": "dim Seamus",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "60",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "61": {
+        "index": "61",
+        "player": "1",
+        "type": "3deep DQN",
+        "path": "models/60-61/guerrilla_model_weights.pth",
+        "name": "dim Yin",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "60",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "62": {
+        "index": "62",
+        "player": "0",
+        "type": "3deep DQN",
+        "path": "models/62-63/coin_model_weights.pth",
+        "name": "misty Sturle",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "62",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
+    },
+    "63": {
+        "index": "63",
+        "player": "1",
+        "type": "3deep DQN",
+        "path": "models/62-63/guerrilla_model_weights.pth",
+        "name": "misty Evangeline",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "62",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
+    },
+    "64": {
+        "index": "64",
+        "player": "0",
+        "type": "4deep DQN",
+        "path": "models/64-65/coin_model_weights.pth",
+        "name": "soggy Renny",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "64",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "65": {
+        "index": "65",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/64-65/guerrilla_model_weights.pth",
+        "name": "soggy Taru-Maria",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "64",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "66": {
+        "index": "66",
+        "player": "0",
+        "type": "4deep DQN",
+        "path": "models/66-67/coin_model_weights.pth",
+        "name": "muffled Enzo",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "66",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "67": {
+        "index": "67",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/66-67/guerrilla_model_weights.pth",
+        "name": "muffled Ai",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "66",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "68": {
+        "index": "68",
+        "player": "0",
+        "type": "4deep DQN",
+        "path": "models/68-69/coin_model_weights.pth",
+        "name": "adorable Tu",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "68",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "69": {
+        "index": "69",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/68-69/guerrilla_model_weights.pth",
+        "name": "adorable Tuulevi",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "68",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "70": {
+        "index": "70",
+        "player": "0",
+        "type": "4deep DQN",
+        "path": "models/70-71/coin_model_weights.pth",
+        "name": "vigorous Abdirisaq",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "70",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "71": {
+        "index": "71",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/70-71/guerrilla_model_weights.pth",
+        "name": "vigorous Sahro",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "70",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "72": {
+        "index": "72",
+        "player": "0",
+        "type": "4deep DQN",
+        "path": "models/72-73/coin_model_weights.pth",
+        "name": "threadbare Mishka",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "72",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "73": {
+        "index": "73",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/72-73/guerrilla_model_weights.pth",
+        "name": "threadbare Kaisa-Helena",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "72",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "74": {
+        "index": "74",
+        "player": "0",
+        "type": "4deep DQN",
+        "path": "models/74-75/coin_model_weights.pth",
+        "name": "pristine Juha-Jaakko",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "74",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
+    },
+    "75": {
+        "index": "75",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/74-75/guerrilla_model_weights.pth",
+        "name": "pristine Meli",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": "74",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
     }
 }
