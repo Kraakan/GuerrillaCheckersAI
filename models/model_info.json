@@ -1518,24 +1518,5 @@
                 "lr": 0.001
             }
         ]
-    },
-    "76": {
-        "index": "77",
-        "player": "1",
-        "type": "basic DQN",
-        "path": "models/76/guerrilla_model_weights.pth",
-        "name": "remarkable Marike",
-        "history": [
-            {
-                "description": "2 games against hardcoded opponent",
-                "batch_size": 128,
-                "gamma": 0.99,
-                "eps_start": 0.9,
-                "eps_end": 0.05,
-                "eps_decay": 10000,
-                "tau": 0.005,
-                "lr": 0.0001
-            }
-        ]
     }
 }
