@@ -138,7 +138,7 @@ class HardCoded():
             self.action_list = action_list_1
             self.n_actions =  n_actions_1
 
-    def select_action(self):
+    def select_action(self, state):
         valid_action_indexes = self.game.get_valid_action_indexes(self.player)
         first_action = valid_action_indexes[0]
         return torch.tensor([[first_action]], device=self.device, dtype=torch.long)
