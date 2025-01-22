@@ -123,11 +123,16 @@ class deep4(nn.Module):
         x = F.relu(self.layer5(x))
         return self.layer6(x)
 
+class DummyNet(nn.Module):
+    pass
+
 class HardCoded():
     
     def __init__(self, player, game, device):
         self.device = device
         self.game = game
+        self.policy_net = DummyNet()
+        self.target_net = DummyNet()
         
         self.steps_done = 0
 
@@ -143,6 +148,12 @@ class HardCoded():
         valid_action_indexes = self.game.get_valid_action_indexes(self.player)
         first_action = valid_action_indexes[0]
         return torch.tensor([[first_action]], device=self.device, dtype=torch.long)
+    
+    def push_memory(self, state, action, next_state, reward):
+        pass
+
+    def optimize_model(self):
+        pass
 
 class Agent():
     

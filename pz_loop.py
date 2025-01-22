@@ -82,7 +82,7 @@ def save_training_data(target_dir, name, wins, lengths):
         csvwriter.writerow(wins)
         csvwriter.writerow(lengths)
 
-def save_models(target_dir, c_target_net, g_target_net,  network_type): # This is where I reversed the players - reorder to fix, but is it worth it?
+def save_models(target_dir, c_target_net, g_target_net, network_type, new_index): # This is where I reversed the players - reorder to fix, but is it worth it?
     # Create unique names by combining adjectives and names from long lists 
     # (duplicates will be unlikely, and won't cause big problems anyway)
     adjectives = open("names/english-adjectives.txt", "r").read().split(sep="\n")
@@ -119,7 +119,6 @@ def save_models(target_dir, c_target_net, g_target_net,  network_type): # This i
                     "name": c_name
                     }
         c_model_info["history"] = [training_info]
-        c_model_info["history"][-1]["opponent id"] = str(new_index + 1)
         model_info[str(new_index)] = c_model_info
         new_index = new_index + 1
 
@@ -136,7 +135,6 @@ def save_models(target_dir, c_target_net, g_target_net,  network_type): # This i
                     "name": g_name
                     }
         g_model_info["history"] = [training_info]
-        g_model_info["history"][-1]["opponent id"] = str(new_index)
         model_info[str(new_index)] = g_model_info
 
         print('Saving guerrilla model', '"' + g_name + '"' ,'to:', g_model_path)
@@ -300,9 +298,9 @@ while i_loop < num_loops:
         f.write(start_time + "\n" + end_time)
         f.close()
     if args.hardcoded_c:
-        save_models(new_dir, None, players[1].target_net, network + " DQN")
+        save_models(new_dir, None, players[1].target_net, network + " DQN", new_index)
     else:
-        save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN")
+        save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN", new_index)
     plot_wins(show_result=False)
     plt.savefig(new_dir + 'pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png')
 
