@@ -191,7 +191,7 @@ while i_loop < num_loops:
     # 0 for COIN, 1 for guerrilla
     # These will hopefully be easy to replace with other types of agent
     if args.hardcoded_c:
-        COIN = DQN.HardCoded(0, env.game)
+        COIN = DQN.HardCoded(0, env.game, device)
     else:
         COIN = DQN.Agent(0, env.game, device, network)
     guerrilla = DQN.Agent(1, env.game, device, network)

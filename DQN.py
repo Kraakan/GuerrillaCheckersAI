@@ -125,7 +125,8 @@ class deep4(nn.Module):
 
 class HardCoded():
     
-    def __init__(self, player, game):
+    def __init__(self, player, game, device):
+        self.device = device
         self.game = game
         
         self.steps_done = 0
