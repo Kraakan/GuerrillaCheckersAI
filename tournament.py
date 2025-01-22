@@ -80,7 +80,7 @@ results_df = pd.DataFrame(data=results_array,
                           index=g_indexes,
                           columns=c_indexes)
 
-results_df.to_excel('tournament_results.xlsx', sheet_name='tournament')
+results_df.to_excel('data/tournament_results.xlsx', sheet_name='tournament')
 
 for key, item in wins.items():
     print("nr.", key, model_info[key]["name"], "-", len(item), "wins!")

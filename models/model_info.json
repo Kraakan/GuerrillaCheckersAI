@@ -2,7 +2,7 @@
     "0": {
         "index": "0",
         "player": "1",
-        "type": "Basic DQN",
+        "type": "basic DQN",
         "path": "models/0-1/coin_model_weights.pth",
         "name": "true Erni",
         "history": [
@@ -22,7 +22,7 @@
     "1": {
         "index": "1",
         "player": "0",
-        "type": "Basic DQN",
+        "type": "basic DQN",
         "path": "models/0-1/guerrilla_model_weights.pth",
         "name": "true Siria",
         "history": [
@@ -42,7 +42,7 @@
     "2": {
         "index": "2",
         "player": "1",
-        "type": "Basic DQN",
+        "type": "basic DQN",
         "path": "models/2-3/coin_model_weights.pth",
         "name": "acrobatic Wiljami",
         "history": [
@@ -62,7 +62,7 @@
     "3": {
         "index": "3",
         "player": "0",
-        "type": "Basic DQN",
+        "type": "basic DQN",
         "path": "models/2-3/guerrilla_model_weights.pth",
         "name": "acrobatic Semra",
         "history": [
