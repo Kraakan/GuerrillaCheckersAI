@@ -123,6 +123,26 @@ class deep4(nn.Module):
         x = F.relu(self.layer5(x))
         return self.layer6(x)
 
+class HardCoded():
+    
+    def __init__(self, player, game):
+        self.game = game
+        
+        self.steps_done = 0
+
+        self.player = player
+        if player == 0:
+            self.action_list = action_list_0
+            self.n_actions =  n_actions_0
+        else:
+            self.action_list = action_list_1
+            self.n_actions =  n_actions_1
+
+    def select_action(self):
+        valid_action_indexes = self.game.get_valid_action_indexes(self.player)
+        first_action = valid_action_indexes[0]
+        return torch.tensor([[first_action]], device=self.device, dtype=torch.long)
+
 class Agent():
     
     def __init__(self, player, game, device, network="basic"):

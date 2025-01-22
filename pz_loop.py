@@ -27,6 +27,11 @@ parser.add_argument(
     default=1,
     help="Number of training sessions to do in this run (each session runs num_episodes games)"
 )
+parser.add_argument(
+    "--hardcoded_c",
+    action='store_true',
+    help="This will train guerilla models only, against an opponent that is hardcoded to always chose the first in a list of available moves"
+)
 
 args = parser.parse_args()
 
@@ -84,24 +89,6 @@ def save_models(target_dir, c_target_net, g_target_net,  network_type): # This i
     girl_names = [s.split(sep=";")[0] for s in open("names/names-women.csv", "r").read().split(sep="\n")]
     boy_names = [s.split(sep=";")[0] for s in open("names/names-men.csv", "r").read().split(sep="\n")]
     adj = random.choice(adjectives)
-
-    c_model_path = target_dir  + 'coin_model_weights.pth'
-    c_name = adj + " " + random.choice(boy_names)
-    c_model_info = {"index": str(new_index),
-                  "player": "0",
-                  "type": network_type,
-                  "path": c_model_path,
-                  "name": c_name
-                  }
-    g_model_path = target_dir + 'guerrilla_model_weights.pth'
-    g_name = adj + " " + random.choice(girl_names)
-    g_model_info = {"index": str(new_index + 1),
-                  "player": "1",
-                  "type": network_type,
-                  "path": g_model_path,
-                  "name": g_name
-                  }
-    #breakpoint()
     # Adding "training history", might be useful at a later point
     training_params = {
                   "batch_size": DQN.BATCH_SIZE,
@@ -112,25 +99,48 @@ def save_models(target_dir, c_target_net, g_target_net,  network_type): # This i
                   "tau": DQN.TAU,
                   "lr": DQN.LR
                   }
-    
-    training_info = {
-        "description" : str(num_episodes) + " games against twin",
-        "opponent id": None
-    }
+    if g_target_net ==  None or c_target_net == None:
+        training_info = {
+            "description" : str(num_episodes) + " games against hardcoded opponent"
+        }
+    else:
+        training_info = {
+            "description" : str(num_episodes) + " games against twin",
+            "opponent id": None
+        }
     training_info.update(training_params)
+    if c_target_net != None:
+        c_model_path = target_dir  + 'coin_model_weights.pth'
+        c_name = adj + " " + random.choice(boy_names)
+        c_model_info = {"index": str(new_index),
+                    "player": "0",
+                    "type": network_type,
+                    "path": c_model_path,
+                    "name": c_name
+                    }
+        c_model_info["history"] = [training_info]
+        c_model_info["history"][-1]["opponent id"] = str(new_index + 1)
+        model_info[str(new_index)] = c_model_info
+        new_index = new_index + 1
 
-    c_model_info["history"] = [training_info]
-    c_model_info["history"][-1]["opponent id"] = str(new_index + 1)
-    g_model_info["history"] = [training_info]
-    g_model_info["history"][-1]["opponent id"] = str(new_index)
+        print('Saving COIN model', '"' + c_name + '"' ,'to:', c_model_path)
+        torch.save(c_target_net.state_dict(), c_model_path)
 
-    model_info[str(new_index)] = c_model_info
-    model_info[str(new_index + 1)] = g_model_info
-    #Save both models
-    print('Saving guerrilla model', '"' + g_name + '"' ,'to:', g_model_path)
-    torch.save(g_target_net.state_dict(), g_model_path)
-    print('Saving COIN model', '"' + c_name + '"' ,'to:', c_model_path)
-    torch.save(c_target_net.state_dict(), c_model_path)
+    if g_target_net != None:
+        g_model_path = target_dir + 'guerrilla_model_weights.pth'
+        g_name = adj + " " + random.choice(girl_names)
+        g_model_info = {"index": str(new_index + 1),
+                    "player": "1",
+                    "type": network_type,
+                    "path": g_model_path,
+                    "name": g_name
+                    }
+        g_model_info["history"] = [training_info]
+        g_model_info["history"][-1]["opponent id"] = str(new_index)
+        model_info[str(new_index)] = g_model_info
+
+        print('Saving guerrilla model', '"' + g_name + '"' ,'to:', g_model_path)
+        torch.save(g_target_net.state_dict(), g_model_path)
 
     with open('models/model_info.json', 'w') as f:
         json.dump(model_info, f, indent=4) # Will this make my json pretty?
@@ -171,13 +181,19 @@ while i_loop < num_loops:
         print("No model info found")
         model_info = {}
     new_index = len(model_info.items())
-    new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
+    if args.hardcoded_c:
+        new_dir = 'models/' + str(new_index) + '/'
+    else:
+        new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
     print("Creating dir", new_dir)
     Path(new_dir).mkdir()
 
     # 0 for COIN, 1 for guerrilla
     # These will hopefully be easy to replace with other types of agent
-    COIN = DQN.Agent(0, env.game, device, network)
+    if args.hardcoded_c:
+        COIN = DQN.HardCoded(0, env.game)
+    else:
+        COIN = DQN.Agent(0, env.game, device, network)
     guerrilla = DQN.Agent(1, env.game, device, network)
     # Player designators correstonds to list indexes
     players = [COIN, guerrilla]
@@ -283,7 +299,10 @@ while i_loop < num_loops:
     with open(new_dir + 'time.txt', 'w') as f:
         f.write(start_time + "\n" + end_time)
         f.close()
-    save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN")
+    if args.hardcoded_c:
+        save_models(new_dir, None, players[1].target_net, network + " DQN")
+    else:
+        save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN")
     plot_wins(show_result=False)
     plt.savefig(new_dir + 'pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png')
 
