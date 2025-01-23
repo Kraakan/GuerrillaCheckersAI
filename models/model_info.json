@@ -1518,5 +1518,119 @@
                 "lr": 0.001
             }
         ]
+    },
+    "76": {
+        "index": "77",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/76/guerrilla_model_weights.pth",
+        "name": "informal Lin\u00e9a",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "77": {
+        "index": "78",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/77/guerrilla_model_weights.pth",
+        "name": "whopping Safiye",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "78": {
+        "index": "79",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/78/guerrilla_model_weights.pth",
+        "name": "best Paige",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "79": {
+        "index": "80",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/79/guerrilla_model_weights.pth",
+        "name": "selfish Anselika",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "80": {
+        "index": "81",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/80/guerrilla_model_weights.pth",
+        "name": "staid Mirel",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "81": {
+        "index": "82",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/81/guerrilla_model_weights.pth",
+        "name": "winged Vida",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
     }
 }
