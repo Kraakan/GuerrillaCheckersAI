@@ -128,7 +128,7 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
     if g_target_net != None:
         g_model_path = target_dir + 'guerrilla_model_weights.pth'
         g_name = adj + " " + random.choice(girl_names)
-        g_model_info = {"index": str(new_index + 1),
+        g_model_info = {"index": str(new_index),
                     "player": "1",
                     "type": network_type,
                     "path": g_model_path,

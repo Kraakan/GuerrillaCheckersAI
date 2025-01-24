@@ -1520,7 +1520,7 @@
         ]
     },
     "76": {
-        "index": "77",
+        "index": "76",
         "player": "1",
         "type": "basic DQN",
         "path": "models/76/guerrilla_model_weights.pth",
@@ -1539,7 +1539,7 @@
         ]
     },
     "77": {
-        "index": "78",
+        "index": "77",
         "player": "1",
         "type": "basic DQN",
         "path": "models/77/guerrilla_model_weights.pth",
@@ -1558,7 +1558,7 @@
         ]
     },
     "78": {
-        "index": "79",
+        "index": "78",
         "player": "1",
         "type": "basic DQN",
         "path": "models/78/guerrilla_model_weights.pth",
@@ -1577,7 +1577,7 @@
         ]
     },
     "79": {
-        "index": "80",
+        "index": "79",
         "player": "1",
         "type": "basic DQN",
         "path": "models/79/guerrilla_model_weights.pth",
@@ -1596,7 +1596,7 @@
         ]
     },
     "80": {
-        "index": "81",
+        "index": "80",
         "player": "1",
         "type": "basic DQN",
         "path": "models/80/guerrilla_model_weights.pth",
@@ -1615,7 +1615,7 @@
         ]
     },
     "81": {
-        "index": "82",
+        "index": "81",
         "player": "1",
         "type": "basic DQN",
         "path": "models/81/guerrilla_model_weights.pth",
