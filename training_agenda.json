@@ -11,7 +11,7 @@
         "network": "basic"
     },
     {
-        "status": "done",
+        "status": "not done",
         "BATCH_SIZE": 256,
         "GAMMA": 0.99,
         "EPS_START": 0.9,

@@ -361,6 +361,7 @@ class game():
             return 1
         if sum(self.board[33:]) == 0 and self.board[0] < 66:
             return 1
+        self.checker_positions = list_checker_positions(self.board) # Unsure if this is redundant, let's hope it doesn't break things
         if len(self.checker_positions) == 0:
             return -1
         if self.guerrillas_turn:
