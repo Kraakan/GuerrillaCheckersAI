@@ -9,7 +9,7 @@ import random
 class PettingZoo(AECEnv):
     metadata = {"render_modes": ["human"], "name": "rps_v2"}
 
-    def __init__(self, render_mode=None):
+    def __init__(self, render_mode=None, num_checkers=6):
         self.possible_agents = ["COIN", "Guerrilla"]
         self._action_spaces = {
             "COIN" : spaces.MultiDiscrete([8,4,8,4]),
@@ -24,7 +24,7 @@ class PettingZoo(AECEnv):
         self.render_mode = render_mode
 
         # I'm creating the game object in the env instead of passing it. I think this will be more efficient
-        self.game = guerrilla_checkers.game()
+        self.game = guerrilla_checkers.game(num_checkers=num_checkers)
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):

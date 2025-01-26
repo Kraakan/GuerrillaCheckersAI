@@ -8,10 +8,19 @@ import torch.nn as nn
 import torch.nn.functional as F
 import json
 import DQN
-
+import argparse
 # Input:
 # c = stdscr.getch()
-
+parser = argparse.ArgumentParser(description="Starts a human-playable in the terminal using curses")
+parser.add_argument(
+    "--num_checkers",
+    type=int,
+    default=6,
+    help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
+)
+args = parser.parse_args()
+num_checkers = args.num_checkers
+#breakpoint()
 def start(stdscr):
     
     curses.start_color()
@@ -536,7 +545,7 @@ def one_player_game(human, ai_model_path, stdscr, network="basic DQN"):
     return oneplayergame.game_record
 
 def randomized_game(stdscr, draw=False):
-    random_game = guerrilla_checkers.game()
+    random_game = guerrilla_checkers.game(num_checkers=num_checkers)
     player = 1
     move_history = []
     if draw:

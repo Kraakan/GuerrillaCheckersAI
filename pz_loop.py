@@ -20,22 +20,40 @@ import csv
 import argparse
 
 # Parse terminal arguments
-parser = argparse.ArgumentParser(description="Control training. Training agenda set in training_agenda.json")
+parser = argparse.ArgumentParser(description="Runs oppositional training")
 parser.add_argument(
     "--loop",
     type=int,
     default=1,
-    help="Number of training sessions to do in this run (each session runs num_episodes games)"
+    help="Number of training sessions to do in this run (each session runs num_episodes games). Training agenda set in training_agenda.json"
+)
+parser.add_argument(
+    "--num_episodes",
+    type=int,
+    default=10000,
+    help="Number of games to run per training session. This number won't be used if torch.cuda.is_available() == False"
+)
+parser.add_argument(
+    "--num_checkers",
+    type=int,
+    default=6,
+    help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
 )
 parser.add_argument(
     "--hardcoded_c",
     action='store_true',
     help="This will train guerilla models only, against an opponent that is hardcoded to always chose the first in a list of available moves"
 )
+parser.add_argument(
+    "--random_c",
+    action='store_true',
+    help="This will train guerilla models only, against an opponent that selects moves at random."
+)
 
 args = parser.parse_args()
 
 num_loops = args.loop
+num_checkers = args.num_checkers
 
 agenda_file = open("training_agenda.json", "r")
 agenda = json.load(agenda_file)
@@ -47,7 +65,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print('device:', device)
 
-env = PettingZoo()
+env = PettingZoo(num_checkers=num_checkers)
 
 # Get the number of state observations
 state = env.reset()
@@ -100,14 +118,21 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
                   "lr": DQN.LR
                   }
     if g_target_net ==  None or c_target_net == None:
-        training_info = {
-            "description" : str(num_episodes) + " games against hardcoded opponent"
-        }
+        if args.hardcoded_c:
+            training_info = {
+                "description" : str(num_episodes) + " games against hardcoded opponent"
+            }
+        if args.random_c:
+            training_info = {
+                "description" : str(num_episodes) + " games against randomly moving opponent"
+            }
     else:
         training_info = {
             "description" : str(num_episodes) + " games against twin",
             "opponent id": None
         }
+    if num_checkers < 6 and num_checkers > 0:
+        training_info["description"] = training_info["description"] + " starting with " + str(num_checkers) + " COIN checkers."
     training_info.update(training_params)
     if c_target_net != None:
         c_model_path = target_dir  + 'coin_model_weights.pth'
@@ -166,7 +191,7 @@ while i_loop < num_loops:
             break
 
     if torch.cuda.is_available():
-        num_episodes = 10000
+        num_episodes = args.num_episodes
     else: # Don't train with cpu!
         num_episodes = 2
         print(num_loops)
@@ -179,7 +204,7 @@ while i_loop < num_loops:
         print("No model info found")
         model_info = {}
     new_index = len(model_info.items())
-    if args.hardcoded_c:
+    if args.hardcoded_c or args.random_c:
         new_dir = 'models/' + str(new_index) + '/'
     else:
         new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
@@ -190,6 +215,8 @@ while i_loop < num_loops:
     # These will hopefully be easy to replace with other types of agent
     if args.hardcoded_c:
         COIN = DQN.HardCoded(0, env.game, device)
+    elif args.random_c:
+        COIN = DQN.Random(0, env.game, device)
     else:
         COIN = DQN.Agent(0, env.game, device, network)
     guerrilla = DQN.Agent(1, env.game, device, network)
@@ -297,7 +324,7 @@ while i_loop < num_loops:
     with open(new_dir + 'time.txt', 'w') as f:
         f.write(start_time + "\n" + end_time)
         f.close()
-    if args.hardcoded_c:
+    if args.hardcoded_c or args.random_c:
         save_models(new_dir, None, players[1].target_net, network + " DQN", new_index)
     else:
         save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN", new_index)

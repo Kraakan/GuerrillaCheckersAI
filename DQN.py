@@ -155,6 +155,35 @@ class HardCoded():
     def optimize_model(self):
         pass
 
+class Random():
+    
+    def __init__(self, player, game, device):
+        self.device = device
+        self.game = game
+        self.policy_net = DummyNet()
+        self.target_net = DummyNet()
+        
+        self.steps_done = 0
+
+        self.player = player
+        if player == 0:
+            self.action_list = action_list_0
+            self.n_actions =  n_actions_0
+        else:
+            self.action_list = action_list_1
+            self.n_actions =  n_actions_1
+
+    def select_action(self, state):
+        valid_action_indexes = self.game.get_valid_action_indexes(self.player)
+        random_action = random.choice(valid_action_indexes)
+        return torch.tensor([[random_action]], device=self.device, dtype=torch.long)
+    
+    def push_memory(self, state, action, next_state, reward):
+        pass
+
+    def optimize_model(self):
+        pass
+
 class Agent():
     
     def __init__(self, player, game, device, network="basic"):

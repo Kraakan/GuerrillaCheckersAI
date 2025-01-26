@@ -2,6 +2,7 @@ import numpy as np
 import copy
 import random
 import pickle
+import json
 
 def compress_board(stones, squares, grid):
     
@@ -58,6 +59,7 @@ def list_checker_positions(board):
 
 try:
     rules = pickle.load( open( "rules.pickle", "rb" ))
+    #breakpoint()
 except FileNotFoundError:
     # Generating "rules" - mostly about the board layout
     print('Generating rules...')
@@ -207,22 +209,37 @@ except FileNotFoundError:
     }
     
     pickle.dump(rules, open( "rules.pickle", "wb" ))
-
-
+try:
+    starting_board_file = open("starting_board.json", "r")
+    starting_board = json.load(starting_board_file)
+except:
+    with open('starting_board.json', 'w') as f:
+        json.dump(rules["starting board"], f, indent=4)
 
 class game():
     # Game object, will probably be instantiated for each game
-    def __init__(self):
+    def __init__(self, num_checkers=6):
         self.board = rules["starting board"]
-        self.checker_positions = list(rules["checker positions"])
+        self.starting_checkers_num = num_checkers
+        self.initialize_checkers()
         self.guerrillas_turn = True
         # NOTE: I may want to remove or disable game_record for training!
         self.game_record = [self.board]
         self.COINjump = None
-    
+        
+    def initialize_checkers(self):
+        if self.starting_checkers_num < 1 or self.starting_checkers_num > 5:
+            self.checker_positions = list(rules["checker positions"])
+        else:
+            self.checker_positions = random.sample(rules["checker positions"], k=self.starting_checkers_num)
+            for index in list(rules["checker positions"]):
+                self.board[index] = 0
+            for index in self.checker_positions:
+                self.board[index] = 1
+
     def reset(self):
         self.board = rules["starting board"]
-        self.checker_positions = list(rules["checker positions"])
+        self.initialize_checkers()
         self.guerrillas_turn = True
         self.game_record = [self.board]
         self.COINjump = None
