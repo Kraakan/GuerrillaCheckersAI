@@ -1,0 +1,230 @@
+{
+    "0": {
+        "index": "0",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/0/guerrilla_model_weights.pth",
+        "name": "noxious Nani",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "1": {
+        "index": "1",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/1/guerrilla_model_weights.pth",
+        "name": "stable Lorraine",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "2": {
+        "index": "2",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/2/guerrilla_model_weights.pth",
+        "name": "cuddly Sari-Maarit",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "3": {
+        "index": "3",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/3/guerrilla_model_weights.pth",
+        "name": "dental Virve",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "4": {
+        "index": "4",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/4/guerrilla_model_weights.pth",
+        "name": "wee Terella",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "5": {
+        "index": "5",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/5/guerrilla_model_weights.pth",
+        "name": "failing Madison",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
+    },
+    "6": {
+        "index": "6",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/6/guerrilla_model_weights.pth",
+        "name": "outstanding Amani",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "7": {
+        "index": "7",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/7/guerrilla_model_weights.pth",
+        "name": "satisfied Tatja",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 256,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "8": {
+        "index": "8",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/8/guerrilla_model_weights.pth",
+        "name": "rectangular Kerstin",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.9,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "9": {
+        "index": "9",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/9/guerrilla_model_weights.pth",
+        "name": "quixotic Beada",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 10000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "10": {
+        "index": "10",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/10/guerrilla_model_weights.pth",
+        "name": "soupy Pia-Marie",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.01,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "11": {
+        "index": "11",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/11/guerrilla_model_weights.pth",
+        "name": "peppery Stefansdotter",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.001
+            }
+        ]
+    }
+}
