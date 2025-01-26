@@ -231,7 +231,7 @@ class game():
         if self.starting_checkers_num < 1 or self.starting_checkers_num > 5:
             self.checker_positions = list(rules["checker positions"])
         else:
-            self.checker_positions = random.sample(rules["checker positions"], k=self.starting_checkers_num)
+            self.checker_positions = random.sample(list(rules["checker positions"]), k=self.starting_checkers_num)
             for index in list(rules["checker positions"]):
                 self.board[index] = 0
             for index in self.checker_positions:
