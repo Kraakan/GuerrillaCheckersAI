@@ -6,6 +6,17 @@ import statistics
 import pandas as pd
 import numpy as np
 import random
+import argparse
+
+parser = argparse.ArgumentParser(description="Test all available models against randomly moving opponents")
+parser.add_argument(
+    "--num_checkers",
+    type=int,
+    default=6,
+    help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
+)
+args = parser.parse_args()
+num_checkers = args.num_checkers
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_COIN_actions = len(guerrilla_checkers.rules['all COIN moves'])
@@ -33,7 +44,6 @@ def play(game, AI, AI_side):
     game_length = (66 - game.board[0])//2
     return winner, game_length
 
-# Play every guerrilla player against every COIN player
 g_indexes = []
 c_indexes = []
 for key, item in model_info.items():
@@ -45,7 +55,7 @@ for key, item in model_info.items():
 num_games = 1000
 precentage_denominator = num_games/100.0
 
-game = guerrilla_checkers.game()
+game = guerrilla_checkers.game(num_checkers=num_checkers)
 g_results_array = np.zeros((len(g_indexes), 2))
 c_results_array = np.zeros((len(c_indexes), 2))
 prev_type = ""
