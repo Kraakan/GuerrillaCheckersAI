@@ -218,9 +218,10 @@ except:
 
 class game():
     # Game object, will probably be instantiated for each game
-    def __init__(self, num_checkers=6):
+    def __init__(self, num_checkers=6, small_reward_factor = 1.0):
         self.board = rules["starting board"]
         self.starting_checkers_num = num_checkers
+        self.fsmall_reward_factor = small_reward_factor
         self.initialize_checkers()
         self.guerrillas_turn = True
         # NOTE: I may want to remove or disable game_record for training!
@@ -390,6 +391,7 @@ class game():
 
     def get_small_reward(self, player):
         reward = len(self.checker_positions)/6
+        reward = reward * self.small_reward_factor
         # Time penalty, might be useful if:
         # 1. It's small enough
         # 2. It applies correctly to both players
@@ -397,6 +399,9 @@ class game():
         if player == 1:
             reward *= -1
         return reward
+    
+    def set_small_reward_factor(self, new_factor):
+        self.small_reward_factor = new_factor
     
     def get_remaining_stones(self):
         # his function returns the number of remaining Guerrilla stones.

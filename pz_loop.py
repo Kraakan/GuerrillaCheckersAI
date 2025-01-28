@@ -179,6 +179,7 @@ i_agenda = 0
 
 while i_loop < num_loops:
     print("Running training loop", i_loop + 1, "of", num_loops, ":")
+    small_reward_factor = 1
     while i_agenda < len(agenda):
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
@@ -192,9 +193,13 @@ while i_loop < num_loops:
             DQN.TAU = params["TAU"]
             DQN.LR = params["LR"]
             network = params["network"]
+            if "small_reward" in params:
+                small_reward_factor = params["small_reward"]
             print(params)
             break
-
+    
+    env.game.set_small_reward_factor(small_reward_factor)
+    print("Small reward factor:", small_reward_factor)
     if torch.cuda.is_available():
         num_episodes = args.num_episodes
     else: # Don't train with cpu!
