@@ -285,13 +285,23 @@ while i_loop < num_loops:
                     target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
                 players[acting_player].target_net.load_state_dict(target_net_state_dict)
             if terminated:
-                #TODO: Try punishing loser
-                loser = env.get_acting_player()
+                # Try punishing loser
+                # TODO: Add option to turn this off
+                result = env.game.get_game_result() # Result code:
+                                                    # -1 = guerrilla wins
+                                                    # 1 = COIN wins
+                                                    # 0 = game isn't over
+                                                    # Player index:
+                                                    # 0 = COIN
+                                                    # 1 =  guerrilla
+                if result == 1:
+                    loser = 1
+                else:
+                    loser = 0
                 loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
                 
                 # Store the transition in memory
                 players[loser].push_memory(state, prev_action, next_state, loss_reward)
-                #breakpoint()
 
                 # Perform one step of the optimization (on the policy network)
                 players[loser].optimize_model()
@@ -300,8 +310,7 @@ while i_loop < num_loops:
                 # θ′ ← τ θ + (1 −τ )θ′
                 target_net_state_dict = players[loser].target_net.state_dict()
                 policy_net_state_dict = players[loser].policy_net.state_dict()
-                who_won = env.game.get_game_result()
-                wins.append(who_won)
+                wins.append(result)
                 # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
                 game_lengths.append((66 - env.game.board[0])//2)
                 plot_wins()
