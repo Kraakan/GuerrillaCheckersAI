@@ -49,6 +49,11 @@ parser.add_argument(
     action='store_true',
     help="This will train guerilla models only, against an opponent that selects moves at random."
 )
+parser.add_argument(
+    "--no_punish",
+    action='store_true',
+    help="Remove extra punishment (-1) given to the loser of each game."
+)
 
 args = parser.parse_args()
 
@@ -284,7 +289,7 @@ while i_loop < num_loops:
                 for key in policy_net_state_dict:
                     target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
                 players[acting_player].target_net.load_state_dict(target_net_state_dict)
-            if terminated:
+            if terminated and not args.no_punish:
                 # Try punishing loser
                 # TODO: Add option to turn this off
                 result = env.game.get_game_result() # Result code:
