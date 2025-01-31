@@ -5,6 +5,17 @@ import DQN
 import statistics
 import pandas as pd
 import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser(description="Test guerrilla models against hardcoded opponents")
+parser.add_argument(
+    "--num_checkers",
+    type=int,
+    default=6,
+    help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
+)
+args = parser.parse_args()
+num_checkers = args.num_checkers
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_COIN_actions = len(guerrilla_checkers.rules['all COIN moves'])
@@ -38,10 +49,10 @@ for key, item in model_info.items():
     if item["player"] == "1":
         g_indexes.append(key)
 
-num_games = 1000
+num_games = 1 # There's no randomness, so one game i enough
 precentage_denominator = num_games/100.0
 
-game = guerrilla_checkers.game()
+game = guerrilla_checkers.game(num_checkers=num_checkers)
 COIN = DQN.HardCoded(0, game, device)
 
 g_results_array = np.zeros((len(g_indexes), 2))
@@ -69,4 +80,4 @@ g_results_df = pd.DataFrame(data=g_results_array,
                           index=g_indexes,
                           columns=["Win rate", "Avg. game length"])
 
-g_results_df.to_excel('data/g_vs_hardcoded_COIN.xlsx', sheet_name='guerrilla vs. hardcoded COIN')
+g_results_df.to_excel('data/g_vs_hardcoded_COIN_' + str(num_checkers) + '_checkers.xlsx', sheet_name='guerrilla vs. hardcoded COIN ' + str(num_checkers) + ' checkers')
