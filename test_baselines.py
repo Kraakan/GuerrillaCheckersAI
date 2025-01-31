@@ -18,7 +18,7 @@ num_games = args.num_games
 precentage_denominator = num_games/100.0
 
 try:
-    random_vs_random_baseline = open("data/random_vs_random_baseline", "r")
+    random_vs_random_baseline = open("data/random_vs_random_baseline.txt", "r")
 except FileNotFoundError:
     print("Running random vs. random games:")
     results = []
@@ -42,13 +42,13 @@ except FileNotFoundError:
     avg_length = statistics.mean(lengths)
     g_win_rate = results.count(-1)/precentage_denominator
     c_win_rate = results.count(1)/precentage_denominator
-    with open("data/random_vs_random_baseline", "w") as f:
+    with open("data/random_vs_random_baseline.txt", "w") as f:
         f.write("Guerrilla wins: " + str(g_win_rate) + " %\n" + "COIN wins: " + str(c_win_rate) + " %\n")
         f.write("Avg. game length: " + str(avg_length))
         f.close()
 
 try:
-    random_vs_hardcoded_baseline = open("data/random_guerrilla_vs_hardcoded_COIN_baseline", "r")
+    random_vs_hardcoded_baseline = open("data/random_guerrilla_vs_hardcoded_COIN_baseline.txt", "r")
 except FileNotFoundError:
     print("Running random guerrilla vs. hardcoded COIN games:")
     results = []
@@ -79,13 +79,13 @@ except FileNotFoundError:
     avg_length = statistics.mean(lengths)
     g_win_rate = results.count(-1)/precentage_denominator
     c_win_rate = results.count(1)/precentage_denominator
-    with open("data/random_guerrilla_vs_hardcoded_COIN_baseline", "w") as f:
+    with open("data/random_guerrilla_vs_hardcoded_COIN_baseline.txt", "w") as f:
         f.write("Guerrilla wins: " + str(g_win_rate) + " %\n" + "COIN wins: " + str(c_win_rate) + " %\n")
         f.write("Avg. game length: " + str(avg_length))
         f.close()
 
 try:
-    random_vs_1_checker_baseline = open("data/random_g_vs_1_checker_baseline", "r")
+    random_vs_1_checker_baseline = open("data/random_g_vs_1_checker_baseline.txt", "r")
 except FileNotFoundError:
     print("Running random guerrilla vs. random COIN with 1 starting checker:")
     results = []
@@ -109,13 +109,13 @@ except FileNotFoundError:
     avg_length = statistics.mean(lengths)
     g_win_rate = results.count(-1)/precentage_denominator
     c_win_rate = results.count(1)/precentage_denominator
-    with open("data/random_g_vs_1_checker_baseline", "w") as f:
+    with open("data/random_g_vs_1_checker_baseline.txt", "w") as f:
         f.write("Guerrilla wins: " + str(g_win_rate) + " %\n" + "COIN wins: " + str(c_win_rate) + " %\n")
         f.write("Avg. game length: " + str(avg_length))
         f.close()
 
 try:
-    random_vs_hardcoded_1_checker_baseline = open("data/random_g_vs_hardcoded_1_checker_baseline", "r")
+    random_vs_hardcoded_1_checker_baseline = open("data/random_g_vs_hardcoded_1_checker_baseline.txt", "r")
 except FileNotFoundError:
     print("Running random guerrilla vs. hardcoded COIN with 1 starting checker:")
     results = []
@@ -145,7 +145,7 @@ except FileNotFoundError:
     avg_length = statistics.mean(lengths)
     g_win_rate = results.count(-1)/precentage_denominator
     c_win_rate = results.count(1)/precentage_denominator
-    with open("data/random_g_vs_1_checker_baseline", "w") as f:
+    with open("data/random_g_vs_hardcoded_1_checker_baseline.txt", "w") as f:
         f.write("Guerrilla wins: " + str(g_win_rate) + " %\n" + "COIN wins: " + str(c_win_rate) + " %\n")
         f.write("Avg. game length: " + str(avg_length))
         f.close()
