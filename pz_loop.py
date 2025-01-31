@@ -120,7 +120,9 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
                   "eps_end": DQN.EPS_END,
                   "eps_decay": DQN.EPS_DECAY,
                   "tau": DQN.TAU,
-                  "lr": DQN.LR
+                  "lr": DQN.LR,
+                  "small_reward": small_reward_factor,
+                  "punish_loser": int(not args.no_punish)
                   }
     if g_target_net ==  None or c_target_net == None:
         if args.hardcoded_c:
