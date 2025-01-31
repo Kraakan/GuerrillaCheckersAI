@@ -1,0 +1,59 @@
+{
+    "0": {
+        "index": "0",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/0/guerrilla_model_weights.pth",
+        "name": "quintessential Kati-Johanna",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 0.0001
+            }
+        ]
+    },
+    "1": {
+        "index": "1",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/1/guerrilla_model_weights.pth",
+        "name": "aromatic Jo",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 1e-05
+            }
+        ]
+    },
+    "2": {
+        "index": "2",
+        "player": "1",
+        "type": "4deep DQN",
+        "path": "models/2/guerrilla_model_weights.pth",
+        "name": "self-reliant Jocelyn",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.005,
+                "lr": 1e-05
+            }
+        ]
+    }
+}
