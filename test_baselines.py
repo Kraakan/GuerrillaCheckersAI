@@ -91,8 +91,6 @@ except FileNotFoundError:
     results = []
     lengths = []
     game = guerrilla_checkers.game(num_checkers=1)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    COIN = DQN.HardCoded(0, game, device)
     for i in range(num_games):
         print(str(i), "games run.", end="\r")
         game.reset()
@@ -123,6 +121,8 @@ except FileNotFoundError:
     results = []
     lengths = []
     game = guerrilla_checkers.game(num_checkers=1)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    COIN = DQN.HardCoded(0, game, device)
     for i in range(num_games):
         game.reset()
         while not game.is_game_over():
