@@ -220,7 +220,7 @@
         "network": "3deep"
     },
     {
-        "status": "done",
+        "status": "not done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -231,7 +231,7 @@
         "network": "4deep"
     },
     {
-        "status": "done",
+        "status": "not done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -262,7 +262,7 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.005,
-        "LR": 0.00001,
+        "LR": 1e-05,
         "network": "4deep"
     },
     {
@@ -273,7 +273,7 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.005,
-        "LR": 0.00001,
+        "LR": 1e-05,
         "network": "4deep",
         "small_reward": 0.5
     },
@@ -285,7 +285,7 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.005,
-        "LR": 0.00001,
+        "LR": 1e-05,
         "network": "4deep",
         "small_reward": 0
     },

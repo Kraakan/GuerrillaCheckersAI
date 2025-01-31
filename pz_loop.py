@@ -273,7 +273,6 @@ while i_loop < num_loops:
                 action_to_pass = players[acting_player].action_list[action.item()]
                 observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
                 reward = torch.tensor([reward], dtype=torch.float32, device=device)
-                
                 if terminated:
                     next_state = None
                 else:
@@ -320,6 +319,10 @@ while i_loop < num_loops:
                 # θ′ ← τ θ + (1 −τ )θ′
                 target_net_state_dict = players[loser].target_net.state_dict()
                 policy_net_state_dict = players[loser].policy_net.state_dict()
+                # I removed the rest of the soft update code because it crashed (I think),
+                # but then does anything happen here?
+                # As I recall, it couldn't handle next_state == None
+            if terminated:
                 wins.append(result)
                 # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
                 game_lengths.append((66 - env.game.board[0])//2)
