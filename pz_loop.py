@@ -269,9 +269,9 @@ while i_loop < num_loops:
                 players[winner].push_memory(state, prev_action, next_state, win_reward)
                 if i_episode % 100 == 0:
                     if winner == 0:
-                        print("No moves, COIN wins! Reward:" , win_reward)
+                        print("No moves, COIN wins! Reward:" , win_reward, "Punishment:", loss_reward)
                     if winner == 1:
-                        print("No moves, guerrilla wins! Reward:" , loss_reward)
+                        print("No moves, guerrilla wins! Reward:" , loss_reward, "Punishment:", loss_reward)
             else:
                 if prev_player != acting_player:
                     prev_player = abs(prev_player -1)
@@ -316,12 +316,12 @@ while i_loop < num_loops:
                     loser = 0
                 loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
                 if i_episode % 100 == 0:
-                    if loser == 1:
-                        print("COIN wins! Reward:" , win_reward)
                     if loser == 0:
-                        print("Guerrilla wins! Reward:" , loss_reward)
+                        print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
+                    if winner == 1:
+                        print("Guerrilla loses! Punishment:" , loss_reward)
                 # Store the transition in memory
-                players[loser].push_memory(state, prev_action, next_state, loss_reward)
+                players[loser].push_memory(state, prev_action, next_state, loss_reward, "Acting player:", acting_player, "Reward:", reward)
 
                 # Perform one step of the optimization (on the policy network)
                 players[loser].optimize_model()
