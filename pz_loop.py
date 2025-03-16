@@ -318,7 +318,7 @@ while i_loop < num_loops:
                 if i_episode % 100 == 0:
                     if loser == 0:
                         print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
-                    if winner == 1:
+                    if loser == 1:
                         print("Guerrilla loses! Punishment:" , loss_reward)
                 # Store the transition in memory
                 players[loser].push_memory(state, prev_action, next_state, loss_reward, "Acting player:", acting_player, "Reward:", reward)
