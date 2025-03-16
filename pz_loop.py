@@ -316,9 +316,9 @@ while i_loop < num_loops:
                     loser = 0
                 loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
                 if i_episode % 100 == 0:
-                    if winner == 0:
+                    if loser == 1:
                         print("COIN wins! Reward:" , win_reward)
-                    if winner == 1:
+                    if loser == 0:
                         print("Guerrilla wins! Reward:" , loss_reward)
                 # Store the transition in memory
                 players[loser].push_memory(state, prev_action, next_state, loss_reward)
