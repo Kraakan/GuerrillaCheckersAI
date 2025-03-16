@@ -325,6 +325,7 @@ while i_loop < num_loops:
                 # but then does anything happen here?
                 # As I recall, it couldn't handle next_state == None
             if terminated:
+                result = env.game.get_game_result()
                 wins.append(result)
                 # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
                 game_lengths.append((66 - env.game.board[0])//2)
