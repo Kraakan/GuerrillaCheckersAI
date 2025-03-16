@@ -256,6 +256,50 @@
     },
     {
         "status": "not done",
+        "BATCH_SIZE": 512,
+        "GAMMA": 0.999,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 10000,
+        "TAU": 0.001,
+        "LR": 1e-06,
+        "network": "basic"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 512,
+        "GAMMA": 0.999,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 10000,
+        "TAU": 0.001,
+        "LR": 1e-06,
+        "network": "2deep"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 512,
+        "GAMMA": 0.999,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 10000,
+        "TAU": 0.001,
+        "LR": 1e-06,
+        "network": "3deep"
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 512,
+        "GAMMA": 0.999,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 10000,
+        "TAU": 0.001,
+        "LR": 1e-06,
+        "network": "4deep"
+    },
+    {
+        "status": "not done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
