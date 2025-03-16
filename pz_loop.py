@@ -319,9 +319,9 @@ while i_loop < num_loops:
                     if loser == 0:
                         print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
                     if loser == 1:
-                        print("Guerrilla loses! Punishment:" , loss_reward)
+                        print("Guerrilla loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
                 # Store the transition in memory
-                players[loser].push_memory(state, prev_action, next_state, loss_reward, "Acting player:", acting_player, "Reward:", reward)
+                players[loser].push_memory(state, prev_action, next_state, loss_reward)
 
                 # Perform one step of the optimization (on the policy network)
                 players[loser].optimize_model()
