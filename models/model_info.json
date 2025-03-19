@@ -1,0 +1,90 @@
+{
+    "0": {
+        "index": "0",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/0/guerrilla_model_weights.pth",
+        "name": "competent Annamaaria",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "1": {
+        "index": "1",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/1/guerrilla_model_weights.pth",
+        "name": "miserly Nadja",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.0,
+                "big_reward": 1,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "2": {
+        "index": "2",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/2/guerrilla_model_weights.pth",
+        "name": "delicious Sini-P\u00e4ivikki",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "3": {
+        "index": "3",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/3/guerrilla_model_weights.pth",
+        "name": "lustrous Anne-Marjatta",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.0,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    }
+}

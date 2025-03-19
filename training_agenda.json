@@ -1,6 +1,6 @@
 [
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -12,7 +12,7 @@
         "big_reward": 0.0
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -24,7 +24,7 @@
         "small_reward": 0.0
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -37,7 +37,7 @@
         "big_reward": 0.0
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
