@@ -254,14 +254,15 @@ while i_loop < num_loops:
             print("Running episode", i_episode+1)
         terminated = False
         while not terminated:
-            acting_player = env.get_acting_player()
+            next_state, acting_player = env._get_obs()
             
 
             if len(env.game.get_valid_action_indexes(acting_player)) < 1: # Seems like this will never happen....
                 # Might happen if guerrilla doesn't have 2 adjacent spaces to play at,
                 # but the game should test for that.
                 terminated = True
-                next_state = None
+                #next_state = None
+                
                 loser = acting_player
                 # Other player = abs(acting_player -1)
                 winner = abs(loser -1)
@@ -338,6 +339,9 @@ while i_loop < num_loops:
                 # I removed the rest of the soft update code because it crashed (I think),
                 # but then does anything happen here?
                 # As I recall, it couldn't handle next_state == None
+                for key in policy_net_state_dict:
+                    target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
+                players[acting_player].target_net.load_state_dict(target_net_state_dict)
             if terminated:
                 result = env.game.get_game_result()
                 wins.append(result)
