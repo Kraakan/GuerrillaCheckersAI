@@ -286,10 +286,8 @@ while i_loop < num_loops:
                 action_to_pass = players[acting_player].action_list[action.item()]
                 observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
                 reward = torch.tensor([reward], dtype=torch.float32, device=device)
-                if terminated:
-                    next_state = None
-                else:
-                    next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
+                
+                next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
                 
                 # Store the transition in memory
                 players[acting_player].push_memory(state, action, next_state, reward)
