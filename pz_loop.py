@@ -205,7 +205,8 @@ while i_loop < num_loops:
             break
     
     env.game.set_small_reward_factor(small_reward_factor)
-    print("Small reward factor:", small_reward_factor)
+    env.game.set_big_reward_factor(big_reward_factor)
+    print("Small reward factor:", small_reward_factor, " Big reward factor:", big_reward_factor)
     if torch.cuda.is_available():
         num_episodes = args.num_episodes
     else: # Don't train with cpu!
