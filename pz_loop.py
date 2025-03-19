@@ -122,6 +122,7 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
                   "tau": DQN.TAU,
                   "lr": DQN.LR,
                   "small_reward": small_reward_factor,
+                  "big_reward": big_reward_factor,
                   "punish_loser": int(not args.no_punish)
                   }
     if g_target_net ==  None or c_target_net == None:
@@ -182,6 +183,7 @@ i_agenda = 0
 while i_loop < num_loops:
     print("Running training loop", i_loop + 1, "of", num_loops, ":")
     small_reward_factor = 1
+    big_reward_factor = 1
     while i_agenda < len(agenda):
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
@@ -197,6 +199,8 @@ while i_loop < num_loops:
             network = params["network"]
             if "small_reward" in params:
                 small_reward_factor = params["small_reward"]
+            if "big_reward" in params:
+                big_reward_factor = params["big_reward"]
             print(params)
             break
     
@@ -314,7 +318,7 @@ while i_loop < num_loops:
                     loser = 1
                 else:
                     loser = 0
-                loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
+                loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
                 if i_episode % 100 == 0:
                     if loser == 0:
                         print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
