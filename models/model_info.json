@@ -86,5 +86,93 @@
                 "punish_loser": 1
             }
         ]
+    },
+    "4": {
+        "index": "4",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/4/guerrilla_model_weights.pth",
+        "name": "equatorial Signhild",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": -1.0,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "5": {
+        "index": "5",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/5/guerrilla_model_weights.pth",
+        "name": "starry Natalja",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.0,
+                "big_reward": -1.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "6": {
+        "index": "6",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/6/guerrilla_model_weights.pth",
+        "name": "conscious Lin\u00e9a",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": -0.5,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "7": {
+        "index": "7",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/7/guerrilla_model_weights.pth",
+        "name": "past Alli",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.0,
+                "big_reward": -0.5,
+                "punish_loser": 1
+            }
+        ]
     }
 }
