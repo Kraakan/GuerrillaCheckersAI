@@ -1,0 +1,178 @@
+{
+    "0": {
+        "index": "0",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/0/guerrilla_model_weights.pth",
+        "name": "wonderful Aninka",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": -1.0,
+                "big_reward": -1.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "1": {
+        "index": "1",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/1/guerrilla_model_weights.pth",
+        "name": "major Chatarina",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "2": {
+        "index": "2",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/2/guerrilla_model_weights.pth",
+        "name": "smug Ahmad",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.0,
+                "big_reward": 1,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "3": {
+        "index": "3",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/3/guerrilla_model_weights.pth",
+        "name": "joyful Jenni-Maria",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "4": {
+        "index": "4",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/4/guerrilla_model_weights.pth",
+        "name": "pleasing Elaisa",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.0,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "5": {
+        "index": "5",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/5/guerrilla_model_weights.pth",
+        "name": "cautious Rabia",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": -1.0,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "6": {
+        "index": "6",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/6/guerrilla_model_weights.pth",
+        "name": "prickly Han",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.0,
+                "big_reward": -1.0,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "7": {
+        "index": "7",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/7/guerrilla_model_weights.pth",
+        "name": "outrageous Minea",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": -0.5,
+                "big_reward": 0.0,
+                "punish_loser": 1
+            }
+        ]
+    }
+}
