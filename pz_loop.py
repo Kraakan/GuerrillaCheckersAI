@@ -255,6 +255,7 @@ while i_loop < num_loops:
         terminated = False
         while not terminated:
             next_state, acting_player = env._get_obs()
+            acting_player =  int(acting_player)
             
 
             if len(env.game.get_valid_action_indexes(acting_player)) < 1: # Seems like this will never happen....
