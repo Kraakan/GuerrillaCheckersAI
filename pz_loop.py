@@ -254,7 +254,7 @@ while i_loop < num_loops:
             print("Running episode", i_episode+1)
         terminated = False
         while not terminated:
-            next_state, acting_player = env._get_obs()
+            observation, acting_player = env._get_obs()
             acting_player =  int(acting_player)
             
 
@@ -263,16 +263,16 @@ while i_loop < num_loops:
                 # but the game should test for that.
                 terminated = True
                 #next_state = None
-                
+                next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
                 loser = acting_player
                 # Other player = abs(acting_player -1)
                 winner = abs(loser -1)
                 #TODO: distribute rewards
-                loss_reward = torch.tensor([-1.], dtype=torch.float32, device=device)
+                loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
                 players[loser].push_memory(state, action, next_state, loss_reward)
                 #The winner's previous action should be used here
                 #It's not possible for COIN to lose on chain jumps, is it?
-                win_reward = torch.tensor([1.], dtype=torch.float32, device=device)
+                win_reward = torch.tensor([1. * big_reward_factor], dtype=torch.float32, device=device)
                 players[winner].push_memory(state, prev_action, next_state, win_reward)
                 if i_episode % 100 == 0:
                     if winner == 0:
@@ -340,7 +340,7 @@ while i_loop < num_loops:
                 # As I recall, it couldn't handle next_state == None
                 for key in policy_net_state_dict:
                     target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
-                players[acting_player].target_net.load_state_dict(target_net_state_dict)
+                players[loser].target_net.load_state_dict(target_net_state_dict)
             if terminated:
                 result = env.game.get_game_result()
                 wins.append(result)
