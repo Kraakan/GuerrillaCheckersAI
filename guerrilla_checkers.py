@@ -390,18 +390,31 @@ class game():
                 return 1
         return 0
 
-    def get_small_reward(self, player):
-        reward = len(self.checker_positions)/self.starting_checkers_num # COIN reward
+    def get_small_reward(self, player): # TODO: switch to reward based on board changes
+        prev_board = self.game_record[-2] # Will break if called before first move, but that should never happen
+
+        if player == 1: # Guerrilla - check for destroyed checkers
+            kills = sum(prev_board[1:33]) - sum(self.board[1:33])
+            reward = kills/self.starting_checkers_num
+        
+        if player == 0: # COIN - check for destroyed stones
+            num_prev_stones = sum(prev_board[33:])
+            kills = num_prev_stones - sum(self.board[33:])
+            reward = kills/num_prev_stones
         # Time penalty, might be useful if:
         # 1. It's small enough
         # 2. It applies correctly to both players
         # Objection: Guerrilla losing by running out of stones functions as a time penalty
         # through back-propagation.
-        reward -= (self.board[0]/64)**2 # Guerrilla will have placed two stones already when this is first called
+
+        # Old stuff:
+
+        #reward = len(self.checker_positions)/self.starting_checkers_num # COIN reward
+        #reward -= (self.board[0]/64)**2 # Guerrilla will have placed two stones already when this is first called
         # g is suicidal! Trying squared time penalty
+        #if player == 1: # Guerrilla
+        #    reward *= -1
         reward = reward * self.small_reward_factor
-        if player == 1: # Guerrilla
-            reward *= -1
         return reward
     
     def set_small_reward_factor(self, new_factor):
@@ -553,9 +566,9 @@ class game():
                         self.guerrillas_turn = False
         self.board = new_board
         normalized_board = copy.copy(self.board)
-        normalized_board[0] /= 66 
-        self.game_record.append(self.board)
+        normalized_board[0] /= 66
         reward = self.get_reward(player)
+        self.game_record.append(self.board)
         terminated = self.is_game_over()
         return (normalized_board, reward, terminated)
     

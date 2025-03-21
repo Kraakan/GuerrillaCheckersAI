@@ -108,7 +108,7 @@
         "EPS_END": 0.05,
         "EPS_DECAY": 1000,
         "TAU": 0.05,
-        "LR": 0.000001,
+        "LR": 1e-06,
         "network": "4deep"
     }
 ]
