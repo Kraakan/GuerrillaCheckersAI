@@ -49,7 +49,7 @@ parser.add_argument(
     action='store_true',
     help="This will train guerilla models only, against an opponent that selects moves at random."
 )
-parser.add_argument(
+parser.add_argument( # TODO: Move this (and other args?) to training agenda
     "--no_punish",
     action='store_true',
     help="Remove extra punishment (-1) given to the loser of each game."
@@ -287,7 +287,11 @@ while i_loop < num_loops:
                 action_to_pass = players[acting_player].action_list[action.item()]
                 observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
                 reward = torch.tensor([reward], dtype=torch.float32, device=device)
-                
+                if i_episode % 4000 == 0:
+                    if acting_player == 0:
+                        print("COIN's turn. Reward:" , reward)
+                    if acting_player == 1:
+                        print("Guerrilla's turn. Reward:" , reward)
                 next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
                 
                 # Store the transition in memory

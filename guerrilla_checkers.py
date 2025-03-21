@@ -391,12 +391,12 @@ class game():
         return 0
 
     def get_small_reward(self, player):
-        reward = len(self.checker_positions)/6
+        reward = len(self.checker_positions)/self.starting_checkers_num
         reward = reward * self.small_reward_factor
         # Time penalty, might be useful if:
         # 1. It's small enough
         # 2. It applies correctly to both players
-        # reward -= self.board[0]/66
+        reward -= self.board[0]/66
         if player == 1:
             reward *= -1
         return reward
