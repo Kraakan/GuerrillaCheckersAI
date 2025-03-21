@@ -267,7 +267,7 @@ while i_loop < num_loops:
                 loser = acting_player
                 # Other player = abs(acting_player -1)
                 winner = abs(loser -1)
-                #TODO: distribute rewards
+                # distribute rewards to both players
                 loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
                 players[loser].push_memory(state, action, next_state, loss_reward)
                 #The winner's previous action should be used here
@@ -320,7 +320,6 @@ while i_loop < num_loops:
                 players[acting_player].target_net.load_state_dict(target_net_state_dict)
             if terminated and not args.no_punish:
                 # Try punishing loser
-                # TODO: Add option to turn this off
                 result = env.game.get_game_result() # Result code:
                                                     # -1 = guerrilla wins
                                                     # 1 = COIN wins

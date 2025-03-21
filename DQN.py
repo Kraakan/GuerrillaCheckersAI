@@ -214,7 +214,7 @@ class Agent():
             self.target_net = basic(n_observations, self.n_actions).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=LR, amsgrad=True)
-        self.memory = ReplayMemory(10000) # TODO: Try different memory sizes?
+        self.memory = ReplayMemory(1000000) # TODO: Try different memory sizes?
     
     def select_action(self, state):
         #global steps_done
