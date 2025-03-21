@@ -286,6 +286,8 @@ while i_loop < num_loops:
                 action = players[acting_player].select_action(state)
                 action_to_pass = players[acting_player].action_list[action.item()]
                 observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
+                if terminated and args.no_punish and reward < 0:
+                    reward = 0
                 reward = torch.tensor([reward], dtype=torch.float32, device=device)
                 if i_episode % 4000 == 0:
                     if acting_player == 0:

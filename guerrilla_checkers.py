@@ -395,6 +395,8 @@ class game():
         # Time penalty, might be useful if:
         # 1. It's small enough
         # 2. It applies correctly to both players
+        # Objection: Guerrilla losing by running out of stones functions as a time penalty
+        # through back-propagation.
         reward -= (self.board[0]/64)**2 # Guerrilla will have placed two stones already when this is first called
         # g is suicidal! Trying squared time penalty
         reward = reward * self.small_reward_factor
