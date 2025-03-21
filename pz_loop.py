@@ -292,6 +292,15 @@ while i_loop < num_loops:
                         print("COIN's turn. Reward:" , reward)
                     if acting_player == 1:
                         print("Guerrilla's turn. Reward:" , reward)
+                    if terminated:
+                        result = env.game.get_game_result()
+                        print("Game over!", end=" ")
+                        if result == -1:
+                            print("Guerrilla wins!")
+                        if result == 1:
+                            print("COIN wins!")
+                        if result == 0:
+                            print("No it isn't?")
                 next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
                 
                 # Store the transition in memory
@@ -323,25 +332,26 @@ while i_loop < num_loops:
                     loser = 1
                 else:
                     loser = 0
-                loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
-                if i_episode % 100 == 0:
-                    if loser == 0:
-                        print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
-                    if loser == 1:
-                        print("Guerrilla loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
-                # Store the transition in memory
-                players[loser].push_memory(state, prev_action, next_state, loss_reward)
+                if loser != acting_player:
+                    loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
+                    if i_episode % 100 == 0:
+                        if loser == 0:
+                            print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
+                        if loser == 1:
+                            print("Guerrilla loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
+                    # Store the transition in memory
+                    players[loser].push_memory(state, prev_action, next_state, loss_reward)
 
-                # Perform one step of the optimization (on the policy network)
-                players[loser].optimize_model()
+                    # Perform one step of the optimization (on the policy network)
+                    players[loser].optimize_model()
 
-                # Soft update of the target network's weights
-                # θ′ ← τ θ + (1 −τ )θ′
-                target_net_state_dict = players[loser].target_net.state_dict()
-                policy_net_state_dict = players[loser].policy_net.state_dict()
-                for key in policy_net_state_dict:
-                    target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
-                players[loser].target_net.load_state_dict(target_net_state_dict)
+                    # Soft update of the target network's weights
+                    # θ′ ← τ θ + (1 −τ )θ′
+                    target_net_state_dict = players[loser].target_net.state_dict()
+                    policy_net_state_dict = players[loser].policy_net.state_dict()
+                    for key in policy_net_state_dict:
+                        target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
+                    players[loser].target_net.load_state_dict(target_net_state_dict)
             if terminated:
                 result = env.game.get_game_result()
                 wins.append(result)
