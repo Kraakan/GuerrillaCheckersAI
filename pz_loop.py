@@ -335,9 +335,6 @@ while i_loop < num_loops:
                 # θ′ ← τ θ + (1 −τ )θ′
                 target_net_state_dict = players[loser].target_net.state_dict()
                 policy_net_state_dict = players[loser].policy_net.state_dict()
-                # I removed the rest of the soft update code because it crashed (I think),
-                # but then does anything happen here?
-                # As I recall, it couldn't handle next_state == None
                 for key in policy_net_state_dict:
                     target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
                 players[loser].target_net.load_state_dict(target_net_state_dict)
