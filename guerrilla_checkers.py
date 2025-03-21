@@ -392,11 +392,11 @@ class game():
 
     def get_small_reward(self, player):
         reward = len(self.checker_positions)/self.starting_checkers_num # COIN reward
-        reward = reward * self.small_reward_factor
         # Time penalty, might be useful if:
         # 1. It's small enough
         # 2. It applies correctly to both players
         reward -= self.board[0]/64 # Guerrilla will have placed two stones already when this is first called
+        reward = reward * self.small_reward_factor
         if player == 1: # Guerrilla
             reward *= -1
         return reward
