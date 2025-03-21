@@ -308,8 +308,6 @@ while i_loop < num_loops:
                 # Store the transition in memory
                 players[acting_player].push_memory(state, action, next_state, reward)
 
-    
-
                 # Perform one step of the optimization (on the policy network)
                 players[acting_player].optimize_model()
 
@@ -383,7 +381,8 @@ while i_loop < num_loops:
     else:
         save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN", new_index)
     plot_wins(show_result=False)
-    plt.savefig(new_dir + 'pettingzoo' + "_".join(str(datetime.datetime.now()).split())+ '.png')
+    index_or_indexes = new_dir.split("/")[-1]
+    plt.savefig(new_dir + 'pettingzoo_' + index_or_indexes + "_trained_" + "_".join(str(datetime.datetime.now()).split())+ '.png')
 
 
 

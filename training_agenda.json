@@ -19,7 +19,31 @@
         "EPS_DECAY": 1000,
         "TAU": 0.05,
         "LR": 0.0001,
-        "network": "basic",
+        "network": "2deep",
+        "big_reward": 0.1
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 128,
+        "GAMMA": 0.99,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 1000,
+        "TAU": 0.05,
+        "LR": 0.0001,
+        "network": "3deep",
+        "big_reward": 0.1
+    },
+    {
+        "status": "not done",
+        "BATCH_SIZE": 128,
+        "GAMMA": 0.99,
+        "EPS_START": 0.9,
+        "EPS_END": 0.05,
+        "EPS_DECAY": 1000,
+        "TAU": 0.05,
+        "LR": 0.0001,
+        "network": "4deep",
         "big_reward": 0.1
     },
     {
