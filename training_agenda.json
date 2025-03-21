@@ -11,7 +11,7 @@
         "network": "basic"
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -23,7 +23,7 @@
         "big_reward": 0.1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -35,7 +35,7 @@
         "big_reward": 0.1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
