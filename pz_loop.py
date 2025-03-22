@@ -33,32 +33,10 @@ parser.add_argument(
     default=10000,
     help="Number of games to run per training session. This number won't be used if torch.cuda.is_available() == False"
 )
-parser.add_argument(
-    "--num_checkers",
-    type=int,
-    default=6,
-    help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
-)
-parser.add_argument(
-    "--hardcoded_c",
-    action='store_true',
-    help="This will train guerilla models only, against an opponent that is hardcoded to always chose the first in a list of available moves"
-)
-parser.add_argument(
-    "--random_c",
-    action='store_true',
-    help="This will train guerilla models only, against an opponent that selects moves at random."
-)
-parser.add_argument( # TODO: Move this (and other args?) to training agenda
-    "--no_punish",
-    action='store_true',
-    help="Remove extra punishment (-1) given to the loser of each game."
-)
 
 args = parser.parse_args()
 
 num_loops = args.loop
-num_checkers = args.num_checkers
 
 agenda_file = open("training_agenda.json", "r")
 agenda = json.load(agenda_file)
@@ -70,7 +48,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print('device:', device)
 
-env = PettingZoo(num_checkers=num_checkers)
+env = PettingZoo()
 
 # Get the number of state observations
 state = env.reset()
@@ -123,14 +101,14 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
                   "lr": DQN.LR,
                   "small_reward": small_reward_factor,
                   "big_reward": big_reward_factor,
-                  "punish_loser": int(not args.no_punish)
+                  "punish_loser": int(not no_punish)
                   }
     if g_target_net ==  None or c_target_net == None:
-        if args.hardcoded_c:
+        if hardcoded_c:
             training_info = {
                 "description" : str(num_episodes) + " games against hardcoded opponent"
             }
-        if args.random_c:
+        if random_c:
             training_info = {
                 "description" : str(num_episodes) + " games against randomly moving opponent"
             }
@@ -184,6 +162,10 @@ while i_loop < num_loops:
     print("Running training loop", i_loop + 1, "of", num_loops, ":")
     small_reward_factor = 1
     big_reward_factor = 1
+    no_punish = False
+    random_c = False
+    hardcoded_c = False
+    num_checkers = 6
     while i_agenda < len(agenda):
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
@@ -201,11 +183,20 @@ while i_loop < num_loops:
                 small_reward_factor = params["small_reward"]
             if "big_reward" in params:
                 big_reward_factor = params["big_reward"]
+            if "no_punish" in params:
+                no_punish = True
+            if "random_c" in params:
+                random_c = True
+            if "hardcoded_c" in params:
+                hardcoded_c = True
+            if "num_checkers" in params:
+                num_checkers = params["num_checkers"] # TODO: set game objects num checkers each training loop
             print(params)
             break
     
     env.game.set_small_reward_factor(small_reward_factor)
     env.game.set_big_reward_factor(big_reward_factor)
+    env.game.set_num_checkers(num_checkers)
     print("Small reward factor:", small_reward_factor, " Big reward factor:", big_reward_factor)
     if torch.cuda.is_available():
         num_episodes = args.num_episodes
@@ -221,7 +212,7 @@ while i_loop < num_loops:
         print("No model info found")
         model_info = {}
     new_index = len(model_info.items())
-    if args.hardcoded_c or args.random_c:
+    if hardcoded_c or random_c:
         new_dir = 'models/' + str(new_index) + '/'
     else:
         new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
@@ -230,9 +221,9 @@ while i_loop < num_loops:
 
     # 0 for COIN, 1 for guerrilla
     # These will hopefully be easy to replace with other types of agent
-    if args.hardcoded_c:
+    if hardcoded_c:
         COIN = DQN.HardCoded(0, env.game, device)
-    elif args.random_c:
+    elif random_c:
         COIN = DQN.Random(0, env.game, device)
     else:
         COIN = DQN.Agent(0, env.game, device, network)
@@ -251,7 +242,7 @@ while i_loop < num_loops:
         state = env.reset()
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
         if i_episode % 100 == 0:
-            print("Running episode", i_episode+1)
+            print("Running episode", i_episode+1, end="\r")
         terminated = False
         while not terminated:
             observation, acting_player = env._get_obs()
@@ -286,8 +277,8 @@ while i_loop < num_loops:
                 action = players[acting_player].select_action(state)
                 action_to_pass = players[acting_player].action_list[action.item()]
                 observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
-                if terminated and args.no_punish and reward < 0:
-                    reward = 0.0
+                #if terminated and no_punish and reward < 0: # Now leaning towards applying this punishment in all cases
+                #    reward = 0.0
                 reward = torch.tensor([reward], dtype=torch.float32, device=device)
                 if i_episode % 4000 == 0:
                     if acting_player == 0:
@@ -318,7 +309,7 @@ while i_loop < num_loops:
                 for key in policy_net_state_dict:
                     target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
                 players[acting_player].target_net.load_state_dict(target_net_state_dict)
-            if terminated and not args.no_punish:
+            if terminated and not no_punish:
                 # Try punishing loser
                 result = env.game.get_game_result() # Result code:
                                                     # -1 = guerrilla wins
@@ -376,7 +367,7 @@ while i_loop < num_loops:
     with open(new_dir + 'time.txt', 'w') as f:
         f.write(start_time + "\n" + end_time)
         f.close()
-    if args.hardcoded_c or args.random_c:
+    if hardcoded_c or random_c:
         save_models(new_dir, None, players[1].target_net, network + " DQN", new_index)
     else:
         save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN", new_index)

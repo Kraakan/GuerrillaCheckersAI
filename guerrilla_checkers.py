@@ -228,6 +228,9 @@ class game():
         # NOTE: I may want to remove or disable game_record for training!
         self.game_record = [self.board]
         self.COINjump = None
+    
+    def set_num_checkers(self, new_num): # This will affect the next reset and scoring
+        self.starting_checkers_num = new_num
         
     def initialize_checkers(self):
         if self.starting_checkers_num < 1 or self.starting_checkers_num > 5:
