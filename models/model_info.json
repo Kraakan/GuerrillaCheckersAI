@@ -130,5 +130,465 @@
                 "punish_loser": 0
             }
         ]
+    },
+    "6": {
+        "index": "6",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/6-7/coin_model_weights.pth",
+        "name": "internal Jordan",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "7": {
+        "index": "7",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/6-7/guerrilla_model_weights.pth",
+        "name": "internal Kirsi-Hannele",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "8": {
+        "index": "8",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/8-9/coin_model_weights.pth",
+        "name": "negative Anshelmi",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "9": {
+        "index": "9",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/8-9/guerrilla_model_weights.pth",
+        "name": "negative Inke",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "10": {
+        "index": "10",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/10-11/coin_model_weights.pth",
+        "name": "gross Elvis",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "11": {
+        "index": "11",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/10-11/guerrilla_model_weights.pth",
+        "name": "gross Signhild",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "12": {
+        "index": "12",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/12-13/coin_model_weights.pth",
+        "name": "hidden Clifford",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "13": {
+        "index": "13",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/12-13/guerrilla_model_weights.pth",
+        "name": "hidden Rosa-Maaria",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "14": {
+        "index": "14",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/14-15/coin_model_weights.pth",
+        "name": "barren Pete",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "15": {
+        "index": "15",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/14-15/guerrilla_model_weights.pth",
+        "name": "barren Piia-Mari",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "16": {
+        "index": "16",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/16-17/coin_model_weights.pth",
+        "name": "ethical Ristonpoika",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "17": {
+        "index": "17",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/16-17/guerrilla_model_weights.pth",
+        "name": "ethical Rebecka",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "18": {
+        "index": "18",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/18-19/coin_model_weights.pth",
+        "name": "unwritten Jian",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "19": {
+        "index": "19",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/18-19/guerrilla_model_weights.pth",
+        "name": "unwritten Vinja",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "20": {
+        "index": "20",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/20-21/coin_model_weights.pth",
+        "name": "noteworthy Jan-Mikael",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "21": {
+        "index": "21",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/20-21/guerrilla_model_weights.pth",
+        "name": "noteworthy Pirkko",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "22": {
+        "index": "22",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/22-23/coin_model_weights.pth",
+        "name": "fine Jeremiah",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "23": {
+        "index": "23",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/22-23/guerrilla_model_weights.pth",
+        "name": "fine Kirsi-Mari",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "24": {
+        "index": "24",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/24-25/coin_model_weights.pth",
+        "name": "sad Olli-Ville",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "25": {
+        "index": "25",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/24-25/guerrilla_model_weights.pth",
+        "name": "sad Jenna-Julia",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
     }
 }
