@@ -393,7 +393,7 @@ class game():
                 return 1
         return 0
 
-    def get_small_reward(self, player): # TODO: switch to reward based on board changes
+    def get_small_reward(self, player): # Reward is based on board changes since before turn
         prev_board = self.game_record[-2] # Will break if called before first move, but that should never happen
 
         if player == 1: # Guerrilla - check for destroyed checkers
