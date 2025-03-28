@@ -1,0 +1,152 @@
+<html>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+      <div class="mermaid">
+    
+        classDiagram
+          class AI {
+            device
+            game
+            model
+            n_ai_actions
+            player
+            select_action(state)
+          }
+          class Agent {
+            action_list : list
+            device
+            game
+            memory
+            n_actions
+            optimizer
+            player
+            policy_net
+            steps_done : int
+            target_net
+            optimize_model()
+            push_memory(state, action, next_state, reward)
+            select_action(state)
+          }
+          class DummyNet {
+          }
+          class HardCoded {
+            action_list : list
+            device
+            game
+            n_actions
+            player
+            policy_net
+            steps_done : int
+            target_net
+            optimize_model()*
+            push_memory(state, action, next_state, reward)*
+            select_action(state)
+          }
+          class PettingZoo {
+            agent_name_mapping : dict
+            agent_selection : int
+            agents : list
+            game
+            infos
+            metadata : dict
+            observations
+            possible_agents : list
+            render_mode : NoneType
+            rewards
+            state
+            terminations
+            truncations
+            close()*
+            get_acting_player()
+            get_valid_sample()
+            observation_space(agent)
+            observe(agent)
+            reset(seed, options)
+            step(action, acting_player)
+          }
+          class Random {
+            action_list : list
+            device
+            game
+            n_actions
+            player
+            policy_net
+            steps_done : int
+            target_net
+            optimize_model()*
+            push_memory(state, action, next_state, reward)*
+            select_action(state)
+          }
+          class ReplayMemory {
+            memory : deque
+            push()
+            sample(batch_size)
+          }
+          class basic {
+            layer1
+            layer2
+            layer3
+            forward(x)
+          }
+          class deep2 {
+            layer1
+            layer2
+            layer3
+            layer4
+            forward(x)
+          }
+          class deep3 {
+            layer1
+            layer2
+            layer3
+            layer4
+            layer5
+            forward(x)
+          }
+          class deep4 {
+            layer1
+            layer2
+            layer3
+            layer4
+            layer5
+            layer6
+            forward(x)
+          }
+          class game {
+            COINjump : NoneType, tuple
+            big_reward_factor : float
+            board
+            checker_positions : list
+            game_record : list
+            guerrillas_turn : bool
+            small_reward_factor : float
+            starting_checkers_num : int
+            capture_and_move(board, position, debug)
+            check_surround(board, positions)
+            get_COIN_moves(debug)
+            get_current_state()
+            get_game_result()
+            get_guerrilla_moves()
+            get_remaining_stones()
+            get_reward(player)
+            get_small_reward(player)
+            get_valid_action_indexes(player)
+            get_valid_actions(player)
+            initialize_checkers()
+            is_game_over()
+            old_get_guerrilla_moves()
+            reset()
+            set_big_reward_factor(new_factor)
+            set_num_checkers(new_num)
+            set_small_reward_factor(new_factor)
+            take_action(player, action)
+          }
+          DummyNet --* HardCoded : policy_net
+          DummyNet --* HardCoded : target_net
+          DummyNet --* Random : policy_net
+          DummyNet --* Random : target_net
+          ReplayMemory --* Agent : memory
+  
+       </div>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+<html>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+      <div class="mermaid">
+    
+        classDiagram
+          class GuerillaCheckersAI {
+          }
+          class DQN {
+          }
+          class guerrilla_checkers {
+          }
+          class pettingzoo_env {
+          }
+          class play {
+          }
+          class pz_loop {
+          }
+          DQN --> guerrilla_checkers
+          pettingzoo_env --> guerrilla_checkers
+          play --> DQN
+          play --> guerrilla_checkers
+          pz_loop --> DQN
+          pz_loop --> pettingzoo_env
+  
+       </div>
+  </body>
+</html>
