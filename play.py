@@ -33,7 +33,6 @@ def start(stdscr):
 
     while True:
         stdscr.clear()
-        stdscr.addstr("There is no AI yet, just random choice.\n")
         stdscr.addstr("Do you want to play with 0, 1 or 2 players? (q to quit) (0/1/2/q)")
         player_choice = stdscr.getch()
         if player_choice == ord('0'): # 0

@@ -274,6 +274,7 @@ while i_loop < num_loops:
                 if prev_player != acting_player:
                     prev_player = abs(prev_player -1)
                     prev_action = copy.deepcopy(action)
+                    prev_state = copy.deepcopy(state)
                 action = players[acting_player].select_action(state)
                 action_to_pass = players[acting_player].action_list[action.item()]
                 observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
@@ -324,13 +325,14 @@ while i_loop < num_loops:
                     loser = 0
                 if loser != acting_player:
                     loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
-                    if i_episode % 100 == 0:
+                    if i_episode % 1000 == 0:
                         if loser == 0:
                             print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
                         if loser == 1:
                             print("Guerrilla loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
                     # Store the transition in memory
-                    players[loser].push_memory(state, prev_action, next_state, loss_reward)
+                    # TODO: Replace state with prev_state
+                    players[loser].push_memory(prev_state, prev_action, next_state, loss_reward)
 
                     # Perform one step of the optimization (on the policy network)
                     players[loser].optimize_model()
