@@ -466,11 +466,11 @@ class game():
             # Permit all moves
             move_dict = dict.fromkeys(move_dict, True)
         else:
+            all_moves = list(move_dict.keys())
             # Find occupied crosses
             for index, cross in enumerate(self.board[33:]):
                 if cross == 1:
                     cross_index = index + 33
-                    all_moves = list(move_dict.keys())
                     # TODO: Start ADJACENT, not on occupied crosses!
                     free_crosses = []
                     # UP
