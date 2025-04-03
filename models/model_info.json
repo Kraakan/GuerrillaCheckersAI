@@ -912,5 +912,143 @@
                 "punish_loser": 0
             }
         ]
+    },
+    "40": {
+        "index": "40",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/40-41/coin_model_weights.pth",
+        "name": "frightening Mihku",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "41": {
+        "index": "41",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/40-41/guerrilla_model_weights.pth",
+        "name": "frightening Carmela",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "42": {
+        "index": "42",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/42-43/coin_model_weights.pth",
+        "name": "frightening Carl-Olof",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "43": {
+        "index": "43",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/42-43/guerrilla_model_weights.pth",
+        "name": "frightening Niki",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "44": {
+        "index": "44",
+        "player": "0",
+        "type": "2deep DQN",
+        "path": "models/44-45/coin_model_weights.pth",
+        "name": "past Harrison",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "45": {
+        "index": "45",
+        "player": "1",
+        "type": "2deep DQN",
+        "path": "models/44-45/guerrilla_model_weights.pth",
+        "name": "past Lemmikki",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
     }
 }
