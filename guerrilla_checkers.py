@@ -440,23 +440,6 @@ class game():
             if surrounded:
                 board[position] = 0
         return board
-
-    def capture_and_move(self, board, position, debug=False):
-        new_moves = []
-        jumped = False
-        for diagonal in rules["diagonals"][position - 1]:
-            if board[diagonal[1]] == 1 and board[diagonal[0] + 1] == 0:
-                jumped = True
-                new_board = copy.copy(board)
-                new_board[position] = 0
-                new_board[diagonal[0] + 1] = 1
-                new_board[diagonal[1]] = 0
-                if debug:
-                    breakpoint()
-                new_moves += self.capture_and_move(new_board, diagonal[0] + 1)
-        if not jumped:
-            new_moves.append(board)
-        return new_moves
     
     def get_guerrilla_moves(self):
         move_dict = copy.copy(rules["all guerrilla moves"])
@@ -505,33 +488,6 @@ class game():
                             if cross_x < 6 and self.board[free_cross + 1 + 33] == 0:
                                 move_dict[(cross_y, cross_x, cross_y, cross_x + 1)] = True
         return move_dict
-                                          
-    def old_get_guerrilla_moves(self):
-        move_list=[]
-        # TODO: Find out if it's necessary to make a copy of the board for each move
-        # First move, if the guerrilla player is still holding all their stones
-        if self.board[0] == 66:
-            for i in range(48):
-                if i < 42:
-                    # Vertical orientation
-                    new_move = (i + 33, i + 33 + 7)
-                    move_list.append(new_move)
-                if (i+1)%7 != 0:
-                    # Horizontal orientation
-                    new_move = (i + 33, i + 33 + 1)
-                    move_list.append(new_move)
-        else:
-            # Find occupied crosses
-            for index, cross in enumerate(self.board[33:]):
-                if cross == 1:
-                    # TODO: Make sure the name and index of the neighbors list is correct!
-                    for neighbor in rules["neighbors"][index]:
-                        if self.board[neighbor + 33] == 0:
-                            for neighborbor in rules["neighbors"][neighbor]:
-                                if self.board[neighborbor + 33] == 0:
-                                    new_move = (neighbor + 33, neighborbor + 33)
-                                    move_list.append(new_move)
-        return move_list
         
     def take_action(self, player, action):
         # This function takes the current player and an action as input, updates the game state based on the action, checks if the game has ended, and returns the outcome.
