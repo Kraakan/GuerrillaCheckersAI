@@ -50,6 +50,9 @@ for key, item in model_info.items():
         g_indexes.append(key)
 
 num_games = 1 # There's no randomness, so one game i enough
+# UNLESS num_checkers < 6, then checker positions are shuffled
+if num_checkers < 6:
+    num_games = 1000
 precentage_denominator = num_games/100.0
 
 game = guerrilla_checkers.game(num_checkers=num_checkers)
