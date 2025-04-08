@@ -1050,5 +1050,225 @@
                 "punish_loser": 1
             }
         ]
+    },
+    "46": {
+        "index": "46",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/46/guerrilla_model_weights.pth",
+        "name": "impartial Aleksandra",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "47": {
+        "index": "47",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/47/guerrilla_model_weights.pth",
+        "name": "miserable de",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "48": {
+        "index": "48",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/48/guerrilla_model_weights.pth",
+        "name": "neglected Hanneli",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "49": {
+        "index": "49",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/49/guerrilla_model_weights.pth",
+        "name": "criminal M\u00e1ria",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "50": {
+        "index": "50",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/50/guerrilla_model_weights.pth",
+        "name": "guilty Minna-Helena",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "51": {
+        "index": "51",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/51/guerrilla_model_weights.pth",
+        "name": "good Maru",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "52": {
+        "index": "52",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/52/guerrilla_model_weights.pth",
+        "name": "sweltering Jannina",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "53": {
+        "index": "53",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/53/guerrilla_model_weights.pth",
+        "name": "complex Ulla-Maja",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "54": {
+        "index": "54",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/54/guerrilla_model_weights.pth",
+        "name": "brown Nikolajevna",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "55": {
+        "index": "55",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/55/guerrilla_model_weights.pth",
+        "name": "old Liselotte",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
     }
 }
