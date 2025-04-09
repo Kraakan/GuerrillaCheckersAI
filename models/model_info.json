@@ -1490,5 +1490,225 @@
                 "punish_loser": 1
             }
         ]
+    },
+    "66": {
+        "index": "66",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/66/guerrilla_model_weights.pth",
+        "name": "unique Josefiina",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "67": {
+        "index": "67",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/67/guerrilla_model_weights.pth",
+        "name": "messy Eva-Lisa",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "68": {
+        "index": "68",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/68/guerrilla_model_weights.pth",
+        "name": "disloyal Giovanna",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "69": {
+        "index": "69",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/69/guerrilla_model_weights.pth",
+        "name": "tepid Anu-Leena",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "70": {
+        "index": "70",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/70/guerrilla_model_weights.pth",
+        "name": "defensive Hannele",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "71": {
+        "index": "71",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/71/guerrilla_model_weights.pth",
+        "name": "rigid Annimari",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "72": {
+        "index": "72",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/72/guerrilla_model_weights.pth",
+        "name": "shoddy Kirsti-Liisa",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "73": {
+        "index": "73",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/73/guerrilla_model_weights.pth",
+        "name": "plump Thelma",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "74": {
+        "index": "74",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/74/guerrilla_model_weights.pth",
+        "name": "popular Adriana",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "75": {
+        "index": "75",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/75/guerrilla_model_weights.pth",
+        "name": "silky Merja-Riitta",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
     }
 }
