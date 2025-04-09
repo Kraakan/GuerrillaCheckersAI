@@ -121,10 +121,16 @@ g_results_df = pd.DataFrame(data=g_results_array,
                           index=g_indexes,
                           columns=["Win rate", "Avg. game length"])
 
-g_results_df.to_excel('data/g_vs_random.xlsx', sheet_name='guerrilla vs. random')
+if num_checkers == 6:
+    g_results_df.to_excel('data/g_vs_random.xlsx', sheet_name='guerrilla vs. random')
+else:
+    g_results_df.to_excel('data/g_vs_random_' + str(num_checkers) + '_checkers.xlsx', sheet_name='g vs. random, ' + str(num_checkers) + ' checkers')
 
 c_results_df = pd.DataFrame(data=c_results_array,
                           index=c_indexes,
                           columns=["Win rate", "Avg. game length"])
+if num_checkers == 6:
+    c_results_df.to_excel('data/c_vs_random.xlsx', sheet_name='COIN vs. random')
+else:
+    c_results_df.to_excel('data/c_vs_random' + str(num_checkers) + '_checkers.xlsx', sheet_name='C vs. random, ' + str(num_checkers) + ' checkers')
 
-c_results_df.to_excel('data/c_vs_random.xlsx', sheet_name='COIN vs. random')

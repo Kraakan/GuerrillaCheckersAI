@@ -83,4 +83,4 @@ g_results_df = pd.DataFrame(data=g_results_array,
                           index=g_indexes,
                           columns=["Win rate", "Avg. game length"])
 
-g_results_df.to_excel('data/g_vs_hardcoded_COIN_' + str(num_checkers) + '_checkers.xlsx', sheet_name='guerrilla vs. hardcoded COIN ' + str(num_checkers) + ' checkers')
+g_results_df.to_excel('data/g_vs_hardcoded_COIN_' + str(num_checkers) + '_checkers.xlsx', sheet_name='g vs. hardcoded C ' + str(num_checkers) + ' checkers')
