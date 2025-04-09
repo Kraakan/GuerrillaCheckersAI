@@ -415,7 +415,7 @@
         "hardcoded_c": true
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -431,7 +431,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -446,7 +446,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -462,7 +462,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -477,7 +477,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -493,7 +493,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -508,7 +508,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -524,7 +524,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -539,7 +539,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,
@@ -555,7 +555,7 @@
         "num_checkers": 1
     },
     {
-        "status": "not done",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,

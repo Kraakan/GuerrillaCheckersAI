@@ -1270,5 +1270,225 @@
                 "punish_loser": 1
             }
         ]
+    },
+    "56": {
+        "index": "56",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/56/guerrilla_model_weights.pth",
+        "name": "impossible Am\u00e9lia",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "57": {
+        "index": "57",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/57/guerrilla_model_weights.pth",
+        "name": "serene Veronika",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "58": {
+        "index": "58",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/58/guerrilla_model_weights.pth",
+        "name": "concrete Ulla-Kaija",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "59": {
+        "index": "59",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/59/guerrilla_model_weights.pth",
+        "name": "complicated Abdulle",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "60": {
+        "index": "60",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/60/guerrilla_model_weights.pth",
+        "name": "happy Asrin",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "61": {
+        "index": "61",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/61/guerrilla_model_weights.pth",
+        "name": "surprised Kaari",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "62": {
+        "index": "62",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/62/guerrilla_model_weights.pth",
+        "name": "gullible Briitta-Liisa",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "63": {
+        "index": "63",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/63/guerrilla_model_weights.pth",
+        "name": "handsome Min\u00e9a",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "64": {
+        "index": "64",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/64/guerrilla_model_weights.pth",
+        "name": "giant Ella-Maaria",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "65": {
+        "index": "65",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/65/guerrilla_model_weights.pth",
+        "name": "zesty Tatyana",
+        "history": [
+            {
+                "description": "10000 games against hardcoded opponent starting with 1 COIN checkers.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
     }
 }
