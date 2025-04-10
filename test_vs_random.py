@@ -87,7 +87,7 @@ for i, g_index in enumerate(g_indexes):
     print(g_info["name"], " won ", win_rate, "%", sep="")
 
     avg_length = statistics.mean(lengths)
-    g_results_array[i] = [win_rate, avg_length]
+    g_results_array[i] = [g_index, win_rate, avg_length]
 
 prev_type = ""
 print("Testing COIN agents against random moves:")
@@ -116,11 +116,12 @@ for i, c_index in enumerate(c_indexes):
     print(c_info["name"], " won ", win_rate, "%", sep="")
 
     avg_length = statistics.mean(lengths)
-    c_results_array[i] = [win_rate, avg_length]
+    c_results_array[i] = [c_index, win_rate, avg_length]
 
 g_results_df = pd.DataFrame(data=g_results_array,
-                          index=g_indexes,
-                          columns=["Win rate", "Avg. game length"])
+                          columns=["Model index", "Win rate", "Avg. game length"])
+
+g_results_df = g_results_df.set_index("Model index")
 
 if num_checkers == 6:
     g_results_df.to_excel('data/g_vs_random.xlsx', sheet_name='guerrilla vs. random')
@@ -129,7 +130,10 @@ else:
 
 c_results_df = pd.DataFrame(data=c_results_array,
                           index=c_indexes,
-                          columns=["Win rate", "Avg. game length"])
+                          columns=["Model index", "Win rate", "Avg. game length"])
+
+c_results_df = c_results_df.set_index("Model index")
+
 if num_checkers == 6:
     c_results_df.to_excel('data/c_vs_random.xlsx', sheet_name='COIN vs. random')
 else:

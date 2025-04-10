@@ -79,10 +79,11 @@ for i, g_index in enumerate(g_indexes):
     print(g_info["name"], " won ", win_rate, "%", sep="")
 
     avg_length = statistics.mean(lengths)
-    g_results_array[i] = [win_rate, avg_length]
+    g_results_array[i] = [g_index, win_rate, avg_length]
 
 g_results_df = pd.DataFrame(data=g_results_array,
-                          index=g_indexes,
-                          columns=["Win rate", "Avg. game length"])
+                          columns=["Model index", "Win rate", "Avg. game length"])
+
+g_results_df = g_results_df.set_index("Model index")
 
 g_results_df.to_excel('data/g_vs_hardcoded_COIN_' + str(num_checkers) + '_checkers.xlsx', sheet_name='g vs. hardcoded C ' + str(num_checkers) + ' checkers')
