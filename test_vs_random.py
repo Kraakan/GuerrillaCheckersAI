@@ -46,6 +46,7 @@ def play(game, AI, AI_side):
 
 g_indexes = []
 c_indexes = []
+# TODO: Go through results and only test untested models, to make adding models easier
 for key, item in model_info.items():
     if item["player"] == "1":
         g_indexes.append(key)

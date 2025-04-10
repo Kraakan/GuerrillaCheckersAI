@@ -60,6 +60,8 @@ COIN = DQN.HardCoded(0, game, device)
 
 g_results_array = np.zeros((len(g_indexes), 2))
 
+# TODO: Go through results and only test untested models, to make adding models easier
+
 for i, g_index in enumerate(g_indexes):
     g_info = model_info[g_index]
     network_type = g_info["type"]

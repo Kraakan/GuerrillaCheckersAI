@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description="Get baselines for various tests. T
 parser.add_argument(
     "--num_games",
     type=int,
-    default=1000,
+    default=10000, # 1000 games seems to have been insufficient to get a solid average
     help="Number of games to run for random tests. This exists because I'm bad at statistics"
 )
 args = parser.parse_args()
