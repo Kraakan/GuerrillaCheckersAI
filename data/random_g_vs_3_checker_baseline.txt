@@ -1,0 +1,3 @@
+Guerrilla wins: 19.72 %
+COIN wins: 80.28 %
+Avg. game length: 30.0831
