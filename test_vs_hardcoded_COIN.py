@@ -58,7 +58,7 @@ precentage_denominator = num_games/100.0
 game = guerrilla_checkers.game(num_checkers=num_checkers)
 COIN = DQN.HardCoded(0, game, device)
 
-g_results_array = np.zeros((len(g_indexes), 2))
+g_results_array = np.zeros((len(g_indexes), 3))
 
 # TODO: Go through results and only test untested models, to make adding models easier
 

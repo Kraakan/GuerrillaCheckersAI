@@ -57,8 +57,8 @@ num_games = 1000
 precentage_denominator = num_games/100.0
 
 game = guerrilla_checkers.game(num_checkers=num_checkers)
-g_results_array = np.zeros((len(g_indexes), 2))
-c_results_array = np.zeros((len(c_indexes), 2))
+g_results_array = np.zeros((len(g_indexes), 3))
+c_results_array = np.zeros((len(c_indexes), 3))
 prev_type = ""
 print("Testing guerrilla agents against random moves:")
 for i, g_index in enumerate(g_indexes):
