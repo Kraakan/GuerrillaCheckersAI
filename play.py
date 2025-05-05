@@ -18,8 +18,15 @@ parser.add_argument(
     default=6,
     help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
 )
+parser.add_argument(
+    "--branching_test",
+    action='store_true',
+    help="Measure branching factor."
+    )
+
 args = parser.parse_args()
 num_checkers = args.num_checkers
+branching_test = args.branching_test
 #breakpoint()
 def start(stdscr):
     
@@ -599,5 +606,20 @@ def review_game(stdscr, game_record, move_history):
             turn = 0
         if turn >= len(move_history):
             turn = len(move_history)
-
-wrapper(start)
+if not branching_test:
+    wrapper(start)
+else:
+    from statistics import fmean
+    random_game = guerrilla_checkers.game(num_checkers=num_checkers)
+    player = 1
+    branches = []
+    while not random_game.is_game_over():
+        valid_actions = random_game.get_valid_actions(player)
+        valid_actions_list = [k for k, v in valid_actions.items() if v == True]
+        if len(valid_actions_list) > 0:
+            selected_move = random.choice(valid_actions_list)
+            branches.append(len(valid_actions_list))
+            random_game.take_action(player, selected_move)
+        player = int(random_game.guerrillas_turn)
+    branching_factor = fmean(branches)
+    print(branching_factor)
