@@ -23,10 +23,10 @@ Victory: The player who clears the board of all enemy pieces at the end of his t
 ### Installation
 
 #### Clone repository
-`git clone https://github.com/Kraakan/GuerillaCheckersAI.git`
+`git clone https://github.com/Kraakan/GuerrillaCheckersAI.git`
 
 #### Create python env (recommended!)
-`cd GuerillaCheckersAI`
+`cd GuerrillaCheckersAI`
 
 `python3 -m venv env`
 
