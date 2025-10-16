@@ -119,6 +119,8 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
         }
     if num_checkers < 6 and num_checkers > 0:
         training_info["description"] = training_info["description"] + " starting with " + str(num_checkers) + " COIN checkers."
+    if num_stones != 66:
+        training_info["description"] = training_info["description"] + " starting with " + str(num_stones) + " guerrilla stones."
     training_info.update(training_params)
     if c_target_net != None:
         c_model_path = target_dir  + 'coin_model_weights.pth'
@@ -166,6 +168,7 @@ while i_loop < num_loops:
     random_c = False
     hardcoded_c = False
     num_checkers = 6
+    num_stones = 66
     while i_agenda < len(agenda):
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
@@ -190,13 +193,16 @@ while i_loop < num_loops:
             if "hardcoded_c" in params:
                 hardcoded_c = True
             if "num_checkers" in params:
-                num_checkers = params["num_checkers"] # TODO: set game objects num checkers each training loop
+                num_checkers = params["num_checkers"]
+            if "num_stones" in params:
+                num_stones = params["num_stones"]
             print(params)
             break
     
     env.game.set_small_reward_factor(small_reward_factor)
     env.game.set_big_reward_factor(big_reward_factor)
     env.game.set_num_checkers(num_checkers)
+    env.game.set_num_stones(num_stones)
     print("Small reward factor:", small_reward_factor, " Big reward factor:", big_reward_factor)
     if torch.cuda.is_available():
         num_episodes = args.num_episodes

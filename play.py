@@ -19,6 +19,12 @@ parser.add_argument(
     help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
 )
 parser.add_argument(
+    "--num_stones",
+    type=int,
+    default=66,
+    help="Number of stones to place on the starting board. This is to shorten the game. Even numbers will be rounded up, and will have no effect if < 4. You can set it as high as you lie but t may lead to problems."
+)
+parser.add_argument(
     "--branching_test",
     action='store_true',
     help="Measure branching factor."
@@ -26,6 +32,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 num_checkers = args.num_checkers
+num_stones = args.num_stones
 branching_test = args.branching_test
 #breakpoint()
 def start(stdscr):
@@ -43,8 +50,8 @@ def start(stdscr):
         stdscr.addstr("Do you want to play with 0, 1 or 2 players? (q to quit) (0/1/2/q)")
         player_choice = stdscr.getch()
         if player_choice == ord('0'): # 0
-            game_record, move_history = randomized_game(stdscr)
-            review_game(stdscr, game_record, move_history)
+            game_record, move_history, winner = randomized_game(stdscr)
+            review_game(stdscr, game_record, move_history, winner)
             break
         
         if player_choice == ord('1'):
@@ -246,7 +253,7 @@ def select_move(player, y, x, move_start = None):
         return (move_start[0], move_start[1], move_y, move_x)
 
 
-def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None):
+def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None, debug = False, message1 = None, message2 = None):
     stdscr.move(0, 0)
 
     stones, squares, grid = guerrilla_checkers.decompress_board(board)
@@ -267,7 +274,11 @@ def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None):
     bullet = u"\u2022"
     stdscr.addstr("  A B C D E F G H\n")
     stdscr.addstr(u" \u2588\u2588\u259B\u2580\u259C\u2588\u259B\u2580\u259C\u2588\u259B\u2580\u259C\u2588\u259B\u2580\u259C")
-    if move != None:
+    if message1 == None:
+        stdscr.addstr(str(board[0]) + " unplayed stones remaining.")
+    else:
+        stdscr.addstr(message1)
+    if debug & (move != None):
         stdscr.addstr(str(move))
     
     for i, row in enumerate(squares):
@@ -348,13 +359,13 @@ def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None):
     # Move cursor to next row?
     stdscr.addstr("\n ")
     stdscr.addstr(u"\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2599\u2584\u259F\u2588\u2588")
-    stdscr.addstr("y:" + str(yy) + " x:" + str(xx))
+    if debug: stdscr.addstr("y:" + str(yy) + " x:" + str(xx))
     # curses.color_pair(5) curses.A_REVERSE)
     stdscr.chgat(yy, xx, 1, curses.color_pair(5) | curses.A_BLINK)
     if move != None:
         highlight = get_highlight(move, player)
         stdscr.move(16, 18)
-        stdscr.addstr(str(highlight))
+        if debug: stdscr.addstr(str(highlight))
         y1, x1, y2, x2 = highlight
         if player == 0:
             stdscr.chgat(y1, x1, 1, curses.color_pair(2))
@@ -364,8 +375,13 @@ def draw_board_with_curses(board, stdscr, yy, xx, move = None, player = None):
             stdscr.chgat(y2, x2, 1, curses.color_pair(4))
     stdscr.move(0, 0)
 
+    if message2 != None:
+        stdscr.move(2, 18)
+        stdscr.addstr(message2)
+        stdscr.move(0, 0)
+
 def two_player_game(stdscr):
-    twoplayergame = guerrilla_checkers.game()
+    twoplayergame = guerrilla_checkers.game(num_checkers=num_checkers, num_stones=num_stones)
     player = 1
     yy = 1
     xx = 1
@@ -449,7 +465,7 @@ def two_player_game(stdscr):
     return twoplayergame.game_record
 
 def one_player_game(human, ai_model_path, stdscr, network="basic DQN"):
-    oneplayergame = guerrilla_checkers.game()
+    oneplayergame = guerrilla_checkers.game(num_checkers=num_checkers, num_stones=num_stones)
     state, player = oneplayergame.get_current_state()
     n_observations = len(state)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -551,10 +567,10 @@ def one_player_game(human, ai_model_path, stdscr, network="basic DQN"):
     return oneplayergame.game_record
 
 def randomized_game(stdscr, draw=False):
-    random_game = guerrilla_checkers.game(num_checkers=num_checkers)
+    random_game = guerrilla_checkers.game(num_checkers=num_checkers, num_stones=num_stones)
     player = 1
     move_history = []
-    if draw:
+    if draw: # There's probably not ebough time to show any of this
         draw_board_with_curses(random_game.board, stdscr, 0, 0)
     while not random_game.is_game_over():
         player = int(random_game.guerrillas_turn)
@@ -580,19 +596,30 @@ def randomized_game(stdscr, draw=False):
         stdscr.addstr("guerrilla wins")
     if winner == 1:
         stdscr.addstr("COIN wins")
-    return random_game.game_record, move_history
+    return random_game.game_record, move_history, winner
 
-def review_game(stdscr, game_record, move_history):
+def review_game(stdscr, game_record, move_history, winner):
     stdscr.clear()
     stdscr.addstr("RESULTS")
     turn = 0
     player = 1
     while True:
+        message1 = None
+        message2 = None
         if turn > 0:
             player, previous_move = move_history[turn - 1]
+            if player == 0:
+                message2 = "COIN's turn."
+            if player == 1:
+                message2 = "guerilla's turn."
         else:
             previous_move = None
-        draw_board_with_curses(game_record[turn], stdscr, 0, 0, move = previous_move, player = player)
+        if turn >= len(move_history):
+            if winner == -1:
+                message1 = "Guerrilla wins!"
+            if winner == 1:
+                message1 = "COIN wins!"
+        draw_board_with_curses(game_record[turn], stdscr, 0, 0, move = previous_move, player = player, message1 = message1, message2 = message2)
         stdscr.addstr("Flip through turns with arrow keys, press q to quit\n")
         c = stdscr.getch()
         if c == ord('q'):
@@ -610,7 +637,7 @@ if not branching_test:
     wrapper(start)
 else:
     from statistics import fmean
-    random_game = guerrilla_checkers.game(num_checkers=num_checkers)
+    random_game = guerrilla_checkers.game(num_checkers=num_checkers, num_stones=num_stones)
     player = 1
     branches = []
     while not random_game.is_game_over():

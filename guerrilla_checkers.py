@@ -218,12 +218,16 @@ except:
 
 class game():
     # Game object, will probably be instantiated for each game
-    def __init__(self, num_checkers=6, small_reward_factor = 1.0, big_reward_factor = 1.0):
+    def __init__(self, num_checkers=6, num_stones=66, small_reward_factor = 1.0, big_reward_factor = 1.0):
         self.board = rules["starting board"]
         self.starting_checkers_num = num_checkers
+        if num_stones % 2 != 0:
+            num_stones = num_stones + 1
+        self.starting_stones_num = num_stones
         self.small_reward_factor = small_reward_factor
         self.big_reward_factor = big_reward_factor
         self.initialize_checkers()
+        self.initialize_stones()
         self.guerrillas_turn = True
         # NOTE: I may want to remove or disable game_record for training!
         self.game_record = [self.board]
@@ -241,21 +245,30 @@ class game():
                 self.board[index] = 0
             for index in self.checker_positions:
                 self.board[index] = 1
+    
+    def set_num_stones(self, new_num): # This will affect the next reset and scoring
+        self.starting_stones_num = new_num
+    
+    def initialize_stones(self):
+        if self.starting_stones_num < 4:
+            self.starting_stones_num = 4
+        self.board[0] = self.starting_stones_num
 
     def reset(self):
         self.board = rules["starting board"]
         self.initialize_checkers()
+        self.initialize_stones()
         self.guerrillas_turn = True
         self.game_record = [self.board]
         self.COINjump = None
         normalized_board = copy.copy(self.board)
-        normalized_board[0] /= 66 
+        normalized_board[0] /= self.starting_stones_num 
         return normalized_board
         
     def get_current_state(self):
         # This function returns the current state of the game.
         normalized_board = copy.copy(self.board)
-        normalized_board[0] /= 66
+        normalized_board[0] /= self.starting_stones_num
         return normalized_board, self.guerrillas_turn
     
     def get_valid_action_indexes(self, player):
@@ -266,7 +279,7 @@ class game():
                     move_list = list(rules["all guerrilla moves"].keys())
                     # TODO: Find out if it's necessary to make a copy of the board for each move
                     # First move, if the guerrilla player is still holding all their stones
-                    if self.board[0] == 66:
+                    if self.board[0] == self.starting_stones_num:
                         # Permit all moves
                         indexes = list(range(len(move_list)))
                     else:
@@ -341,7 +354,7 @@ class game():
         # and the second spot is where it ends up.
         
         moves = None
-        #if self.board[0] < 66:
+        #if self.board[0] < self.starting_stones_num:
             #self.checker_positions = list_checker_positions(self.board)
         # player: 1 = guerrilla 0 = COIN
         # Not sure if I need to check whose turn it is, 
@@ -364,7 +377,7 @@ class game():
         # This function checks if the game is over and returns a boolean value.
         if self.board[0] <= 0:
             return True
-        if sum(self.board[33:]) == 0 and self.board[0] < 66:
+        if sum(self.board[33:]) == 0 and self.board[0] < self.starting_stones_num:
             return True
         self.checker_positions = list_checker_positions(self.board)
         if len(self.checker_positions) == 0:
@@ -381,7 +394,7 @@ class game():
         # -1 = guerrilla wins, 1 = COIN wins, 0 = game isn't over
         if self.board[0] <= 0:
             return 1
-        if sum(self.board[33:]) == 0 and self.board[0] < 66:
+        if sum(self.board[33:]) == 0 and self.board[0] < self.starting_stones_num:
             return 1
         self.checker_positions = list_checker_positions(self.board) # Unsure if this is redundant, let's hope it doesn't break things
         if len(self.checker_positions) == 0:
@@ -445,7 +458,7 @@ class game():
         move_dict = copy.copy(rules["all guerrilla moves"])
         # TODO: Find out if it's necessary to make a copy of the board for each move
         # First move, if the guerrilla player is still holding all their stones
-        if self.board[0] == 66:
+        if self.board[0] == self.starting_stones_num:
             # Permit all moves
             move_dict = dict.fromkeys(move_dict, True)
         else:
@@ -525,7 +538,7 @@ class game():
                         self.guerrillas_turn = False
         self.board = new_board
         normalized_board = copy.copy(self.board)
-        normalized_board[0] /= 66
+        normalized_board[0] /= self.starting_stones_num
         reward = self.get_reward(player)
         self.game_record.append(self.board)
         terminated = self.is_game_over()
