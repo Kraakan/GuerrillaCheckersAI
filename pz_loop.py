@@ -14,6 +14,7 @@ import torch
 import datetime
 import json
 from pathlib import Path
+import re
 
 import csv
 
@@ -380,8 +381,11 @@ while i_loop < num_loops:
     else:
         save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN", new_index)
     plot_wins(show_result=False)
-    index_or_indexes = new_dir.split("/")[-1]
-    plt.savefig(new_dir + 'pettingzoo_' + index_or_indexes + "_trained_" + "_".join(str(datetime.datetime.now()).split())+ '.png')
+    index_or_indexes = new_dir.split("/")[-2]
+    filename = 'pettingzoo_' + index_or_indexes + "_trained_" + "_".join(str(datetime.datetime.now()).split())+ '.png'
+    # Filter out Windows reserved charachters
+    filename = re.sub('[<>:"/\|?*]', '-', filename)
+    plt.savefig(new_dir + filename)
 
 
 
