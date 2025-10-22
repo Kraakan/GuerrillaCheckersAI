@@ -1710,5 +1710,225 @@
                 "punish_loser": 1
             }
         ]
+    },
+    "76": {
+        "index": "76",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/76/guerrilla_model_weights.pth",
+        "name": "colorless Besarta",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "77": {
+        "index": "77",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/77/guerrilla_model_weights.pth",
+        "name": "ethical Ingeg\u00e4rd",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 2.0,
+                "big_reward": 0.02,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "78": {
+        "index": "78",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/78/guerrilla_model_weights.pth",
+        "name": "advanced Lauren",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "79": {
+        "index": "79",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/79/guerrilla_model_weights.pth",
+        "name": "short-term Merete",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.8,
+                "big_reward": 0.04,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "80": {
+        "index": "80",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/80/guerrilla_model_weights.pth",
+        "name": "outrageous Ilham",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "81": {
+        "index": "81",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/81/guerrilla_model_weights.pth",
+        "name": "gracious Merena",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.6,
+                "big_reward": 0.06,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "82": {
+        "index": "82",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/82/guerrilla_model_weights.pth",
+        "name": "winged Anne-Marjut",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "83": {
+        "index": "83",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/83/guerrilla_model_weights.pth",
+        "name": "bumpy Kaiho",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.4,
+                "big_reward": 0.08,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "84": {
+        "index": "84",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/84/guerrilla_model_weights.pth",
+        "name": "true Odelia",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "85": {
+        "index": "85",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/85/guerrilla_model_weights.pth",
+        "name": "trim Eulaalia",
+        "history": [
+            {
+                "description": "10000 games against randomly moving opponent starting with 1 COIN checkers. starting with 12 guerrilla stones.",
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 1.2,
+                "big_reward": 0.1,
+                "punish_loser": 1
+            }
+        ]
     }
 }
