@@ -355,7 +355,7 @@ while i_loop < num_loops:
                 result = env.game.get_game_result()
                 wins.append(result)
                 # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
-                game_lengths.append((66 - env.game.board[0])//2)
+                game_lengths.append((num_stones - env.game.board[0])//2)
                 plot_wins()
                 if i_episode % 500 == 100: #TODO: adjust
                     # Save game record
