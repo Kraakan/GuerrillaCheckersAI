@@ -51,9 +51,6 @@ def play(game, AI, AI_side):
     game_length = (game.starting_stones_num - game.board[0])//2
     return winner, game_length
 
-g_indexes = []
-c_indexes = []
-
 # TODO: Go through results and only test untested models, to make adding models easier
 if num_checkers == 6:
     g_file_name = 'data/g_vs_random.xlsx'
@@ -83,6 +80,9 @@ except(FileNotFoundError):
     new_c_file = True
 
 
+g_indexes = []
+c_indexes = []
+
 for key, item in model_info.items():
     if item["player"] == "1":
         g_indexes.append(key)
@@ -96,7 +96,7 @@ precentage_denominator = num_games/100.0
 if not new_g_file:
     num_removals = 0
     for index in g_indexes:
-        if int(index) in g_results_df:
+        if int(index) in g_results_df.index:
             g_indexes.remove(index)
             num_removals += 1
     print(num_removals, "guerrilla indexes with data found and removed.")
@@ -104,7 +104,7 @@ if not new_g_file:
 if not new_c_file:
     num_removals = 0
     for index in c_indexes:
-        if int(index) in c_results_df:
+        if int(index) in c_results_df.index:
             c_indexes.remove(index)
             num_removals += 1
     print(num_removals, "COIN indexes with data found and removed.")
@@ -175,18 +175,27 @@ for i, c_index in enumerate(c_indexes):
     avg_length = statistics.mean(lengths)
     c_results_array[i] = [c_index, win_rate, avg_length]
 
-g_results_df = pd.DataFrame(data=g_results_array,
-                          columns=["Model index", "Win rate", "Avg. game length"])
 
-g_results_df = g_results_df.set_index("Model index")
+new_g_results_df = pd.DataFrame(data=g_results_array,
+                            columns=["Model index", "Win rate", "Avg. game length"])
 
+new_g_results_df = new_g_results_df.set_index("Model index")
+
+if new_g_file:
+    g_results_df = new_g_results_df
+else:
+    pd.concat([g_results_df, new_g_results_df])
 g_results_df.to_excel(g_file_name, sheet_name=g_sheet_name)
 
-c_results_df = pd.DataFrame(data=c_results_array,
-                          index=c_indexes,
-                          columns=["Model index", "Win rate", "Avg. game length"])
+new_c_results_df = pd.DataFrame(data=c_results_array,
+                        index=c_indexes,
+                        columns=["Model index", "Win rate", "Avg. game length"])
 
-c_results_df = c_results_df.set_index("Model index")
+new_c_results_df = new_c_results_df.set_index("Model index")
 
+if new_c_file:
+    c_results_df = new_c_results_df
+else:
+    pd.concat([c_results_df, new_c_results_df])
 c_results_df.to_excel(c_file_name, sheet_name=c_sheet_name)
 
