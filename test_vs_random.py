@@ -65,6 +65,7 @@ else:
 
 try:
     g_results_df = pd.read_excel(g_file_name)
+    g_results_df = g_results_df.set_index("Model index")
     new_g_file = False
     print("Loaded data file", g_file_name)
 except(FileNotFoundError):
@@ -73,6 +74,7 @@ except(FileNotFoundError):
 
 try:
     c_results_df = pd.read_excel(c_file_name)
+    c_results_df = c_results_df.set_index("Model index")
     new_c_file = False
     print("Loaded data file", c_file_name)
 except(FileNotFoundError):
