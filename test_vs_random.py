@@ -97,17 +97,17 @@ precentage_denominator = num_games/100.0
 # Possibly: Remove existing indexes, then add new results to old ones
 if not new_g_file:
     num_removals = 0
-    for index in g_indexes:
-        if int(index) in g_results_df.index:
-            g_indexes.remove(index)
+    for index in g_results_df.index:
+        if str(index) in g_indexes:
+            g_indexes.remove(str(index))
             num_removals += 1
     print(num_removals, "guerrilla indexes with data found and removed.")
 
 if not new_c_file:
     num_removals = 0
-    for index in c_indexes:
-        if int(index) in c_results_df.index:
-            c_indexes.remove(index)
+    for index in c_results_df.index:
+        if str(index) in c_indexes:
+            c_indexes.remove(str(index))
             num_removals += 1
     print(num_removals, "COIN indexes with data found and removed.")
 
@@ -115,7 +115,7 @@ if len(c_indexes) == 0 and len(g_indexes) == 0:
     print("Nothing to test :)")
     sys.exit()
 else:
-    print("Will run", c_indexes + g_indexes, "test games.")
+    print("Will run", len(c_indexes) + len(g_indexes), "test games.")
 
 game = guerrilla_checkers.game(num_checkers=num_checkers)
 g_results_array = np.zeros((len(g_indexes), 3))
