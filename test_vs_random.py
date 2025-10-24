@@ -186,7 +186,8 @@ new_g_results_df = new_g_results_df.set_index("Model index")
 if new_g_file:
     g_results_df = new_g_results_df
 else:
-    pd.concat([g_results_df, new_g_results_df])
+    g_results_df = pd.concat([g_results_df, new_g_results_df])
+
 g_results_df.to_excel(g_file_name, sheet_name=g_sheet_name)
 
 new_c_results_df = pd.DataFrame(data=c_results_array,
@@ -198,6 +199,7 @@ new_c_results_df = new_c_results_df.set_index("Model index")
 if new_c_file:
     c_results_df = new_c_results_df
 else:
-    pd.concat([c_results_df, new_c_results_df])
+    c_results_df = pd.concat([c_results_df, new_c_results_df])
+
 c_results_df.to_excel(c_file_name, sheet_name=c_sheet_name)
 
