@@ -114,6 +114,8 @@ if not new_c_file:
 if len(c_indexes) == 0 and len(g_indexes) == 0:
     print("Nothing to test :)")
     sys.exit()
+else:
+    print("Will run", c_indexes + g_indexes, "test games.")
 
 game = guerrilla_checkers.game(num_checkers=num_checkers)
 g_results_array = np.zeros((len(g_indexes), 3))
