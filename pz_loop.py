@@ -34,6 +34,11 @@ parser.add_argument(
     default=10000,
     help="Number of games to run per training session. This number won't be used if torch.cuda.is_available() == False"
 )
+parser.add_argument(
+    "--no_saving",
+    action="store_true",
+    help="Prevents models and model data from being saved (for testing)."
+)
 
 args = parser.parse_args()
 
@@ -170,6 +175,7 @@ while i_loop < num_loops:
     hardcoded_c = False
     num_checkers = 6
     num_stones = 66
+    reward_saltation_factor = 0. # Toggle with math (change to logic?)
     while i_agenda < len(agenda):
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
@@ -197,6 +203,8 @@ while i_loop < num_loops:
                 num_checkers = params["num_checkers"]
             if "num_stones" in params:
                 num_stones = params["num_stones"]
+            if "reward_saltation" in params:
+                reward_saltation_factor = float(params["reward_saltation"])
             print(params)
             break
     
@@ -208,8 +216,9 @@ while i_loop < num_loops:
     if torch.cuda.is_available():
         num_episodes = args.num_episodes
     else: # Don't train with cpu!
-        num_episodes = 2
+        num_episodes = 200
         print(num_loops)
+        print("Running with cpu, only for testing!")
     
     # Ugly, but I need to track this file in att least two places
     try:
@@ -219,12 +228,13 @@ while i_loop < num_loops:
         print("No model info found")
         model_info = {}
     new_index = len(model_info.items())
-    if hardcoded_c or random_c:
-        new_dir = 'models/' + str(new_index) + '/'
-    else:
-        new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
-    print("Creating dir", new_dir)
-    Path(new_dir).mkdir()
+    if not args.no_saving:
+        if hardcoded_c or random_c:
+            new_dir = 'models/' + str(new_index) + '/'
+        else:
+            new_dir = 'models/' + str(new_index) + "-" + str(new_index + 1) + '/' # I decided "twins" should share a dir
+        print("Creating dir", new_dir)
+        Path(new_dir).mkdir()
 
     # 0 for COIN, 1 for guerrilla
     # These will hopefully be easy to replace with other types of agent
@@ -238,9 +248,13 @@ while i_loop < num_loops:
     # Player designators correstonds to list indexes
     players = [COIN, guerrilla]
 
+    # For reward saltation:
+    avg_rewards = [0., 0.]
+
     wins = []
     game_lengths = []
     start_time = str(datetime.datetime.now())
+    print("Started at", start_time)
 
     for i_episode in range(num_episodes):
         # Initialize the environment and get its state
@@ -248,8 +262,12 @@ while i_loop < num_loops:
         prev_player = 1
         state = env.reset()
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
-        if i_episode % 100 == 0:
-            print("Running episode", i_episode+1, end="\r")
+        
+        # For reward saltation:
+        episode_rewards = [0., 0.]
+
+        if i_episode % 1 == 0: # ONLY TESTING!
+            print("Average rewards [COIN, guerrilla]:", avg_rewards, "Running episode", i_episode+1, end="\r")
         terminated = False
         while not terminated:
             observation, acting_player = env._get_obs()
@@ -265,18 +283,28 @@ while i_loop < num_loops:
                 loser = acting_player
                 # Other player = abs(acting_player -1)
                 winner = abs(loser -1)
+
+                # Calculate saltation_size for -1:
+                saltation_size = (-1. - avg_rewards[loser]) * reward_saltation_factor
+
                 # distribute rewards to both players
-                loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
+                loss_reward = torch.tensor([(-1. + saltation_size) * big_reward_factor], dtype=torch.float32, device=device)
                 players[loser].push_memory(state, action, next_state, loss_reward)
+                episode_rewards[loser] -= 1.
                 #The winner's previous action should be used here
                 #It's not possible for COIN to lose on chain jumps, is it?
-                win_reward = torch.tensor([1. * big_reward_factor], dtype=torch.float32, device=device)
+
+                # Calculate saltation_size for 1:
+                saltation_size = (1. - avg_rewards[winner]) * reward_saltation_factor
+
+                win_reward = torch.tensor([(1. + saltation_size) * big_reward_factor], dtype=torch.float32, device=device)
                 players[winner].push_memory(state, prev_action, next_state, win_reward)
-                if i_episode % 100 == 0:
-                    if winner == 0:
-                        print("No moves, COIN wins! Reward:" , win_reward, "Punishment:", loss_reward)
-                    if winner == 1:
-                        print("No moves, guerrilla wins! Reward:" , loss_reward, "Punishment:", loss_reward)
+                episode_rewards[winner] += 1.
+                # Let's actually see if it ever happens!
+                if winner == 0:
+                    print("No moves, COIN wins! Reward:" , win_reward, "Punishment:", loss_reward)
+                if winner == 1:
+                    print("No moves, guerrilla wins! Reward:" , loss_reward, "Punishment:", loss_reward)
             else:
                 if prev_player != acting_player:
                     prev_player = abs(prev_player -1)
@@ -285,17 +313,22 @@ while i_loop < num_loops:
                 action = players[acting_player].select_action(state)
                 action_to_pass = players[acting_player].action_list[action.item()]
                 observation, reward, terminated, truncated, _ = env.step(action_to_pass, acting_player)
-                #if terminated and no_punish and reward < 0: # Now leaning towards applying this punishment in all cases
-                #    reward = 0.0
-                reward = torch.tensor([reward], dtype=torch.float32, device=device)
+                if terminated and no_punish and reward < 0: # Now leaning towards applying this punishment in all cases
+                    reward = 0.
+
+                # Calculate reward saltation_size:
+                saltation_size = (reward - avg_rewards[acting_player]) * reward_saltation_factor
+
+                reward = torch.tensor([reward + saltation_size], dtype=torch.float32, device=device)
+                episode_rewards[acting_player] += reward
                 if i_episode % 4000 == 0:
                     if acting_player == 0:
-                        print("COIN's turn. Reward:" , reward)
+                        print("\nCOIN's turn. Reward:" , reward)
                     if acting_player == 1:
-                        print("Guerrilla's turn. Reward:" , reward)
+                        print("\nGuerrilla's turn. Reward:" , reward)
                     if terminated:
                         result = env.game.get_game_result()
-                        print("Game over!", end=" ")
+                        print("\nGame over!", end=" ")
                         if result == -1:
                             print("Guerrilla wins!")
                         if result == 1:
@@ -318,6 +351,7 @@ while i_loop < num_loops:
                     target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
                 players[acting_player].target_net.load_state_dict(target_net_state_dict)
             if terminated and not no_punish:
+                print("The whip cracks!")
                 # Try punishing loser
                 result = env.game.get_game_result() # Result code:
                                                     # -1 = guerrilla wins
@@ -337,6 +371,11 @@ while i_loop < num_loops:
                             print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
                         if loser == 1:
                             print("Guerrilla loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
+                    
+
+                    # Calculate reward saltation_size:
+                    saltation_size = (loss_reward - avg_rewards[loser]) * reward_saltation_factor
+
                     # Store the transition in memory
                     # TODO: Replace state with prev_state
                     players[loser].push_memory(prev_state, prev_action, next_state, loss_reward)
@@ -355,9 +394,16 @@ while i_loop < num_loops:
                 result = env.game.get_game_result()
                 wins.append(result)
                 # Game length is inferred from the number of stones left to play, since guerrilla always plays exacly 2/turn
-                game_lengths.append((num_stones - env.game.board[0])//2)
+                game_length = (num_stones - env.game.board[0])//2
+                game_lengths.append(game_length)
+
+                # Calculate average for reward saltation:
+                
+                for i in [0,1]:
+                    avg_rewards[i] = avg_rewards[i] + ((episode_rewards[i]/float(game_length)) - avg_rewards[i])/(i_episode + 1)
+
                 plot_wins()
-                if i_episode % 500 == 100: #TODO: adjust
+                if i_episode % 500 == 100 and not args.no_saving: #TODO: adjust
                     # Save game record
                     record = env.game.game_record
                     with open(new_dir + str(i_episode) + ".csv", "w", newline='') as csvfile:
@@ -370,22 +416,24 @@ while i_loop < num_loops:
             state = next_state
     end_time = str(datetime.datetime.now())
     i_loop += 1
-    agenda[i_agenda]["status"] = "done"
-    with open('training_agenda.json', 'w') as f:
-        json.dump(agenda, f, indent=4)
-    with open(new_dir + 'time.txt', 'w') as f:
-        f.write(start_time + "\n" + end_time)
-        f.close()
-    if hardcoded_c or random_c:
-        save_models(new_dir, None, players[1].target_net, network + " DQN", new_index)
-    else:
-        save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN", new_index)
-    plot_wins(show_result=False)
-    index_or_indexes = new_dir.split("/")[-2]
-    filename = 'pettingzoo_' + index_or_indexes + "_trained_" + "_".join(str(datetime.datetime.now()).split())+ '.png'
-    # Filter out Windows reserved charachters
-    filename = re.sub('[<>:"/\|?*]', '-', filename)
-    plt.savefig(new_dir + filename)
+    if not args.no_saving:
+        agenda[i_agenda]["status"] = "done"
+        with open('training_agenda.json', 'w') as f:
+            json.dump(agenda, f, indent=4)
+        with open(new_dir + 'time.txt', 'w') as f:
+            f.write(start_time + "\n" + end_time)
+            f.close()
+        if hardcoded_c or random_c:
+            save_models(new_dir, None, players[1].target_net, network + " DQN", new_index)
+        else:
+            save_models(new_dir, players[0].target_net, players[1].target_net, network + " DQN", new_index)
+        plot_wins(show_result=False)
+        index_or_indexes = new_dir.split("/")[-2]
+        filename = 'pettingzoo_' + index_or_indexes + "_trained_" + "_".join(str(datetime.datetime.now()).split())+ '.png'
+        # Filter out Windows reserved charachters
+        filename = re.sub('[<>:"/\|?*]', '-', filename)
+        plt.savefig(new_dir + filename)
+    else: print("\nFinished at", end_time)
 
 
 

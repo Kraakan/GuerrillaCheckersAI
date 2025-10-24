@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import random
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description="Test all available models against randomly moving opponents")
 parser.add_argument(
@@ -15,6 +16,12 @@ parser.add_argument(
     default=6,
     help="Number of checkers to place on the starting board. This is to give the guerrilla AI an easier challenge. Will have no effect if < 1 or > 5."
 )
+parser.add_argument( #TODO: Implement!
+    "--rerun",
+    action="store_true",
+    help="Re-run and overwrite old results."
+)
+
 args = parser.parse_args()
 num_checkers = args.num_checkers
 
@@ -41,12 +48,41 @@ def play(game, AI, AI_side):
             selected_move = random.choice(valid_actions_list)
         game.take_action(whose_turn_it_is, selected_move)
     winner = game.get_game_result()
-    game_length = (66 - game.board[0])//2
+    game_length = (game.starting_stones_num - game.board[0])//2
     return winner, game_length
 
 g_indexes = []
 c_indexes = []
+
 # TODO: Go through results and only test untested models, to make adding models easier
+if num_checkers == 6:
+    g_file_name = 'data/g_vs_random.xlsx'
+    g_sheet_name = 'guerrilla vs. random'
+    c_file_name = 'data/c_vs_random.xlsx'
+    c_sheet_name = 'COIN vs. random'
+else:
+    g_file_name = 'data/g_vs_random_' + str(num_checkers) + '_checkers.xlsx'
+    g_sheet_name = 'g vs. random, ' + str(num_checkers) + ' checkers'
+    c_file_name = 'data/c_vs_random' + str(num_checkers) + '_checkers.xlsx'
+    c_sheet_name = 'C vs. random, ' + str(num_checkers) + ' checkers'
+
+try:
+    g_results_df = pd.read_excel(g_file_name)
+    new_g_file = False
+    print("Loaded data file", g_file_name)
+except(FileNotFoundError):
+    print("No old data found!")
+    new_g_file = True
+
+try:
+    c_results_df = pd.read_excel(c_file_name)
+    new_c_file = False
+    print("Loaded data file", c_file_name)
+except(FileNotFoundError):
+    print("No old data found!")
+    new_c_file = True
+
+
 for key, item in model_info.items():
     if item["player"] == "1":
         g_indexes.append(key)
@@ -55,6 +91,27 @@ for key, item in model_info.items():
 
 num_games = 1000
 precentage_denominator = num_games/100.0
+
+# Possibly: Remove existing indexes, then add new results to old ones
+if not new_g_file:
+    num_removals = 0
+    for index in g_indexes:
+        if int(index) in g_results_df:
+            g_indexes.remove(index)
+            num_removals += 1
+    print(num_removals, "guerrilla indexes with data found and removed.")
+
+if not new_c_file:
+    num_removals = 0
+    for index in c_indexes:
+        if int(index) in c_results_df:
+            c_indexes.remove(index)
+            num_removals += 1
+    print(num_removals, "COIN indexes with data found and removed.")
+
+if len(c_indexes) == 0 and len(g_indexes) == 0:
+    print("Nothing to test :)")
+    sys.exit()
 
 game = guerrilla_checkers.game(num_checkers=num_checkers)
 g_results_array = np.zeros((len(g_indexes), 3))
@@ -123,10 +180,7 @@ g_results_df = pd.DataFrame(data=g_results_array,
 
 g_results_df = g_results_df.set_index("Model index")
 
-if num_checkers == 6:
-    g_results_df.to_excel('data/g_vs_random.xlsx', sheet_name='guerrilla vs. random')
-else:
-    g_results_df.to_excel('data/g_vs_random_' + str(num_checkers) + '_checkers.xlsx', sheet_name='g vs. random, ' + str(num_checkers) + ' checkers')
+g_results_df.to_excel(g_file_name, sheet_name=g_sheet_name)
 
 c_results_df = pd.DataFrame(data=c_results_array,
                           index=c_indexes,
@@ -134,8 +188,5 @@ c_results_df = pd.DataFrame(data=c_results_array,
 
 c_results_df = c_results_df.set_index("Model index")
 
-if num_checkers == 6:
-    c_results_df.to_excel('data/c_vs_random.xlsx', sheet_name='COIN vs. random')
-else:
-    c_results_df.to_excel('data/c_vs_random' + str(num_checkers) + '_checkers.xlsx', sheet_name='C vs. random, ' + str(num_checkers) + ' checkers')
+c_results_df.to_excel(c_file_name, sheet_name=c_sheet_name)
 
