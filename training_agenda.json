@@ -725,11 +725,7 @@
         "num_checkers": 1
     },
     {
-<<<<<<< HEAD
-        "status": "testing saltation",
-=======
         "status": "done",
->>>>>>> 8e88b652bb833bc8801f025aa20e072133d5b111
         "BATCH_SIZE": 128,
         "GAMMA": 0.99,
         "EPS_START": 0.9,

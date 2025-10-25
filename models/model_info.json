@@ -1930,5 +1930,51 @@
                 "punish_loser": 1
             }
         ]
+    },
+    "86": {
+        "index": "86",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/86-87/coin_model_weights.pth",
+        "name": "pointed Ekku",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.1,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
+    },
+    "87": {
+        "index": "87",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/86-87/guerrilla_model_weights.pth",
+        "name": "pointed Tuula-Riitta",
+        "history": [
+            {
+                "description": "10000 games against twin",
+                "opponent id": null,
+                "batch_size": 128,
+                "gamma": 0.99,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.1,
+                "big_reward": 0.1,
+                "punish_loser": 0
+            }
+        ]
     }
 }
