@@ -180,7 +180,7 @@ while i_loop < num_loops:
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
         else:
-            print("Running agenda item no.", i_agenda)
+            print("Running agenda item no.", i_agenda, "of", len(agenda))
             params = agenda[i_agenda]
             DQN.BATCH_SIZE = params["BATCH_SIZE"]
             DQN.GAMMA = params["GAMMA"]
@@ -322,7 +322,7 @@ while i_loop < num_loops:
 
                 reward = torch.tensor([reward + saltation_size], dtype=torch.float32, device=device)
                 episode_rewards[acting_player] += reward
-                if i_episode % 4000 == 0:
+                if i_episode % num_episodes -1 == 0: # Just once, for now.
                     if acting_player == 0:
                         print("\nCOIN's turn. Reward:" , reward)
                     if acting_player == 1:
@@ -352,7 +352,6 @@ while i_loop < num_loops:
                     target_net_state_dict[key] = policy_net_state_dict[key]*DQN.TAU + target_net_state_dict[key]*(1-DQN.TAU)
                 players[acting_player].target_net.load_state_dict(target_net_state_dict)
             if terminated and not no_punish:
-                print("The whip cracks!")
                 # Try punishing loser
                 result = env.game.get_game_result() # Result code:
                                                     # -1 = guerrilla wins
