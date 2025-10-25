@@ -180,6 +180,7 @@ while i_loop < num_loops:
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
         else:
+            print("Running agenda item no.", i_agenda)
             params = agenda[i_agenda]
             DQN.BATCH_SIZE = params["BATCH_SIZE"]
             DQN.GAMMA = params["GAMMA"]
@@ -417,6 +418,7 @@ while i_loop < num_loops:
     end_time = str(datetime.datetime.now())
     i_loop += 1
     if not args.no_saving:
+        print("Completed agenda item no.", i_agenda)
         agenda[i_agenda]["status"] = "done"
         with open('training_agenda.json', 'w') as f:
             json.dump(agenda, f, indent=4)
