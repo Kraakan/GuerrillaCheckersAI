@@ -337,7 +337,7 @@ while i_loop < num_loops:
             #print("Running episode", i_episode+1, "Best/worst g reward:", best_g_reward, worst_g_reward, end="\r")
             #print("Running episode", i_episode+1, "Best/worst p:", best_jump_p, worst_jump_p, end="\r")
         terminated = False
-        turn = 0
+        turn = 1
         while not terminated:
             observation, acting_player = env._get_obs()
             acting_player =  int(acting_player)
@@ -353,8 +353,9 @@ while i_loop < num_loops:
                 # Other player = abs(acting_player -1)
                 winner = abs(loser -1)
 
-                win = 1. * turn/max_game_length
-                loss = -1. * turn/max_game_length
+                # Should be smaller the longer the game was, but watch out for /0!
+                win = 1. * max_game_length/turn
+                loss = -1. * max_game_length/turn
 
                 salted_win_reward = add_reward_saltation(win, prev_rewards[winner], reward_saltation_threshold)
                 salted_loss_reward  = add_reward_saltation(loss, prev_rewards[loser], reward_saltation_threshold)
@@ -387,7 +388,7 @@ while i_loop < num_loops:
 
                 # add reward saltation:
                 # Using best reward upt to this point in previous game for comparison
-                prev_best = max(prev_reward_lists[acting_player][0:turn + 1])
+                prev_best = max(prev_reward_lists[acting_player][0:turn])
                 salted_reward = add_reward_saltation(reward, prev_best, reward_saltation_threshold)
 
                 # Trying to see what's up with the suicidal guerillas
@@ -442,7 +443,8 @@ while i_loop < num_loops:
                 else:
                     loser = 0
                 if loser != acting_player:
-                    loss = -1. * turn/max_game_length * big_reward_factor
+                    # Should be smaller the longer the game was, but watch out for /0!
+                    loss = -1. * (max_game_length/turn) * big_reward_factor
                     # To what should this loss be compared?
                     # Let's say to the worst reward from last game
                     prev_nadir = min(prev_reward_lists[acting_player])
