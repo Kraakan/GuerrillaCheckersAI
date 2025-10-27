@@ -2850,5 +2850,341 @@
                 "punish_loser": 1
             }
         ]
+    },
+    "126": {
+        "index": "126",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/126-127/coin_model_weights.pth",
+        "name": "our Villemarkus",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.3,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "127": {
+        "index": "127",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/126-127/guerrilla_model_weights.pth",
+        "name": "our Sariina",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.3,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "128": {
+        "index": "128",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/128-129/coin_model_weights.pth",
+        "name": "busy Alexei",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.4,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "129": {
+        "index": "129",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/128-129/guerrilla_model_weights.pth",
+        "name": "busy Rona",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.4,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "130": {
+        "index": "130",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/130-131/coin_model_weights.pth",
+        "name": "alarming Jallu",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.5,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "131": {
+        "index": "131",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/130-131/guerrilla_model_weights.pth",
+        "name": "alarming Johanne",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.5,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "132": {
+        "index": "132",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/132-133/coin_model_weights.pth",
+        "name": "scarce Jarno",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.6,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "133": {
+        "index": "133",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/132-133/guerrilla_model_weights.pth",
+        "name": "scarce Annevi",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.6,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "134": {
+        "index": "134",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/134-135/coin_model_weights.pth",
+        "name": "tame Roni",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.7,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "135": {
+        "index": "135",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/134-135/guerrilla_model_weights.pth",
+        "name": "tame Natasha",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.7,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "136": {
+        "index": "136",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/136-137/coin_model_weights.pth",
+        "name": "vigilant Kerim",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.8,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "137": {
+        "index": "137",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/136-137/guerrilla_model_weights.pth",
+        "name": "vigilant Erja",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.8,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "138": {
+        "index": "138",
+        "player": "0",
+        "type": "basic DQN",
+        "path": "models/138-139/coin_model_weights.pth",
+        "name": "fat Rainer",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.9,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
+    },
+    "139": {
+        "index": "139",
+        "player": "1",
+        "type": "basic DQN",
+        "path": "models/138-139/guerrilla_model_weights.pth",
+        "name": "fat Kasperiina",
+        "history": [
+            {
+                "description": "10000 games against twin Attempted to use reward saltation.",
+                "opponent id": null,
+                "saltation_threshold": 0.9,
+                "batch_size": 128,
+                "gamma": 0.999,
+                "eps_start": 0.9,
+                "eps_end": 0.05,
+                "eps_decay": 1000,
+                "tau": 0.05,
+                "lr": 0.0001,
+                "small_reward": 0.5,
+                "big_reward": 0.5,
+                "punish_loser": 1
+            }
+        ]
     }
 }

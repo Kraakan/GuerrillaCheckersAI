@@ -1015,7 +1015,7 @@
         "reward_saltation": 2
     },
     {
-        "status": "testing reward saltation",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.999,
         "EPS_START": 0.9,
@@ -1029,7 +1029,7 @@
         "reward_saltation": 0.3
     },
     {
-        "status": "testing reward saltation",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.999,
         "EPS_START": 0.9,
@@ -1043,7 +1043,7 @@
         "reward_saltation": 0.4
     },
     {
-        "status": "testing reward saltation",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.999,
         "EPS_START": 0.9,
@@ -1057,7 +1057,7 @@
         "reward_saltation": 0.5
     },
     {
-        "status": "testing reward saltation",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.999,
         "EPS_START": 0.9,
@@ -1071,7 +1071,7 @@
         "reward_saltation": 0.6
     },
     {
-        "status": "testing reward saltation",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.999,
         "EPS_START": 0.9,
@@ -1085,7 +1085,7 @@
         "reward_saltation": 0.7
     },
     {
-        "status": "testing reward saltation",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.999,
         "EPS_START": 0.9,
@@ -1099,7 +1099,7 @@
         "reward_saltation": 0.8
     },
     {
-        "status": "testing reward saltation",
+        "status": "done",
         "BATCH_SIZE": 128,
         "GAMMA": 0.999,
         "EPS_START": 0.9,
