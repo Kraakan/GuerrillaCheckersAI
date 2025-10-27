@@ -77,10 +77,11 @@ class PettingZoo(AECEnv):
         # acting_player = self.agent_selection
         board, reward, terminated = self.game.take_action(acting_player, tuple(action))
         small_reward = self.game.get_small_reward(acting_player)
-        if abs(reward + small_reward) < 1:
-            reward = reward + small_reward
-        elif small_reward > abs(reward):
-            reward = small_reward
+        #if abs(reward + small_reward) < 1: # This was for keeping reward between, -1 and 1
+        #    reward = reward + small_reward
+        #elif small_reward > abs(reward):
+        #    reward = small_reward
+        reward = reward + small_reward
         observation, acting_player = self._get_obs()
         info = self._get_info()
         self.agent_selection = int(self.game.guerrillas_turn)

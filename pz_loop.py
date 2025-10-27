@@ -20,6 +20,9 @@ import csv
 
 import argparse
 
+import sys
+import math
+
 # Parse terminal arguments
 parser = argparse.ArgumentParser(description="Runs oppositional training")
 parser.add_argument(
@@ -89,7 +92,7 @@ def save_training_data(target_dir, name, wins, lengths):
         csvwriter.writerow(wins)
         csvwriter.writerow(lengths)
 
-def save_models(target_dir, c_target_net, g_target_net, network_type, new_index): # This is where I reversed the players - reorder to fix, but is it worth it?
+def save_models(target_dir, c_target_net, g_target_net, network_type, new_index):
     # Create unique names by combining adjectives and names from long lists 
     # (duplicates will be unlikely, and won't cause big problems anyway)
     adjectives = open("names/english-adjectives.txt", "r").read().split(sep="\n")
@@ -127,6 +130,9 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
         training_info["description"] = training_info["description"] + " starting with " + str(num_checkers) + " COIN checkers."
     if num_stones != 66:
         training_info["description"] = training_info["description"] + " starting with " + str(num_stones) + " guerrilla stones."
+    if reward_saltation_threshold != 0:
+        training_info["description"] = training_info["description"] + " Attempted to use reward saltation."
+        training_info["saltation_threshold"] = reward_saltation_threshold
     training_info.update(training_params)
     if c_target_net != None:
         c_model_path = target_dir  + 'coin_model_weights.pth'
@@ -163,6 +169,59 @@ def save_models(target_dir, c_target_net, g_target_net, network_type, new_index)
         json.dump(model_info, f, indent=4) # Will this make my json pretty?
     save_training_data(new_dir, "training-data", wins, game_lengths)
 
+epsilon = sys.float_info.epsilon
+
+best_jump_p = 0.0
+worst_jump_p = 0.0
+best_jump_x = 0.0
+worst_jump_x = 0.0
+best_salt = 0.0
+worst_salt = 2.0
+
+worst_g_reward = 0.0
+best_g_reward = 0.0
+
+def add_reward_saltation(reward, prev_reward, threshold):
+    # Trying to follow Zijian Hu et al.
+    if abs(prev_reward) < abs(reward):
+        p_denominator = abs(prev_reward) + epsilon
+    else:
+        p_denominator = abs(reward) + epsilon
+    p = reward - (prev_reward / p_denominator)
+    global best_jump_p, worst_jump_p, best_jump_x, worst_jump_x, best_salt, worst_salt
+    if p > best_jump_p:
+        best_jump_p = p
+    if p < worst_jump_p:
+        worst_jump_p = p
+    # Python doesn't have a sign function...
+    salt_lambda =  math.copysign(1, (reward - prev_reward))
+    x = p + salt_lambda
+
+    if x > threshold:
+        fx = math.atan(x * (math.pi/2) * (1/threshold))
+        if fx > best_jump_x:
+            best_jump_x = fx
+        if fx < worst_jump_x:
+            worst_jump_x = fx
+        boost = epsilon + (fx - salt_lambda) * abs(reward + epsilon)
+        new_reward = (reward + epsilon) + boost
+        if boost > best_salt:
+            best_salt = boost
+        return new_reward
+    elif x < threshold * -1:
+        fx = math.atan(x * (math.pi/2) * (1/threshold))
+        if fx > best_jump_x:
+            best_jump_x = fx
+        if fx < worst_jump_x:
+            worst_jump_x = fx
+        boost = epsilon + (fx + salt_lambda) * abs(reward + epsilon)
+        new_reward = reward + boost
+        if boost < worst_salt:
+            worst_salt = boost
+        return new_reward
+    else:
+        return reward
+
 i_loop = 0
 i_agenda = 0
 
@@ -175,12 +234,12 @@ while i_loop < num_loops:
     hardcoded_c = False
     num_checkers = 6
     num_stones = 66
-    reward_saltation_factor = 0. # Toggle with math (change to logic?)
+    reward_saltation_threshold = 0. # Toggle with math (change to logic?)
     while i_agenda < len(agenda):
         if agenda[i_agenda]["status"] == "done":
             i_agenda += 1
         else:
-            print("Running agenda item no.", i_agenda, "of", len(agenda))
+            print("Running agenda item no.", i_agenda, "of", len(agenda) -1)
             params = agenda[i_agenda]
             DQN.BATCH_SIZE = params["BATCH_SIZE"]
             DQN.GAMMA = params["GAMMA"]
@@ -205,7 +264,7 @@ while i_loop < num_loops:
             if "num_stones" in params:
                 num_stones = params["num_stones"]
             if "reward_saltation" in params:
-                reward_saltation_factor = float(params["reward_saltation"])
+                reward_saltation_threshold = float(params["reward_saltation"])
             print(params)
             break
     
@@ -251,6 +310,9 @@ while i_loop < num_loops:
 
     # For reward saltation:
     avg_rewards = [0., 0.]
+    prev_rewards = [0., 0.]
+    max_game_length = int(num_stones/2)
+    
 
     wins = []
     game_lengths = []
@@ -266,10 +328,16 @@ while i_loop < num_loops:
         
         # For reward saltation:
         episode_rewards = [0., 0.]
+        prev_c_reward_list = [0.0] * max_game_length
+        prev_g_reward_list = [0.0] * max_game_length
+        prev_reward_lists = [prev_c_reward_list, prev_g_reward_list]
 
         if i_episode % 1 == 0: # ONLY TESTING!
             print("Average rewards [COIN, guerrilla]:", avg_rewards, "Running episode", i_episode+1, end="\r")
+            #print("Running episode", i_episode+1, "Best/worst g reward:", best_g_reward, worst_g_reward, end="\r")
+            #print("Running episode", i_episode+1, "Best/worst p:", best_jump_p, worst_jump_p, end="\r")
         terminated = False
+        turn = 0
         while not terminated:
             observation, acting_player = env._get_obs()
             acting_player =  int(acting_player)
@@ -285,22 +353,22 @@ while i_loop < num_loops:
                 # Other player = abs(acting_player -1)
                 winner = abs(loser -1)
 
-                # Calculate saltation_size for -1:
-                saltation_size = (-1. - avg_rewards[loser]) * reward_saltation_factor
+                win = 1. * turn/max_game_length
+                loss = -1. * turn/max_game_length
+
+                salted_win_reward = add_reward_saltation(win, prev_rewards[winner], reward_saltation_threshold)
+                salted_loss_reward  = add_reward_saltation(loss, prev_rewards[loser], reward_saltation_threshold)
 
                 # distribute rewards to both players
-                loss_reward = torch.tensor([(-1. + saltation_size) * big_reward_factor], dtype=torch.float32, device=device)
+                loss_reward = torch.tensor([salted_loss_reward * big_reward_factor], dtype=torch.float32, device=device)
                 players[loser].push_memory(state, action, next_state, loss_reward)
-                episode_rewards[loser] -= 1.
+                episode_rewards[loser] -= salted_loss_reward * big_reward_factor
                 #The winner's previous action should be used here
                 #It's not possible for COIN to lose on chain jumps, is it?
 
-                # Calculate saltation_size for 1:
-                saltation_size = (1. - avg_rewards[winner]) * reward_saltation_factor
-
-                win_reward = torch.tensor([(1. + saltation_size) * big_reward_factor], dtype=torch.float32, device=device)
+                win_reward = torch.tensor([salted_win_reward * big_reward_factor], dtype=torch.float32, device=device)
                 players[winner].push_memory(state, prev_action, next_state, win_reward)
-                episode_rewards[winner] += 1.
+                episode_rewards[winner] += salted_win_reward * big_reward_factor
                 # Let's actually see if it ever happens!
                 if winner == 0:
                     print("No moves, COIN wins! Reward:" , win_reward, "Punishment:", loss_reward)
@@ -317,12 +385,21 @@ while i_loop < num_loops:
                 if terminated and no_punish and reward < 0: # Now leaning towards applying this punishment in all cases
                     reward = 0.
 
-                # Calculate reward saltation_size:
-                saltation_size = (reward - avg_rewards[acting_player]) * reward_saltation_factor
+                # add reward saltation:
+                # Using best reward upt to this point in previous game for comparison
+                prev_best = max(prev_reward_lists[acting_player][0:turn + 1])
+                salted_reward = add_reward_saltation(reward, prev_best, reward_saltation_threshold)
 
-                reward = torch.tensor([reward + saltation_size], dtype=torch.float32, device=device)
+                # Trying to see what's up with the suicidal guerillas
+                if acting_player == 1:
+                    if salted_reward > best_g_reward:
+                        best_g_reward = salted_reward
+                    if salted_reward < worst_g_reward:
+                        worst_g_reward = salted_reward
+
+                reward = torch.tensor([salted_reward], dtype=torch.float32, device=device)
                 episode_rewards[acting_player] += reward
-                if i_episode % num_episodes -1 == 0: # Just once, for now.
+                if i_episode == num_episodes -1: # Just once, for now.
                     if acting_player == 0:
                         print("\nCOIN's turn. Reward:" , reward)
                     if acting_player == 1:
@@ -365,16 +442,23 @@ while i_loop < num_loops:
                 else:
                     loser = 0
                 if loser != acting_player:
-                    loss_reward = torch.tensor([-1. * big_reward_factor], dtype=torch.float32, device=device)
-                    if i_episode % 1000 == 0:
+                    loss = -1. * turn/max_game_length * big_reward_factor
+                    # To what should this loss be compared?
+                    # Let's say to the worst reward from last game
+                    prev_nadir = min(prev_reward_lists[acting_player])
+                    salted_loss_reward = add_reward_saltation(loss, prev_nadir, reward_saltation_threshold)
+                    loss_reward = torch.tensor([salted_loss_reward], dtype=torch.float32, device=device)
+                    if i_episode % 100 == 0:
                         if loser == 0:
                             print("COIN loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
                         if loser == 1:
                             print("Guerrilla loses! Punishment:" , loss_reward, "Acting player:", acting_player, "Reward:", reward)
-                    
-
-                    # Calculate reward saltation_size:
-                    saltation_size = (loss_reward - avg_rewards[loser]) * reward_saltation_factor
+                    # Trying to see what's up with the suicidal guerillas
+                    if acting_player == 1:
+                        if salted_reward > best_g_reward:
+                            best_g_reward = salted_reward
+                        if salted_reward < worst_g_reward:
+                            worst_g_reward = salted_reward
 
                     # Store the transition in memory
                     # TODO: Replace state with prev_state
@@ -397,13 +481,14 @@ while i_loop < num_loops:
                 game_length = (num_stones - env.game.board[0])//2
                 game_lengths.append(game_length)
 
-                # Calculate average for reward saltation:
+                # Save reward for reward saltation:
                 
                 for i in [0,1]:
                     avg_rewards[i] = avg_rewards[i] + ((episode_rewards[i]/float(game_length)) - avg_rewards[i])/(i_episode + 1)
+                    prev_rewards[i] = episode_rewards[i]
 
                 plot_wins()
-                if i_episode % 500 == 100 and not args.no_saving: #TODO: adjust
+                if i_episode % 500 == 100 and not args.no_saving:
                     # Save game record
                     record = env.game.game_record
                     with open(new_dir + str(i_episode) + ".csv", "w", newline='') as csvfile:
@@ -414,6 +499,8 @@ while i_loop < num_loops:
             
             # Move to the next state
             state = next_state
+
+            turn += 1
     end_time = str(datetime.datetime.now())
     i_loop += 1
     if not args.no_saving:
